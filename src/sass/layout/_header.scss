@@ -1,0 +1,46 @@
+header {
+	grid-area: header;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	@media screen and (max-width: 1201px) {
+		margin: 3em 3em 2em 3em;
+	}
+	
+	.player {
+		display: flex;
+		justify-content: space-between;
+		height: 70px;
+		
+		.avatar {
+			width: 70px;
+			height: 70px;
+		}
+		
+		.name {
+			height: 2em;
+		}
+		.stats {
+			height: 2em;
+			display: flex;
+			justify-content: space-between;
+			flex-direction: row;
+			
+			.stat {
+				margin:0 5px 0 0;
+			}
+		}
+	}
+	
+	.score {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 6em;
+		line-height: 1em;
+		font-weight: 500;
+		color:$color-primary;
+		margin:0;
+		width: 25%;
+	}
+}

@@ -1,0 +1,44 @@
+
+:root {
+	font-family: Poppins;
+	line-height: 1.5;
+	font-weight: 400;
+	// font-size: smaller;
+
+	color-scheme: light dark;
+	color: black;
+	background-color: #ffffff;
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	height: 100vh;
+	background-color: $color-bg;
+	font-family: Poppins;
+	line-height: 1.5;
+	font-weight: 400;
+	font-size: small;
+	caret-color: transparent;
+}
+ 
+    
+#left_top {
+	grid-area: left_top;
+}
+
+#right_top {
+	grid-area: right_top;
+}
+
+#logout {
+	position: absolute;
+	top:1em;
+	right: 2em;
+}
+
