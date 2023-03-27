@@ -6,7 +6,7 @@ services:
     build: ./frontend/
     restart: always
     ports:
-      - "5173:5173"
+      - "5574:5574"
     volumes:
       - frontend-volume:/home/frontend-volume
   backend:
