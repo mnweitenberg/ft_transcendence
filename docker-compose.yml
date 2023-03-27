@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: pong-frontend
+    build: ./frontend/
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - frontend-volume:/home/frontend-volume
+  backend:
+    container_name: pong-backend
+    build: ./backend/
+    restart: always
+    volumes:
+      - backend-volume:/home/backend-volume
+  postgres_db:
+    container_name: pong-database
+    image: postgres:15.2-alpine
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - database:/var/lib/postgresql/data
+networks:
+  pong-network:
+    driver: bridge
+volumes:
+  database:
+  frontend-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/frontend/volume
+  backend-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/backend/volume
