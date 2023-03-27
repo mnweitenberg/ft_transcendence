@@ -13,13 +13,13 @@ endif
 $(NAME): all
 
 all:
-	$(DK_CMP) up
+	$(DK_CMP) up -d
 
 build:
 	$(DK_CMP) build --no-cache
 
 clean:
-	$(DK_CMP) stop
+	$(DK_CMP) down
 
 fclean: clean
 	docker system prune -af --volumes ; \
