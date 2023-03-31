@@ -6,19 +6,23 @@ services:
     build: ./frontend/
     restart: always
     ports:
-      - "5574:5574"
+      - 5574:5574
     networks:
       - pong-network
     volumes:
-      - frontend-volume:/home/frontend-volume
+      - ./frontend/volume:/home/frontend-volume
   backend:
     container_name: pong-backend
     build: ./backend/
     restart: always
+    env_file:
+      - .env
+    ports:
+      - 4242:4242
     networks:
       - pong-network
     volumes:
-      - backend-volume:/home/backend-volume
+      - ./backend/volume:/home/backend-volume
   postgres_db:
     container_name: pong-database
     build: ./database/
@@ -27,8 +31,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_DB_HOST=pong-database
-      - POSTGRES_DB_PORT=5432
+      - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
+      - POSTGRES_DB_PORT=${POSTGRES_DB_PORT}
       - PONG_DB_USER=${PONG_DB_USER}
       - PONG_DB_PASSWORD=${PONG_DB_PASSWORD}
     ports:
@@ -49,15 +53,3 @@ networks:
     driver: bridge
 volumes:
   database:
-  frontend-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${PWD}/frontend/volume
-  backend-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${PWD}/backend/volume

@@ -31,12 +31,12 @@ export class User {
 }
 
 
-const user = {
-    id: 2,
-    username: "bob"
-}
+// const user = {
+//     id: 2,
+//     username: "bob"
+// }
 
-const new_user = {
-    ...user,
-    id: 3,
-}
+// const new_user = {
+//     ...user,
+//     id: 3,
+// }

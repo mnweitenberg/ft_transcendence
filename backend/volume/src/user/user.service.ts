@@ -10,11 +10,11 @@ export class UserService {
         private readonly userRepository: Repository<User>,
     ) {}
 
-    async getUser() {
-        
+    async getAllUsers(): Promise<Array<User>> {
+        return this.userRepository.find();
     }
 
-    async setUsername(usernameParam: string) {
-        
-    }
+    // async setUsername(usernameParam: string) {
+    //     return 
+    // }
 }
