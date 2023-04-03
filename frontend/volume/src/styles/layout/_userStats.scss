@@ -1,0 +1,35 @@
+.userStats {
+	.avatar {
+		width: 100px;
+		height: 100px;
+		border-radius: 100%;
+	}
+
+	.user {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		gap: 3em;
+		align-items: center;
+		margin-bottom: 3em;
+	}
+
+	.user_actions {
+		// text-align: right;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+
+	table {
+		width: 100%;
+		font-size: 1em;
+		font-weight: 600;
+		line-height: 2em;
+	}
+
+	td {
+		width: 20%;
+	}
+}

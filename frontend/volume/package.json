@@ -2,12 +2,13 @@
   "name": "pong",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "compile-sass": "node-sass src/sass/main.scss src/css/style.css",
+    "compile-sass": "node-sass src/styles/main.scss src/styles/style.css",
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write \"{src,test}/**/*.{ts,tsx}\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx}\" --fix"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -19,9 +20,17 @@
   "devDependencies": {
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-react": "^3.1.0",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^9.10.0",
     "node-sass": "^8.0.0",
+    "prettier": "^2.8.7",
     "typescript": "^4.9.3",
-    "vite": "^4.2.0"
+    "vite": "^4.2.0",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }
