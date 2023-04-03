@@ -1,13 +1,12 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsLatLong } from 'class-validator';
 
 @Entity()
 @ObjectType()
 export class User {
-    @PrimaryGeneratedColumn()
-    @Field(type => Int)
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    @Field()
+    id: string;
 
     @Column()
     @Field()
@@ -23,11 +22,11 @@ export class User {
 
     @Column()
     @Field(type => Int)
-    wins: number;
+    wins: number = 0;
 
     @Column()
     @Field(type => Int)
-    losses: number;
+    losses: number = 0;
 }
 
 

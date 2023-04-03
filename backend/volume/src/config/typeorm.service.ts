@@ -15,6 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
             username: this.config.get<string>('PONG_DB_USER'),
             password: this.config.get<string>('PONG_DB_PASSWORD'),
             database: this.config.get<string>('POSTGRES_DB'),
+            schema: this.config.get<string>('PONG_DB_USER'),
             autoLoadEntities: true,
             synchronize: true,
         };
