@@ -1,0 +1,72 @@
+#auth {
+	width: 100%;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-size: 200% 200%;
+	background-image: linear-gradient(-45deg, $color-animation_pink 0%, $color-animation_blue 100%);
+	-webkit-animation: AnimateBG 10s ease infinite;
+	animation: AnimateBG 10s ease infinite;
+
+	@-webkit-keyframes AnimateBG {
+		0% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+
+	@keyframes AnimateBG {
+		0% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+
+	.logo42 {
+		margin-top: 1em;
+		-webkit-filter: drop-shadow(0 0 8px rgba(0, 0, 0, .05));
+		filter: drop-shadow(0 0 8px rgba(0, 0, 0, .05));
+	}
+
+	.signin {
+		font-size: 2em;
+		padding: 1em 2em;
+		color: $color-animation_blue;
+		border-radius: 1em;
+		height: 7em;
+		box-shadow: rgba(17, 17, 26, 0.05) 0px 0px 8px,
+			rgba(17, 17, 26, 0.05) 0px 0px 64px,
+			inset rgba(248, 235, 250, 0.60) 0px 0px 64px;
+		background-size: 300% 300%;
+		background-image: linear-gradient(120deg, $color-animation_lightblue 0%, $color-animation_white 25%, $color-animation_lightblue 50%, $color-animation_white 100%);
+		-webkit-animation: AnimateBG 15s ease infinite;
+		animation: AnimateBG 15s ease infinite;
+		transition: $transition-slow;
+	}
+
+
+	.signin:hover {
+		cursor: pointer;
+		padding: 1.2em 2.2em;
+		border-radius: 2em;
+		opacity: 0.9;
+		box-shadow: rgba(61, 61, 146, 0.25) 0px 0px 8px,
+			rgba(55, 87, 152, 0.25) 0px 0px 64px;
+		transition: $transition-slow;
+	}
+}
