@@ -1,6 +1,6 @@
-import "../styles/style.css";
-import { queue, matchHistory } from "../utils/data";
-import { getWinsByUser, getLossesByUser } from "../utils/utils";
+import "src/styles/style.css";
+import { queue, matchHistory } from "src/utils/data";
+import { getWinsByUser, getLossesByUser } from "src/utils/utils";
 
 function Header() {
 	if (queue.length === 0) return <></>;
