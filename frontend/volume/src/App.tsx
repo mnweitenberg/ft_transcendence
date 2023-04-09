@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ReactDOM } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "src/styles/style.css";
 import Auth from "src/components/login/Auth";
@@ -20,7 +19,7 @@ function App() {
 		<>
 			<Routes>
 				<Route path="/" element={<Home LogIn={LogIn} />} />
-				<Route path="login" element={<Auth />} />
+				<Route path="/login" element={<Auth />} />
 				<Route path="/loading" element={<Loading LogIn={LogIn} />} />
 			</Routes>
 		</>
