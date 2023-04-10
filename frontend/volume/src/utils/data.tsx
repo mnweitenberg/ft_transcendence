@@ -35,6 +35,7 @@ export const milan: i.User = {
 export const allUsers: Array<i.User> = [marius, justin, jonathan, milan];
 
 export const user: i.User = milan;
+// export const user: i.User | null = null;
 
 ///////////
 // QUEUE //
@@ -208,9 +209,35 @@ export const groupChat: Array<i.Chat> = [
 		reciever: milan,
 	},
 ];
-// let groupChat = {
-// 	name: "J4M GroupChat",
-// 	avatar: "src/assets/img/groupchat.png",
-// 	status: "",
-// 	chat: chat_group,
-// };
+
+export const publicChannels: Array<i.Channel> = [
+	{
+		name: "channel1",
+		avatar: "./img/milan2.png",
+		creator: jonathan,
+		members: [justin, jonathan, marius],
+	},
+	{
+		name: "Crazy groupchat",
+		avatar: "./img/milan.png",
+		creator: justin,
+		members: [justin, marius],
+	},
+];
+
+export const privateChannels: Array<i.PrivateChannel> = [
+	{
+		name: "secret meeting",
+		avatar: "./img/milan2.png",
+		password: "asdf",
+		creator: milan,
+		members: [jonathan],
+	},
+	{
+		name: "Crazy private groupchat",
+		avatar: "./img/milan.png",
+		password: "asdf",
+		creator: justin,
+		members: [justin, jonathan],
+	},
+];

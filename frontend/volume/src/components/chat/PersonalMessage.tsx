@@ -6,6 +6,8 @@ import { getChatsByUser } from "../../utils/utils";
 import { createChallengeAlert, createBlockAlert } from "../../utils/utils";
 import UserStats from "../../components/common/UserStats";
 
+// https://css-tricks.com/books/greatest-css-tricks/pin-scrolling-to-bottom/
+
 export default function PersonalMessage({
 	props,
 	renderOverview,
