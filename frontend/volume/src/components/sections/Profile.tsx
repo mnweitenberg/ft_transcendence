@@ -1,9 +1,9 @@
-import "../styles/style.css";
-import { user } from "../utils/data";
-import UserStats from "../components/common/UserStats";
-import Stats from "../components/common/Stats";
-import MatchHistory from "../components/common/MatchHistory";
-import * as i from "../types/Interfaces";
+import "src/styles/style.css";
+import { user } from "src/utils/data";
+import UserStats from "src/components/common/UserStats";
+import Stats from "src/components/common/Stats";
+import MatchHistory from "src/components/common/MatchHistory";
+import * as i from "src/types/Interfaces";
 
 export default function Profile(props: i.ModalProps) {
 	return (

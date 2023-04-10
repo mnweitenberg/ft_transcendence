@@ -1,7 +1,7 @@
-import "../styles/style.css";
-import UserStats from "../components/common/UserStats";
-import { ranking } from "../utils/data";
-import * as i from "../types/Interfaces";
+import "src/styles/style.css";
+import UserStats from "src/components/common/UserStats";
+import { ranking } from "src/utils/data";
+import * as i from "src/types/Interfaces";
 
 function Ranking(propsModal: i.ModalProps) {
 	return (

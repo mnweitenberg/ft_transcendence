@@ -1,7 +1,7 @@
-import "../styles/style.css";
-import UserStats from "../components/common/UserStats";
-import { queue } from "../utils/data";
-import * as i from "../types/Interfaces";
+import "src/styles/style.css";
+import UserStats from "src/components/common/UserStats";
+import { queue } from "src/utils/data";
+import * as i from "src/types/Interfaces";
 
 export default function Queue(props: i.ModalProps) {
 	if (queue.length === 0) return <JoinQueue />;
