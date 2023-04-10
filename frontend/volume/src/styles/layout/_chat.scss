@@ -219,17 +219,25 @@ section#chat {
 //////////////
 // NEW CHAT //
 //////////////
-
 .new_chat {
 
-	#personalChat {
+	#privateChannel {
 		display: none;
 		margin-top: 2em;
 	}
 
-	#groupChat {
-		display: none;
+	#publicChannel {
+		display: block;
 		margin-top: 2em;
+	}
+
+	#publicLink {
+		font-weight: bold;
+	}
+
+	h5{
+		margin:0;
+		color:$color-messages_friend;
 	}
 
 	.avatar {
@@ -270,10 +278,6 @@ section#chat {
 		position: absolute;
 		top: 0;
 		right: 0;
-	}
-
-	#welcomeDiv {
-		display: none;
 	}
 
 }

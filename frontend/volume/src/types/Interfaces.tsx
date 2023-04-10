@@ -16,6 +16,17 @@ export interface Chat {
 	reciever: User;
 }
 
+export interface Channel {
+	name: string;
+	avatar: string;
+	creator: User;
+	members: Array<User>;
+}
+
+export interface PrivateChannel extends Channel {
+	password: string;
+}
+
 ///////////////
 // USERSTATS //
 ///////////////

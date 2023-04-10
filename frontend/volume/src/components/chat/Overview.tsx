@@ -1,11 +1,9 @@
 import "../../styles/style.css";
-import NewChat from "./NewChat";
-import { user, chats } from "../../utils/data";
+import NewChat from "./JoinChannel";
+import { user, chats, allUsers } from "../../utils/data";
 import * as i from "../../types/Interfaces";
 import { getChatsByUser } from "../../utils/utils";
 import { ChatState } from "../../utils/constants";
-
-// https://css-tricks.com/books/greatest-css-tricks/pin-scrolling-to-bottom/
 
 function Overview({
 	props,
@@ -65,11 +63,48 @@ function Overview({
 				</div>
 			</div>
 
-			<div className="new_chat">
-				<a onClick={() => props.toggleModal(null, <NewChat />)}>new chat</a>
+			<div className="new_chat flex_row_spacebetween">
+				<a onClick={() => props.toggleModal(null, <PersonalChat />)}>new chat</a>
+				<a onClick={() => props.toggleModal(null, <NewChat />)}>join channel</a>
+				<a onClick={() => props.toggleModal(null, <CreateChannel />)}>create channel</a>
 			</div>
 		</>
 	);
+}
+
+function PersonalChat() {
+	return (
+		<div className="new_chat">
+			{allUsers.map(function (user: any) {
+				return (
+					<div key={user.name} className="selectUser">
+						<img className="avatar" src={user.avatar} />
+						<button onClick={() => CreateNewChat(user)}>
+							Send message to {user.name}
+						</button>
+					</div>
+				);
+			})}
+		</div>
+	);
+}
+
+function CreateChannel() {
+	return (
+		<div className="new_chat">
+			<form>
+				<h3>Name</h3>
+				<input type="text" placeholder=""></input>
+				<h3>Password</h3>
+				<input type="text" placeholder="leave blank to create public channel"></input>
+				<button>Create channel</button>
+			</form>
+		</div>
+	);
+}
+
+function CreateNewChat(user: i.User) {
+	console.log(user.name);
 }
 
 export default Overview;

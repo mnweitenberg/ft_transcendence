@@ -1,31 +1,20 @@
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
-import { createFriendRequesAlert, createLeaveGroupChatAlert } from "../../utils/utils";
 
 function UserStats(props: i.ModalProps) {
 	return (
 		<div className="userStats">
 			<div className="user">
-				<img className="avatar" src={props.selectedUser.avatar} />
+				<img className="avatar" src="" />
+				{/* <img className="avatar" src={props.selectedUser.avatar} /> */}
 
 				<div className="user_actions">
-					<h1>{props.selectedUser.name}</h1>
-					<a
-						className="link"
-						onClick={() =>
-							props.toggleModal(props.selectedUser, createFriendRequesAlert(props))
-						}
-					>
-						change password
-					</a>
-					<a
-						className="link"
-						onClick={() =>
-							props.toggleModal(props.selectedUser, createLeaveGroupChatAlert(props))
-						}
-					>
-						leave group
-					</a>
+					{/* <h1>{props.selectedUser.name}</h1> */}
+					<h1>"[name of groupchat]"</h1>
+					{/* only show if user is admin: */}
+					<a className="link">change user priviliges</a>
+					{/* only show if user is admin: */}
+					<a className="link">change password</a>
 				</div>
 			</div>
 			<h2>Group members</h2>
@@ -42,8 +31,6 @@ function UserStats(props: i.ModalProps) {
 						);
 					})}
 			</div>
-			Subject zegt niks over of we het wachtwoord van de group nog moeten aanpassen als dit
-			lastig kunnen we deze pagina eventueel achterwege laten
 		</div>
 	);
 }

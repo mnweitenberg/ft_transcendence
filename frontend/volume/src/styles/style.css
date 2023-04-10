@@ -399,13 +399,20 @@ section#chat {
       height: 40px;
       border-radius: 100%; }
 
-.new_chat #personalChat {
+.new_chat #privateChannel {
   display: none;
   margin-top: 2em; }
 
-.new_chat #groupChat {
-  display: none;
+.new_chat #publicChannel {
+  display: block;
   margin-top: 2em; }
+
+.new_chat #publicLink {
+  font-weight: bold; }
+
+.new_chat h5 {
+  margin: 0;
+  color: #c0d7e0; }
 
 .new_chat .avatar {
   height: 50px;
@@ -438,9 +445,6 @@ section#chat {
   position: absolute;
   top: 0;
   right: 0; }
-
-.new_chat #welcomeDiv {
-  display: none; }
 
 #game {
   grid-area: game;
