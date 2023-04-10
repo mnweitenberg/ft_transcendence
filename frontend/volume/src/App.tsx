@@ -13,9 +13,12 @@ function App() {
 	}
 
 	const navigate = useNavigate();
-	useEffect(() => {
-		if (!login) navigate("/login");
-	}, [login]);
+	if (!login) {
+		LogIn();
+		useEffect(() => {
+			navigate("/login");
+		}, [login]);
+	}
 
 	return (
 		<>
