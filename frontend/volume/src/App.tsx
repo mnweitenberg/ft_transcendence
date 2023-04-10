@@ -13,7 +13,9 @@ function App() {
 	}
 
 	const navigate = useNavigate();
-	if (!login) navigate("/login");
+	useEffect(() => {
+		if (!login) navigate("/login");
+	}, [login]);
 
 	return (
 		<>
