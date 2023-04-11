@@ -1,6 +1,6 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io'
-import { QueueService, getWholeQueue } from './queue.service';
+import { Socket, Server } from 'socket.io';
+import { QueueService } from './queue.service';
 
 
 //@WebSocketGateway(evtueel PORT_NUMBER)
@@ -21,11 +21,14 @@ export class QueueGateway {
 
     @SubscribeMessage('findMatch')
     async findMatch(@MessageBody() userId: string) {
-        const matches = await this.queueService.findMatch(userId); // should return all matches, including new one
+        // const matches = await this.queueService.findMatch(userId); // should return all matches, including new one
         
-        this.server.emit('newMatch', matches);      // stuurt naar alle clients de event 'newMatch' met als data alle matches
+        console.log("find match called van website!!!!!!");
 
-        return matches;     // return to client who called 'joinQueue'
+        return "hallo van backend";
+        // this.server.emit('newMatch', matches);      // stuurt naar alle clients de event 'newMatch' met als data alle matches
+
+        // return matches;     // return to client who called 'joinQueue'
     }
 
 
@@ -43,9 +46,16 @@ export class QueueGateway {
         return this.queueService.getWholeQueue();
     }
 
+    // displays 'joining...' if no match is found
     @SubscribeMessage('joining')
-    async joining() {
-        // displays 'joining...' if no mathc is found
+    async joining(
+        @MessageBody('isJoining') isJoining: boolean,
+        @ConnectedSocket() client: Socket,
+        ) {
+            const userId = await this.queueService.getClientUserId(client.id); // userId should maybe be name
+
+            // dit emit het event 'joining' met de payload 'userId'(string) en 'isJoining'(boolean)
+            client.broadcast.emit('joining', { userId, isJoining });     // client.broadcast stuurt naar alle clients behalve current client
     }
 
 
