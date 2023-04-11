@@ -50,3 +50,30 @@ function JoinQueue() {
 		</div>
 	);
 }
+
+import { useEffect } from "react";
+import { io, Socket } from "socket.io-client";
+
+const URL = "http://localhost:6565";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const socket = io(URL);
+
+/**
+ * Hook to listen for socket.io events
+ * @param socket socket to apply event listener to
+ * @param event event name to listen for
+ * @param callback callback function that will be called when the event is received
+ */
+export function useSocketListener(
+	socket: Socket,
+	event: string,
+	callback: (...args: any[]) => void
+) {
+	useEffect(() => {
+		socket.on(event, callback);
+		return () => {
+			socket.off(event, callback);
+		};
+	}, []);
+}

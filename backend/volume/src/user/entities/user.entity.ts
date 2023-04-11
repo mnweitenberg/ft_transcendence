@@ -1,5 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Queue } from 'src/queue/entities/queue.entity';
+// import { Queue, QueueWaiting } from './../../queue/entities/queue.entity';
 
 @Entity()
 @ObjectType()
@@ -28,13 +30,3 @@ export class User {
 	@Field((type) => Int)
 	losses: number = 0;
 }
-
-// const user = {
-//     id: 2,
-//     username: "bob"
-// }
-
-// const new_user = {
-//     ...user,
-//     id: 3,
-// }
