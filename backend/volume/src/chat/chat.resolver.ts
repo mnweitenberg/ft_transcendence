@@ -23,6 +23,6 @@ export class ChatResolver {
 
 	@ResolveField()
 	async members(@Parent() chat: Chat) {
-		return this.chat_service.get_members(chat);
+		return this.chat_service.getMembers(chat);
 	}
 }

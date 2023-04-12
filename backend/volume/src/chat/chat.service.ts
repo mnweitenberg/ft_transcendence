@@ -14,8 +14,8 @@ export class ChatService {
 		private readonly userService: UserService,
 	) {}
 
-	async getAllChats(with_members: boolean = false): Promise<Array<Chat>> {
-		return this.chatRepository.find({ relations: { members: with_members } });
+	async getAllChats(): Promise<Array<Chat>> {
+		return this.chatRepository.find();
 	}
 
 	async create(createChatInput: CreateChatInput): Promise<Chat> {
@@ -26,7 +26,7 @@ export class ChatService {
 		return await this.chatRepository.save(chat);
 	}
 
-	async get_members(chat: Chat): Promise<Array<User>> {
+	async getMembers(chat: Chat): Promise<Array<User>> {
 		const chat_ = await this.chatRepository.findOne({ relations: { members: true }, where: { id: chat.id } });
 		return chat_.members;
 	}
