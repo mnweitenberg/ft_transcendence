@@ -21,6 +21,12 @@ export class UserService {
 		});
 	}
 
+	async getUserById(id: string) {
+		return this.userRepository.findOne({
+			where: { id: id },
+		});
+	}
+
 	async create(createUserInput: CreateUserInput): Promise<User> {
 		const user = this.userRepository.create(createUserInput);
 		return await this.userRepository.save(user);
