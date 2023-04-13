@@ -9,7 +9,7 @@ import { LoginModule } from './session/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';
-import { ChatModule } from './chat/chat.module';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
 	imports: [
@@ -27,7 +27,7 @@ import { ChatModule } from './chat/chat.module';
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
 		UserModule,
 		LoginModule,
-		ChatModule,
+		ChannelModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

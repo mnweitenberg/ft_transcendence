@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Chat } from 'src/chat/entities/chat.entity';
+import { Channel } from 'src/channel/entities/channel.entity';
 
 @Entity()
 @ObjectType()
@@ -29,7 +29,7 @@ export class User {
 	@Field((type) => Int)
 	losses: number = 0;
 
-	@ManyToMany((type) => Chat, (chat) => chat.members)
-	@Field((type) => [Chat], { nullable: true })
-	chats: Chat[];
+	@ManyToMany((type) => Channel, (channel) => channel.members)
+	@Field((type) => [Channel], { nullable: true })
+	channels: Channel[];
 }

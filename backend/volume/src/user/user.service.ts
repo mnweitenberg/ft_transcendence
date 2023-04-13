@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
-import { Chat } from 'src/chat/entities/chat.entity';
+import { Channel } from 'src/channel/entities/channel.entity';
 
 @Injectable()
 export class UserService {
@@ -33,8 +33,8 @@ export class UserService {
 		return await this.userRepository.save(user);
 	}
 
-	async getChats(user: User): Promise<Array<Chat>> {
-		const user_ = await this.userRepository.findOne({ relations: { chats: true }, where: { id: user.id } });
-		return user_.chats;
+	async getChannels(user: User): Promise<Array<Channel>> {
+		const user_ = await this.userRepository.findOne({ relations: { channels: true }, where: { id: user.id } });
+		return user_.channels;
 	}
 }
