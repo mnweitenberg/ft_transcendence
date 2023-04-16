@@ -13,9 +13,9 @@ import { isNullableType } from 'graphql';
 
 export let rij: Queue;
 
-rij.queueUserId.push("eerste test");
-rij.queueUserId.push("tweede test");
-rij.queueUserId.push("derde test");
+// rij.queueUserId.push("eerste test");
+// rij.queueUserId.push("tweede test");
+// rij.queueUserId.push("derde test");
 
 @ObjectType()
 export class Queue {
@@ -28,6 +28,7 @@ export class Queue {
 			if (userId != rij[i].queueUserId)
 				return i;
 		rij.queueUserId.push(userId);
+		return -1;
 	}
 	
 	foundMatch(userOneId: string, index: number) : void {
@@ -39,6 +40,7 @@ export class Queue {
 		// 
 
 	}
+
 
 	@PrimaryGeneratedColumn('uuid')
 	@Field()

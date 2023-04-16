@@ -16,11 +16,16 @@ export class QueueResolver {
 		return this.queueService.getWholeQueue();
 	}
 
-	@Query ()
+	@Query ((returns) => Queue)
 	async joinQueue(userId: User["id"]) {
-		rij.lookForMatch(userId);
+		var index: number = rij.lookForMatch(userId);
 		
-
+		if (index == -1){
+			console.log("No match found, return this???");
+			return null;
+		}
+		console.log("Found match on rij[%d]!, return user id??", index);	
+		return null
 	}
 
 
