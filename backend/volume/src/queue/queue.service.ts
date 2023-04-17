@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Queue, rij } from './entities/queue.entity';
-import { Socket } from 'socket.io'
+import { Queue, rij } from './queue.model'
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository } from 'typeorm';
+// import { Queue, rij } from './entities/queue.entity';
+// import { Socket } from 'socket.io'
 
 // import { CreateUserInput } from './dto/create-user.input';
+
+function addToQueue(username: String) {
+	const add = new Queue;
+	add.playerNameInQueue = username;
+	rij.push(add);
+}
 
 @Injectable()
 export class QueueService {
@@ -13,34 +20,9 @@ export class QueueService {
 	// 	private readonly queueRepository: Repository<Queue>,
 	// ) {}
 
-	clientToUser = {};
-
-	findMatch(userId: string) {
-		rij.lookForMatch(userId);
-
-		return "return match if found";
+	create(username: String) : Queue {
+		addToQueue(username);
+		console.log('added ', rij[0].playerNameInQueue)
+		return rij[0];
 	}
-
-	identify(userId: string, clientId: string) {	
-		this.clientToUser[clientId] = userId;		// keeps track of which client is which user (misschien niet nodig?)
-
-	}
-
-	getClientUserId(clientId: string) {
-		return this.clientToUser[clientId];
-	}
-	
-
-
-	getWholeQueue() {
-		let ret: string = rij.queueUserId.join(" + ");
-
-		return ret;
-	}
-
-	// async create(playerId: string): Promise<Queue> {
-	// 	return this.queueRepository.create({
-			// where: { id: playerId } });
-		// return await this.queueRepository.save(queue);
-	// }
 }

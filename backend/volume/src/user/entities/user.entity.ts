@@ -1,7 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Queue } from 'src/queue/entities/queue.entity';
-// import { Queue, QueueWaiting } from './../../queue/entities/queue.entity';
+import { Chat } from 'src/chat/entities/chat.entity';
 
 @Entity()
 @ObjectType()
@@ -29,4 +28,8 @@ export class User {
 	@Column()
 	@Field((type) => Int)
 	losses: number = 0;
+
+	@ManyToMany((type) => Chat, (chat) => chat.members)
+	@Field((type) => [Chat], { nullable: true })
+	chats: Chat[];
 }

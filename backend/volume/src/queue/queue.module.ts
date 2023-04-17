@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Queue } from './entities/queue.entity';
+// import { Queue } from './entities/queue.entity';
+import { Queue } from './queue.model'
 import { QueueService } from './queue.service';
 import { QueueResolver } from './queue.resolver';
 import { QueueGateway } from './queue.gateway';

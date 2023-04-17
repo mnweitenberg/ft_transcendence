@@ -1,6 +1,6 @@
 
-import { Queue } from "./entities/queue.entity";
-import { User } from "src/user/entities/user.entity";
+// import { Queue } from "./entities/queue.entity";
+// import { User } from "src/user/entities/user.entity";
 
 // voor many to many https://stackoverflow.com/questions/49903229/many-to-many-relationship-in-graphql
 

@@ -6,23 +6,20 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
-const URL = "http://localhost:4242";
+// const URL = "http://localhost:4242";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const socket = io(URL);
+// export const socket = io(URL);
 
 export default function Queue(props: i.ModalProps) {
 	// stuur req naar backend om alle GameScore structs te ontvangen
+	// const rij: Array<i.GameScore> = [];
 
-	socket.emit("getQueue");
-
-	const rij: Array<i.GameScore> = [];
-
-	if (rij.length === 0) return <JoinQueue />;
+	// if (rij.length === 0) return <JoinQueue />;
 
 	return (
 		<>
-			{rij.map(function (game) {
+			{queue.map(function (game) {
 				if (!game.playerOne || !game.playerTwo) return <JoinQueue />;
 				return (
 					// TO DO: Add a unique key to the div
@@ -59,7 +56,8 @@ export default function Queue(props: i.ModalProps) {
 
 function JoinQueue() {
 	function handleClick() {
-		socket.emit("test", "hallo van front");
+		// socket.emit("test", "hallo van front");
+		alert("queue join clicked");
 	}
 
 	return <button onClick={handleClick}>Join queue</button>;

@@ -9,8 +9,8 @@ import { UserModule } from './user/user.module';
 import { LoginModule } from './session/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { join } from 'path';
 import { ExampleQLModule } from './example_ql/example_ql.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
 	imports: [
@@ -29,6 +29,7 @@ import { ExampleQLModule } from './example_ql/example_ql.module';
 		UserModule,
 		QueueModule,
 		LoginModule,
+		ChatModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

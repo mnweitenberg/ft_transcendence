@@ -1,9 +1,8 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
-import { Queue, rij } from './entities/queue.entity';
+import { rij, Queue } from './queue.model'
+// import { Queue, rij } from './entities/queue.entity';
 import { User } from '../user/entities/user.entity'
-
-
 
 
 
@@ -11,42 +10,70 @@ import { User } from '../user/entities/user.entity'
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	@Query((returns) => [Queue])
-	async wholeQueueQuery() {
-		return this.queueService.getWholeQueue();
-	}
-
-	@Query ((returns) => Queue)
-	async joinQueue(userId: User["id"]) {
-		var index: number = rij.lookForMatch(userId);
-		
-		if (index == -1){
-			console.log("No match found, return this???");
-			return null;
-		}
-		console.log("Found match on rij[%d]!, return user id??", index);	
-		return null
-	}
-
-
-	// @Mutation ()
-	// async joinQueue(
-	// 	@Args('userid', { type: () => String }) userId: string, 
-	// ) {
-		
-	// }
-
 	@Mutation((returns) => Queue)
-	async createQueue(
-		@Args('playerId', { type: () => String }) playerId: string, )
-		{
-        // return this.queueService.create(playerId);
+	async joinGlobalQueue(
+		@Args('username', { type: () => String }) usernameParameter: string,
+	) {
+		return this.queueService.create(usernameParameter);
+	}
 
-    }
+
+	// @Query((returns) => String)
+	// userNameQuery() {
+	// 	return this.queueService.userNameQuery();
+	// }
+	
+
 }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// @Query((returns) => [Queue])
+	// async wholeQueueQuery() {
+	// 	return this.queueService.getWholeQueue();
+	// }
+
+	// @Query ((returns) => Queue)
+	// async joinQueue(userId: User["id"]) {
+	// 	var index: number = rij.lookForMatch(userId);
+		
+	// 	if (index == -1){
+	// 		console.log("No match found, return this???");
+	// 		return null;
+	// 	}
+	// 	console.log("Found match on rij[%d]!, return user id??", index);	
+	// 	return null
+	// }
+
+
+	// // @Mutation ()
+	// // async joinQueue(
+	// // 	@Args('userid', { type: () => String }) userId: string, 
+	// // ) {
+		
+	// // }
+
+	// @Mutation((returns) => Queue)
+	// async createQueue(
+	// 	@Args('playerId', { type: () => String }) playerId: string, )
+	// 	{
+    //     // return this.queueService.create(playerId);
+
+    // }
 // @Resolver()
 // export class QueueResolver {
 //   @Mutation(() => Queue)
