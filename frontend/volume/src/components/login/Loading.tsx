@@ -1,17 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import "src/styles/style.css";
 
-function Loading() {
-	const navigate = useNavigate();
-	const toHomePage = () => {
-		useEffect(() => {
-			navigate("/");
-		});
-	};
+function Loading({ LogIn }: { LogIn(): void }) {
 	return (
-		<div id="loading">
-			<div onClick={toHomePage} className="login">
+		<div id="auth">
+			<div onClick={LogIn} className="signin">
 				loading...
 				<img className="logo42" src="/img/42logo.svg" />
 			</div>
@@ -19,15 +11,3 @@ function Loading() {
 	);
 }
 export default Loading;
-
-// function Loading({ LogIn }: { LogIn(): void }) {
-// 	return (
-// 		<div id="loading">
-// 			<div onClick={LogIn} className="login">
-// 				loading...
-// 				<img className="logo42" src="/img/42logo.svg" />
-// 			</div>
-// 		</div>
-// 	);
-// }
-// export default Loading;

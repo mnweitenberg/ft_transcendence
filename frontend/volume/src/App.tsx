@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "src/styles/style.css";
 import Auth from "src/components/login/Auth";
 import Loading from "src/components/login/Loading";
@@ -12,12 +12,11 @@ function App() {
 		setLogin(!login);
 	}
 
+	const location = useLocation();
 	const navigate = useNavigate();
-	if (!login) {
-		LogIn();
-		useEffect(() => {
-			navigate("/login");
-		}, [login]);
+	console.log(location.pathname);
+	if (!login && location.pathname == "/") {
+		navigate("/login");
 	}
 
 	return (
