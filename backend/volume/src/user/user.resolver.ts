@@ -37,4 +37,9 @@ export class UserResolver {
 	async channels(@Parent() user: User) {
 		return this.userService.getChannels(user);
 	}
+
+	@ResolveField()
+	async messages(@Parent() user: User) {
+		return this.userService.getMessages(user);
+	}
 }

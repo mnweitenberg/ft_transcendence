@@ -10,6 +10,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';
 import { ChannelModule } from './channel/channel.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { ChannelModule } from './channel/channel.module';
 		UserModule,
 		LoginModule,
 		ChannelModule,
+		MessageModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

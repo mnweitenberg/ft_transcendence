@@ -28,4 +28,9 @@ export class ChannelResolver {
 	async members(@Parent() channel: Channel) {
 		return this.channel_service.getMembers(channel);
 	}
+
+	@ResolveField()
+	async messages(@Parent() channel: Channel) {
+		return this.channel_service.getMessages(channel);
+	}
 }

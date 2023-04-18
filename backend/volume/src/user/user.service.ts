@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { Channel } from 'src/channel/entities/channel.entity';
+import { Message } from 'src/message/entities/message.entity';
 
 @Injectable()
 export class UserService {
@@ -34,7 +35,18 @@ export class UserService {
 	}
 
 	async getChannels(user: User): Promise<Array<Channel>> {
-		const user_ = await this.userRepository.findOne({ relations: { channels: true }, where: { id: user.id } });
-		return user_.channels;
+		const user_with_channels = await this.userRepository.findOne({
+			relations: { channels: true },
+			where: { id: user.id },
+		});
+		return user_with_channels.channels;
+	}
+
+	async getMessages(user: User): Promise<Array<Message>> {
+		const user_with_messages = await this.userRepository.findOne({
+			relations: { messages: true },
+			where: { id: user.id },
+		});
+		return user_with_messages.messages;
 	}
 }
