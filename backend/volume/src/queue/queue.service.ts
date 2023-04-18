@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Queue, rij } from './queue.model'
+import { Queue, queueStatus, rij } from './queue.model'
 // import { InjectRepository } from '@nestjs/typeorm';
 // import { Repository } from 'typeorm';
 // import { Queue, rij } from './entities/queue.entity';
@@ -10,7 +10,17 @@ import { Queue, rij } from './queue.model'
 function addToQueue(username: String) {
 	const add = new Queue;
 	add.playerNameInQueue = username;
+	add.status = queueStatus.WAITING;
 	rij.push(add);
+	console.log("Added to queue: ", add.playerNameInQueue);
+	return add;
+}
+
+function isPlayerInQueue(username: String) {
+	for (var i = 0; i < rij.length; i++)
+		if (rij[i].playerNameInQueue == username)
+			return true;
+	return false;		
 }
 
 @Injectable()
@@ -20,9 +30,11 @@ export class QueueService {
 	// 	private readonly queueRepository: Repository<Queue>,
 	// ) {}
 
-	create(username: String) : Queue {
-		addToQueue(username);
-		console.log('added ', rij[0].playerNameInQueue)
-		return rij[0];
+	join(username: String) : Queue {
+		if (isPlayerInQueue(username)) {
+			console.log(username, " is already in queue");
+			return null;
+		}
+		return addToQueue(username);
 	}
 }
