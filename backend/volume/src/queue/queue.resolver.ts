@@ -14,6 +14,7 @@ export class QueueResolver {
 	async joinGlobalQueue(
 		@Args('username', { type: () => String }) usernameParameter: string,
 	) {
+		console.log(usernameParameter);
 		return this.queueService.create(usernameParameter);
 	}
 

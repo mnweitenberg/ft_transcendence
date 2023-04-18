@@ -6,6 +6,8 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
+import { gql, useQuery, useMutation } from "@apollo/client";
+
 // const URL = "http://localhost:4242";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -54,10 +56,26 @@ export default function Queue(props: i.ModalProps) {
 	);
 }
 
+const JOIN_GLOBAL_QUEUE = gql`
+	mutation joinGlobalQueue($username: String!) {
+		joinGlobalQueue(username: $username) {
+			playerNameInQueue
+		}
+	}
+`;
+
 function JoinQueue() {
+	const [joinGlobalQueue, data] = useMutation(JOIN_GLOBAL_QUEUE);
+	// userName moet gebruikers naam van sessie oid krijgen
+	const userName = "placeholder voor get_user_name";
+
 	function handleClick() {
-		// socket.emit("test", "hallo van front");
-		alert("queue join clicked");
+		// dan zetten we userName als de input van de mutation en callen we de mutation
+		joinGlobalQueue({
+			variables: {
+				username: userName,
+			},
+		});
 	}
 
 	return <button onClick={handleClick}>Join queue</button>;
