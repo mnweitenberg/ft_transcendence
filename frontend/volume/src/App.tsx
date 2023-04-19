@@ -14,10 +14,11 @@ function App() {
 
 	const location = useLocation();
 	const navigate = useNavigate();
-	console.log(location.pathname);
-	if (!login && location.pathname == "/") {
-		navigate("/login");
-	}
+	useEffect(() => {
+		if (!login && location.pathname == "/") {
+			navigate("/login");
+		}
+	});
 
 	return (
 		<>

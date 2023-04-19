@@ -4,4 +4,6 @@ import { Field, ObjectType } from '@nestjs/graphql';
 export class Login {
 	@Field((type) => String)
 	client_uid: string;
+
+	client_secret: string;
 }
