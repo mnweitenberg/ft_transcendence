@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GraphQLError } from 'graphql';
 import { LoginService } from './login.service';
 import { Login } from './login.model';
 
@@ -13,6 +14,15 @@ export class LoginResolver {
 
 	@Mutation((returns) => String)
 	async sendCodeMutation(@Args('code') code: string) {
-		return this.loginService.sendCode(code);
+		try {
+			var result = this.loginService.sendCode(code);
+		} catch (e) {
+			throw new GraphQLError('Failed API request', {
+				extensions: {
+					code: 'INTERNAL_SERVER_ERROR',
+				},
+			});
+		}
+		return result;
 	}
 }

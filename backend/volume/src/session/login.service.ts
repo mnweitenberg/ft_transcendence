@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Login } from './login.model';
 import * as dotenv from 'dotenv';
+import { map, catchError, lastValueFrom } from 'rxjs';
 dotenv.config();
 
 @Injectable()
@@ -12,31 +13,28 @@ export class LoginService {
 		client_secret: process.env.CLIENT_SECRET,
 	};
 	baseUrl: string = 'https://api.intra.42.fr/oauth/token';
-	grantType: string = 'grant_type=authorization_code';
+	grantType: string = 'authorization_code';
 
 	async getClientUid() {
 		return this.login.client_uid;
 	}
 
 	async sendCode(code: string) {
-		var requestUrl: string =
-			this.baseUrl +
-			'?' +
-			this.grantType +
-			'&' +
-			'client_id=' +
-			this.login.client_uid +
-			'&' +
-			'client_secret=' +
-			this.login.client_secret +
-			'&' +
-			'code=' +
-			code +
-			'&' +
-			'redirect_uri=' +
-			encodeURIComponent('http://localhost:5574/');
-		console.log('requestUrl: ');
-		console.log(requestUrl);
-		return this.httpService.post(requestUrl).;
+		const response = await lastValueFrom(
+			this.httpService.post(this.baseUrl, {
+				params: {
+					grant_type: this.grantType,
+					client_id: this.login.client_uid,
+					client_secret: this.login.client_secret,
+					code: code,
+					// redirect_uri: 'http://localhost:5574/',
+				},
+			}),
+		);
+		return {
+			data: {
+				response,
+			},
+		};
 	}
 }
