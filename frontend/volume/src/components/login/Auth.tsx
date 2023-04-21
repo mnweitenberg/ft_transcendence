@@ -7,6 +7,16 @@ const GET_CLIENT_UID = gql`
 	}
 `;
 
+function dec2hex(dec: any) {
+	return dec.toString(16).padStart(2, "0");
+}
+
+function generateState(): string {
+	const arr = new Uint8Array(10);
+	window.crypto.getRandomValues(arr);
+	return Array.from(arr, dec2hex).join("");
+}
+
 function Auth() {
 	const { loading, error, data } = useQuery(GET_CLIENT_UID);
 	if (error) return <h1>Something went wrong!</h1>;
@@ -18,6 +28,8 @@ function Auth() {
 		data.clientUidQuery +
 		"&redirect_uri=" +
 		encodeURIComponent("http://localhost:5574/loading") +
+		"&state=" +
+		generateState() +
 		"&response_type=code";
 	return (
 		<div id="auth">

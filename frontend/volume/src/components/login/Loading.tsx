@@ -17,12 +17,17 @@ function Loading({ LogIn }: { LogIn(): void }) {
 
 	if (error) return <h1>Something went wrong!</h1>;
 	if (loading) return <h1>Loading...</h1>;
-	sendCode();
 
 	return (
 		<div id="auth">
 			<Link to="/">
-				<div onClick={LogIn} className="signin">
+				<div
+					onClick={() => {
+						sendCode();
+						LogIn();
+					}}
+					className="signin"
+				>
 					loading...
 					<img className="logo42" src="/img/42logo.svg" />
 				</div>

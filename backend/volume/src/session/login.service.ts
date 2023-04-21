@@ -1,9 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Login } from './login.model';
 import * as dotenv from 'dotenv';
-import { map, catchError, lastValueFrom } from 'rxjs';
 dotenv.config();
+const axios = require('axios').default;
 
 @Injectable()
 export class LoginService {
@@ -20,21 +20,21 @@ export class LoginService {
 	}
 
 	async sendCode(code: string) {
-		const response = await lastValueFrom(
-			this.httpService.post(this.baseUrl, {
-				params: {
-					grant_type: this.grantType,
-					client_id: this.login.client_uid,
-					client_secret: this.login.client_secret,
-					code: code,
-					// redirect_uri: 'http://localhost:5574/',
-				},
-			}),
-		);
-		return {
-			data: {
-				response,
-			},
-		};
+		axios
+			.post(this.baseUrl, {
+				grant_type: this.grantType,
+				client_id: this.login.client_uid,
+				client_secret: this.login.client_secret,
+				code: code,
+				redirect_uri: 'http://localhost:5574/loading',
+			})
+			.then(function (response) {
+				console.log(response);
+			})
+			.catch(function (error) {
+				console.log(error);
+				console.log('ERRORROROROROR');
+			});
+		return code;
 	}
 }
