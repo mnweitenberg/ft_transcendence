@@ -11,8 +11,13 @@ export class LoginResolver {
 		return this.loginService.getClientUid();
 	}
 
-	@Mutation((returns) => String)
-	async sendCodeMutation(@Args('code') code: string) {
-		return this.loginService.sendCode(code);
+	// @Mutation((returns) => String)
+	// async sendCodeMutation(@Args('code') code: string) {
+	// 	return this.loginService.sendCode(code);
+	// }
+
+	@Query((returns) => String)
+	async sessionTokenQuery(@Args('code') code: string) {
+		return this.loginService.getSessionToken(code);
 	}
 }

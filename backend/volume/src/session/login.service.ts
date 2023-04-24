@@ -19,7 +19,8 @@ export class LoginService {
 		return this.login.client_uid;
 	}
 
-	async sendCode(code: string) {
+	async getSessionToken(code: string) {
+		var output: string;
 		axios
 			.post(this.baseUrl, {
 				grant_type: this.grantType,
@@ -29,12 +30,11 @@ export class LoginService {
 				redirect_uri: 'http://localhost:5574/loading',
 			})
 			.then(function (response) {
-				console.log(response);
+				output = JSON.stringify(response.data);
 			})
 			.catch(function (error) {
-				console.log(error);
-				console.log('ERRORROROROROR');
+				output = JSON.stringify(error);
 			});
-		return code;
+		return output;
 	}
 }
