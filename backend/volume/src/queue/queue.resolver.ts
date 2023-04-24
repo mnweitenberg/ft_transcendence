@@ -26,7 +26,7 @@ export class QueueResolver {
 		
 		// pubsub.publish first argument is the triggername (eventname), second argument is event payload
 		// the event payload must have the same form as the subscription return value. So in our case it has to be a Match
-		// pubSub.publish('matchFound', { matchFound: match })
+		pubSub.publish('matchFound', { matchFound: match })
 		return match;
 	}
 

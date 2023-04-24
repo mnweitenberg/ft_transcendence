@@ -6,6 +6,15 @@ export class Match {
 	@Field()
 	foundMatch: boolean;
 
+	@Field()
+	id: number;
+
+	@Field()
+	playerOne: String;
+
+	@Field()
+	playerTwo: String;
+
 	@Field( { nullable: true })
 	playerOneName: String;
 

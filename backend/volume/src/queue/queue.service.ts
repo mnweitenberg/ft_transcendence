@@ -33,6 +33,8 @@ function findMatch(username: String) : Match {
 			match.foundMatch = true;
 			match.playerOneName = username;
 			match.playerTwoName = rij[i].playerNameInQueue;
+			match.playerOne = match.playerOneName;
+			match.playerTwo = match.playerTwo;
 			rij.splice(i, 1);
 			return match;
 		}

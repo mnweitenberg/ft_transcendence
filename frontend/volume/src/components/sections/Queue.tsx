@@ -3,22 +3,43 @@ import React from "react";
 import UserStats from "src/components/common/UserStats";
 import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 
 // const URL = "http://localhost:4242";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // export const socket = io(URL);
 
-export default function Queue(props: i.ModalProps) {
-	// stuur req naar backend om alle GameScore structs te ontvangen
-	// const rij: Array<i.GameScore> = [];
+const MATCH_FOUND = gql`
+	subscription {
+		matchFound {
+			foundMatch
+			playerOneName
+			playerTwoName
+		}
+	}
+`;
 
-	// if (rij.length === 0) return <JoinQueue />;
+export default function Queue(props: i.ModalProps) {
+	useSubscription(MATCH_FOUND, {
+		onSubscriptionData: ({ subscriptionData }) => {
+			// newMatch zou match data van backend moeten ontvangen die correspondeert met GamerScore.
+			//
+			// voorzover ik zou denken is subscriptionData de return value van the subscription, (en dus een match),
+			// al geven we hierboven in de MATCH_FOUND aan welke data terug komt (dit zou dan overeen moeten komen)
+			// met de gamerscore.
+			//
+			// dus misschien gamerscore op backend na bootsen? zie interfaces.tsx voor gamerscore layout
+			// score kan bijvoorbeeld altijd op 0 - 0
+
+			const newMatch = subscriptionData.data.eventEmitter;
+			queue.push(newMatch);
+		},
+	});
 
 	return (
 		<>
@@ -68,19 +89,19 @@ const JOIN_GLOBAL_QUEUE = gql`
 `;
 
 function JoinQueue() {
-	const [joinGlobalQueue, { data }] = useMutation(JOIN_GLOBAL_QUEUE);
+	const [joinGlobalQueue, { data: queue_data }] = useMutation(JOIN_GLOBAL_QUEUE);
 
 	useEffect(() => {
-		if (data) {
-			if (data.joinGlobalQueue.foundMatch) {
+		if (queue_data) {
+			if (queue_data.joinGlobalQueue.foundMatch) {
 				alert(
-					`Match found! ${data.joinGlobalQueue.playerOneName} vs ${data.joinGlobalQueue.playerTwoName}`
+					`Match found! ${queue_data.joinGlobalQueue.playerOneName} vs ${queue_data.joinGlobalQueue.playerTwoName}`
 				);
 			} else {
-				alert(`You were added to the queue! ${data.joinGlobalQueue.playerOneName}`);
+				alert(`You were added to the queue! ${queue_data.joinGlobalQueue.playerOneName}`);
 			}
 		}
-	}, [data]);
+	}, [queue_data]);
 
 	const handleClick = (event) => {
 		event.preventDefault();
