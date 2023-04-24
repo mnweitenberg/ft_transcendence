@@ -60,7 +60,9 @@ export default function Queue(props: i.ModalProps) {
 const JOIN_GLOBAL_QUEUE = gql`
 	mutation joinGlobalQueue($username: String!) {
 		joinGlobalQueue(username: $username) {
-			playerNameInQueue
+			foundMatch
+			playerOneName
+			playerTwoName
 		}
 	}
 `;
@@ -68,21 +70,29 @@ const JOIN_GLOBAL_QUEUE = gql`
 function JoinQueue() {
 	const [joinGlobalQueue, { data }] = useMutation(JOIN_GLOBAL_QUEUE);
 
+	useEffect(() => {
+		if (data) {
+			if (data.joinGlobalQueue.foundMatch) {
+				alert(
+					`Match found! ${data.joinGlobalQueue.playerOneName} vs ${data.joinGlobalQueue.playerTwoName}`
+				);
+			} else {
+				alert(`You were added to the queue! ${data.joinGlobalQueue.playerOneName}`);
+			}
+		}
+	}, [data]);
+
 	const handleClick = (event) => {
 		event.preventDefault();
 
-		// usern moet eigenlijk de ingelogde unieke usernaam meegeven
-		const usern = event.target.elements.username.value;
+		const usern = event.target.elements.username.value; // placeholder usern moet eigenlijk de ingelogde unieke usernaam meegeven
 
-		// dan zetten we userName als de input van de mutation en callen we de mutation
+		// dan zetten we username als de input van de mutation en callen we de mutation
 		joinGlobalQueue({
 			variables: {
 				username: usern,
 			},
 		});
-
-		if (data) alert("You were added to the queue!");
-		else alert("You are already in a game/the queue!");
 	};
 
 	return (

@@ -21,6 +21,12 @@ import { ChatModule } from './chat/chat.module';
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
+			installSubscriptionHandlers: true,
+			// subscriptions default to using subscriptions-transport-ws, 
+			// which is no longer supported, so we want graphql-ws
+			subscriptions: {
+				'graphql-ws': true,
+			}
 			// sortSchema: true, // Sort lexicographically
 		}),
 		// Other modules

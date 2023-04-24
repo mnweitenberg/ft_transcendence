@@ -6,8 +6,6 @@ export enum queueStatus {
 	IN_GAME,
 }
 
-export var rij: Queue[] = [] 
-
 @ObjectType()
 export class Queue {
 	
