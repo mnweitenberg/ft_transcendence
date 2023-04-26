@@ -1,25 +1,26 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
+import { useEffect } from "react";
 import "src/styles/style.css";
 
 const SEND_CODE = gql`
-	mutation sessionTokenQuery($codeStr: String!) {
-		sessionTokenQuery(code: $codeStr)
+	mutation sessionTokenMutation($codeStr: String!) {
+		sessionTokenMutation(code: $codeStr)
 	}
 `;
 
-function queryAndSaveToken(sendCode: () => any): void {}
+// function queryAndSaveToken(sendCode: () => any): void {}
 
 function Loading({ LogIn }: { LogIn(): void }) {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const codeStr = searchParams.get("code");
-	const { loading, error, data } = useQuery(SEND_CODE, {
-		variables: { codeStr },
-	});
-
+	const [sendCode, { data, loading, error }] = useMutation(SEND_CODE);
+	useEffect(() => {
+		sendCode({ variables: { codeStr } });
+	}, []);
 	if (error) return <h1>Something went wrong!</h1>;
 	if (loading) return <h1>Loading...</h1>;
-
+	console.log(data);
 	return (
 		<div id="auth">
 			<Link to="/">

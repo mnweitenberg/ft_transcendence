@@ -6,7 +6,6 @@ const GET_CLIENT_UID = gql`
 		clientUidQuery
 	}
 `;
-
 function dec2hex(dec: any) {
 	return dec.toString(16).padStart(2, "0");
 }

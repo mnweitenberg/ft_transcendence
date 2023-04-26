@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Login } from './login.model';
 import * as dotenv from 'dotenv';
@@ -21,20 +21,18 @@ export class LoginService {
 
 	async getSessionToken(code: string) {
 		var output: string;
-		axios
-			.post(this.baseUrl, {
-				grant_type: this.grantType,
-				client_id: this.login.client_uid,
-				client_secret: this.login.client_secret,
-				code: code,
-				redirect_uri: 'http://localhost:5574/loading',
-			})
-			.then(function (response) {
-				output = JSON.stringify(response.data);
-			})
-			.catch(function (error) {
-				output = JSON.stringify(error);
-			});
-		return output;
+		try {
+			const response = await axios.post(this.baseUrl, {
+											grant_type: this.grantType,
+											client_id: this.login.client_uid,
+											client_secret: this.login.client_secret,
+											code: code,
+											redirect_uri: 'http://localhost:5574/loading',
+										});
+			output = response.data;
+		} catch (error) {
+			output = error;
+		}
+		return JSON.stringify(output);
 	}
 }
