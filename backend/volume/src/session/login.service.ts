@@ -20,19 +20,25 @@ export class LoginService {
 	}
 
 	async getSessionToken(code: string) {
-		var output: string;
+		var tmp: any;
 		try {
-			const response = await axios.post(this.baseUrl, {
-											grant_type: this.grantType,
-											client_id: this.login.client_uid,
-											client_secret: this.login.client_secret,
-											code: code,
-											redirect_uri: 'http://localhost:5574/loading',
-										});
-			output = response.data;
+			const response: any = await axios.post(this.baseUrl, {
+				grant_type: this.grantType,
+				client_id: this.login.client_uid,
+				client_secret: this.login.client_secret,
+				code: code,
+				redirect_uri: 'http://localhost:5574/loading',
+			});
+			tmp = {
+				code: 200,
+				nestedJson: response.data,
+			};
 		} catch (error) {
-			output = error;
+			tmp = {
+				code: 401,
+				nestedJson: error,
+			};
 		}
-		return JSON.stringify(output);
+		return JSON.stringify(tmp);
 	}
 }

@@ -20,6 +20,7 @@ import { ExampleQLModule } from './example_ql/example_ql.module';
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
+			context: ({ req, res }) => ({ req, res }),
 			// sortSchema: true, // Sort lexicographically
 		}),
 		// Other modules

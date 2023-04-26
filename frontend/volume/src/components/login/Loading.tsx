@@ -14,13 +14,17 @@ const SEND_CODE = gql`
 function Loading({ LogIn }: { LogIn(): void }) {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const codeStr = searchParams.get("code");
-	const [sendCode, { data, loading, error }] = useMutation(SEND_CODE);
+	const [sendCode, { data, loading, error }] = useMutation(SEND_CODE, {
+		onCompleted: (data) => {
+			console.log(data);
+		},
+	});
 	useEffect(() => {
 		sendCode({ variables: { codeStr } });
 	}, []);
+
 	if (error) return <h1>Something went wrong!</h1>;
 	if (loading) return <h1>Loading...</h1>;
-	console.log(data);
 	return (
 		<div id="auth">
 			<Link to="/">
