@@ -76,15 +76,6 @@ const JOIN_GLOBAL_QUEUE = gql`
 	}
 `;
 
-const MATCH_FOUND = gql`
-	subscription {
-		matchFound {
-			foundMatch
-			playerOneName
-			playerTwoName
-		}
-	}
-`;
 // const {
 // 	data: match_data,
 // 	error,
@@ -130,13 +121,39 @@ function JoinQueue() {
 	};
 
 	if (queue_data) {
-		return <div> You are in the queue! </div>;
+		return <JoinedQueue />;
 	} else {
 		return (
 			<form onSubmit={handleClick}>
 				<input type="text" name="username" placeholder="Voor testing only" />
 				<button type="submit">Join queue</button>
 			</form>
+		);
+	}
+}
+
+const MATCH_FOUND = gql`
+	subscription {
+		matchFound {
+			foundMatch
+			playerOneName
+			playerTwoName
+		}
+	}
+`;
+function JoinedQueue() {
+	const { data, loading, error } = useSubscription(MATCH_FOUND);
+
+	if (error) alert(error.message);
+
+	if (loading) return <div> Joined the Queue! </div>;
+
+	if (data.matchFound.foundMatch) {
+		return (
+			<div>
+				Playerone = {data.matchFound.playerOneName}
+				PlayerTwo = {data.matchFound.playerTwoName}
+			</div>
 		);
 	}
 }

@@ -28,7 +28,10 @@ export class QueueResolver {
 		{
 			pubSub.publish('matchFound', { matchFound: match });
 			console.log("match found: %s vs %s pubsub.publish called", match.playerOneName, match.playerTwoName)	
+		} else {
+			console.log("%s added to the queue", usernameParameter);
 		}
+
 		
 		return match.foundMatch;
 	}
