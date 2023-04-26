@@ -6,40 +6,32 @@ import * as i from "src/types/Interfaces";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { io, Socket } from "socket.io-client";
-
+import { GameScore } from "src/types/Interfaces";
 import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 
-// const URL = "http://localhost:4242";
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// export const socket = io(URL);
-
-const MATCH_FOUND = gql`
-	subscription {
-		matchFound {
-			foundMatch
-			playerOneName
-			playerTwoName
-		}
-	}
-`;
-
 export default function Queue(props: i.ModalProps) {
-	useSubscription(MATCH_FOUND, {
-		onSubscriptionData: ({ subscriptionData }) => {
-			// newMatch zou match data van backend moeten ontvangen die correspondeert met GamerScore.
-			//
-			// voorzover ik zou denken is subscriptionData de return value van the subscription, (en dus een match),
-			// al geven we hierboven in de MATCH_FOUND aan welke data terug komt (dit zou dan overeen moeten komen)
-			// met de gamerscore.
-			//
-			// dus misschien gamerscore op backend na bootsen? zie interfaces.tsx voor gamerscore layout
-			// score kan bijvoorbeeld altijd op 0 - 0
+	// onSubscriptionData: ({ subscriptionData }) => {
+	// const newMatch = subscriptionData.data.eventEmitter;
 
-			const newMatch = subscriptionData.data.eventEmitter;
-			queue.push(newMatch);
-		},
-	});
+	// 	if (loading)
+	// 		return <div> Queueing... </div>
+
+	// };
+
+	// alert(matchData.playerOne);
+
+	// query maken om queue object te vullen vanaf database zodat we deze kunnen pushen aan de queue.
+	// denk beter vanaf backend
+	// const match = new i.GamerScore;
+	// queue.push(match);
+
+	// return (
+	// 	<div>
+	// 		<h1>Match found!</h1>
+	// 		<p>Player One: {matchData.playerOneName} </p>
+	// 		<p>Player Two: {matchData.playerTwoName} </p>
+	// 	</div>
+	// );
 
 	return (
 		<>
@@ -80,28 +72,49 @@ export default function Queue(props: i.ModalProps) {
 
 const JOIN_GLOBAL_QUEUE = gql`
 	mutation joinGlobalQueue($username: String!) {
-		joinGlobalQueue(username: $username) {
+		joinGlobalQueue(username: $username)
+	}
+`;
+
+const MATCH_FOUND = gql`
+	subscription {
+		matchFound {
 			foundMatch
 			playerOneName
 			playerTwoName
 		}
 	}
 `;
+// const {
+// 	data: match_data,
+// 	error,
+// 	loading,
+// } = useSubscription(MATCH_FOUND, {
+// variable for query, so username?
+// variables: {
+// 	user: "user1",
+// }
+// });
+// useEffect(() => {
+// 	if (match_data) {
+// 		alert(match_data.playerOneName);
+// 	}
+// }, [match_data]);
 
 function JoinQueue() {
-	const [joinGlobalQueue, { data: queue_data }] = useMutation(JOIN_GLOBAL_QUEUE);
+	const [joinGlobalQueue, { data: queue_data, loading: queue_loading, error: queue_error }] =
+		useMutation(JOIN_GLOBAL_QUEUE);
 
-	useEffect(() => {
-		if (queue_data) {
-			if (queue_data.joinGlobalQueue.foundMatch) {
-				alert(
-					`Match found! ${queue_data.joinGlobalQueue.playerOneName} vs ${queue_data.joinGlobalQueue.playerTwoName}`
-				);
-			} else {
-				alert(`You were added to the queue! ${queue_data.joinGlobalQueue.playerOneName}`);
-			}
-		}
-	}, [queue_data]);
+	// useEffect(() => {
+	// 	if (queue_data) {
+	// 		if (queue_data.joinGlobalQueue) {
+	// 			// alert("found match!");
+	// 			// `Match found! ${queue_data.joinGlobalQueue.playerOneName} vs ${queue_data.joinGlobalQueue.playerTwoName}`
+	// 		} else {
+	// 			// alert(`You were added to the queue!`);
+	// 		}
+	// 	}
+	// }, [queue_data]);
 
 	const handleClick = (event) => {
 		event.preventDefault();
@@ -116,10 +129,14 @@ function JoinQueue() {
 		});
 	};
 
-	return (
-		<form onSubmit={handleClick}>
-			<input type="text" name="username" placeholder="Voor testing only" />
-			<button type="submit">Join queue</button>
-		</form>
-	);
+	if (queue_data) {
+		return <div> You are in the queue! </div>;
+	} else {
+		return (
+			<form onSubmit={handleClick}>
+				<input type="text" name="username" placeholder="Voor testing only" />
+				<button type="submit">Join queue</button>
+			</form>
+		);
+	}
 }

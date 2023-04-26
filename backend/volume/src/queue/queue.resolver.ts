@@ -18,19 +18,24 @@ export class QueueResolver {
 		return this.queueService.printQ();
 	}
 
-	@Mutation((returns) => Match)
+	@Mutation((returns) => Boolean)
 	async joinGlobalQueue(
 		@Args('username', { type: () => String }) usernameParameter: string,
 	) {
 		const match = this.queueService.join(usernameParameter);
 		
-		// pubsub.publish first argument is the triggername (eventname), second argument is event payload
-		// the event payload must have the same form as the subscription return value. So in our case it has to be a Match
-		pubSub.publish('matchFound', { matchFound: match })
-		return match;
+		if (match.foundMatch)
+		{
+			pubSub.publish('matchFound', { matchFound: match });
+			console.log("match found: %s vs %s pubsub.publish called", match.playerOneName, match.playerTwoName)	
+		}
+		
+		return match.foundMatch;
 	}
 
+		
 		// To subscripe to the same event as the resolver
+		// asyncIterator subscribes to the event passed as parameter 
 	@Subscription((returns) => Match)
 	matchFound() {
 		return pubSub.asyncIterator('matchFound');
@@ -43,6 +48,4 @@ export class QueueResolver {
 	subscribeToMatchFound1() {
 		return pubSub.asyncIterator('matchFound1');
 	}
-	
-	// @Mutation(returns => )
 }

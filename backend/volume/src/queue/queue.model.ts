@@ -15,11 +15,4 @@ export class Queue {
 	
 	@Field()
 	status: queueStatus;
-	
-	// @Field(() => queueStatus, { defaultValue: queueStatus.IDLE })
-	// status: queueStatus;
-
-	// constructor(playerNameInQueue: String) {
-	// 	this.playerNameInQueue = playerNameInQueue;
-	// }
 }

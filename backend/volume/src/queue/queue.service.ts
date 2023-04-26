@@ -1,29 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Queue, queueStatus } from './queue.model'
 import { Match } from './match.model'
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
-// import { Queue, rij } from './entities/queue.entity';
-// import { Socket } from 'socket.io'
-
-// import { CreateUserInput } from './dto/create-user.input';
 
 export var rij: Queue[] = [] 
-
-// const matches: Match[] = [];
 
 function addToQueue(username: String) {
 	const add = new Queue;
 	add.playerNameInQueue = username;
 	add.status = queueStatus.WAITING;
 	rij.push(add);
-}
-
-function isPlayerInQueue(username: String) {
-	for (var i = 0; i < rij.length; i++)
-		if (rij[i].playerNameInQueue == username)
-			return true;
-	return false;		
 }
 
 function findMatch(username: String) : Match {
@@ -33,8 +18,6 @@ function findMatch(username: String) : Match {
 			match.foundMatch = true;
 			match.playerOneName = username;
 			match.playerTwoName = rij[i].playerNameInQueue;
-			match.playerOne = match.playerOneName;
-			match.playerTwo = match.playerTwo;
 			rij.splice(i, 1);
 			return match;
 		}
@@ -42,25 +25,27 @@ function findMatch(username: String) : Match {
 	return match;	
 }
 
+/*
+join que vindt of een match of zet iemand in de que
+
+in geval van match moet subscription event emitten, zodat tegen speler bericht krijgt dat hij gematched is
+en rest van mensen de zichtbare queue wordt upgedate met nieuw match
+
+in geval van que alleen bericht terug dat ze in queue zitten (of niks terug sturen)
+*/ 
+
 @Injectable()
 export class QueueService {
 	join(username: String) : Match {
-		if (isPlayerInQueue(username)) {
-			const placeholder_for_when_frontend_handles_this = new Match;
-			console.log("%s is already in queue", username);
-			placeholder_for_when_frontend_handles_this.foundMatch = false;
-			return placeholder_for_when_frontend_handles_this;
-		}
-		
 		const match = findMatch(username);
 		
 		if (match.foundMatch) {
-			console.log("found match: %s vs %s", match.playerOneName, match.playerTwoName)
+			
+			// call subscription dmv pubsub?
+ 			// emit data naar front end dmv pubsub?
 		}
 		else {
 			addToQueue(username);
-			match.playerOneName = username;
-			console.log("Added to queue: %s", rij[rij.length - 1].playerNameInQueue);
 		}
 		return match;
 	}
@@ -75,11 +60,6 @@ export class QueueService {
 	/*
 	DEBUGGING PURPOSES
 	*/
-	
-	// onze front end zou dit moeten opvangen, dus een speler die in queue of in game zit
-	// kan nooit joinQueue aanroepen
-
-
 	printQ(): Queue[] {
 		for (let i = 0; i < rij.length; i++)
 			console.log("rij[%i].username = %s", i, rij[i].playerNameInQueue);

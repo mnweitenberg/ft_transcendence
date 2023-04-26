@@ -9,11 +9,11 @@ export class Match {
 	@Field()
 	id: number;
 
-	@Field()
-	playerOne: String;
+	// @Field()
+	// playerOne: String;
 
-	@Field()
-	playerTwo: String;
+	// @Field()
+	// playerTwo: String;
 
 	@Field( { nullable: true })
 	playerOneName: String;
