@@ -25,5 +25,5 @@ export class Message {
 
 	@ManyToOne(() => User, (user) => user.messages)
 	@Field((type) => User)
-	sender: User;
+	author: User;
 }

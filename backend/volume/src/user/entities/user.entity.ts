@@ -30,17 +30,17 @@ export class User {
 
 	@Column()
 	@Field((type) => Int)
-	wins = 0;
+	wins: number = 0;
 
 	@Column()
 	@Field((type) => Int)
-	losses = 0;
+	losses: number = 0;
 
 	@ManyToMany((type) => Channel, (channel) => channel.members)
 	@Field((type) => [Channel], { nullable: true })
 	channels: Channel[];
 
-	@OneToMany(() => Message, (message) => message.sender)
+	@OneToMany(() => Message, (message) => message.author)
 	@Field((type) => [Message], { nullable: true })
 	messages: Message[];
 }

@@ -18,8 +18,8 @@ export class MessageService {
 	) {}
 
 	async create(createMessageInput: CreateMessageInput): Promise<Message> {
-		const sender = await this.userService.getUserById(
-			createMessageInput.sender_id,
+		const author = await this.userService.getUserById(
+			createMessageInput.author_id,
 		);
 		const channel = await this.channelService.getChannelById(
 			createMessageInput.channel_id,
@@ -29,25 +29,25 @@ export class MessageService {
 			'received message: ',
 			createMessageInput.content,
 			' from ',
-			sender.username,
+			author.username,
 			' in channel ',
 			channel.id,
 		);
 
 		const message = this.messageRepository.create({
-			sender,
+			author,
 			channel,
 			content: createMessageInput.content,
 		});
 		return await this.messageRepository.save(message);
 	}
 
-	async getSender(message: Message): Promise<User> {
-		const message_with_sender = await this.messageRepository.findOne({
-			relations: { sender: true },
+	async getAuthor(message: Message): Promise<User> {
+		const message_with_author = await this.messageRepository.findOne({
+			relations: { author: true },
 			where: { id: message.id },
 		});
-		return message_with_sender.sender;
+		return message_with_author.author;
 	}
 
 	async getChannel(message: Message): Promise<Channel> {

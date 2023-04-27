@@ -15,5 +15,5 @@ export class CreateMessageInput {
 	@Field(() => String, {
 		description: 'id of the user who sent this message',
 	})
-	sender_id: string;
+	author_id: string;
 }
