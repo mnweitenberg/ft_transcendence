@@ -1,4 +1,5 @@
 import {
+	Column,
 	Entity,
 	JoinTable,
 	ManyToMany,
@@ -24,4 +25,16 @@ export class Channel {
 	@OneToMany(() => Message, (message) => message.channel)
 	@Field((type) => [Message], { nullable: true })
 	messages: Message[];
+
+	@Column()
+	@Field(() => String, {
+		description: 'name of the channel',
+	})
+	name: string;
+
+	@Column()
+	@Field(() => String, {
+		description: 'logo of the channel',
+	})
+	logo: string;
 }

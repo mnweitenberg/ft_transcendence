@@ -13,8 +13,13 @@ export default function Chat(props: i.ModalProps) {
 		setChatState(ChatState.overview);
 	}
 
+	const [channel_id, setChannelId] = useState("");
+	function setSelectedChannel(channel_id: string) {
+		setChannelId(channel_id);
+	}
+
 	if (chatState === ChatState.overview)
-		return <Overview props={props} setChatState={setChatState} />;
+		return <Overview props={props} setSelectedChannel={setSelectedChannel} setChatState={setChatState} />;
 
 	if (chatState === ChatState.personalMessage)
 		return <PersonalMessage props={props} renderOverview={renderOverview} />;

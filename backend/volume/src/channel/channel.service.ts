@@ -31,6 +31,8 @@ export class ChannelService {
 		);
 		const channel = this.channelRepository.create({
 			members,
+			name: createChannelInput.name,
+			logo: createChannelInput.logo,
 		});
 		return await this.channelRepository.save(channel);
 	}
