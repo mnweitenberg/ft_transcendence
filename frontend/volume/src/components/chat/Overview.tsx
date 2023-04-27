@@ -12,6 +12,9 @@ const GET_CHANNELS = gql`
 			id
 			name
 			logo
+			lastMessage {
+				content
+			}
 		}
 	}
 `;
@@ -25,7 +28,9 @@ function Overview({
 	setSelectedChannel: (channel_id: string) => void;
 	setChatState: (state: ChatState) => void;
 }) {
-	let { loading, data, error } = useQuery(GET_CHANNELS);
+	let { loading, data, error } = useQuery(GET_CHANNELS, {
+		fetchPolicy: "network-only", // TODO: Is this the best way to do this?
+	});
 	if (error) return <p>Error</p>;
 	if (loading) return <p>Loading...</p>;
 
@@ -56,9 +61,7 @@ function Overview({
 							<div className="status">{channel.status}</div>
 						</div>
 						<div className="chat_preview">
-							PLACEHOLDER PREVIEW MESSAGE
-							{/* {getChatsByUser(chats, user) &&
-								getChatsByUser(chats, user).at(-1)?.message} */}
+							{channel.lastMessage?.content ?? ""}
 						</div>
 					</div>
 				</div>

@@ -53,7 +53,7 @@ export default function NewGroupMessage({
 }) {
 	let { loading, data, error, subscribeToMore } = useQuery(GET_CHANNEL, {
 		variables: { channel_id: channel_id },
-	});
+	}); // FIXME: If a user is in the channel overview and a new message is sent, the user will not see the new message until he reloads the page
 	let [sendMessageMutation] = useMutation(SEND_MESSAGE);
 
 	useEffect(() => {
@@ -93,6 +93,7 @@ export default function NewGroupMessage({
 	if (error) return <p>Error</p>;
 	if (loading) return <p>Loading...</p>;
 
+	// const chatsWithFriend = getChatsByUser(chats, props.selectedUser);
 	return (
 		<div className="personalMessage">
 			<div className="chat_pm_header">
@@ -149,6 +150,32 @@ export default function NewGroupMessage({
 						);
 					})}
 			</div>
+
+			{/* <div className="messages_container">
+				{chatsWithFriend &&
+					chatsWithFriend.map(function (chat) {
+						if (chat.sender === user)
+							return (
+								<div key={chat.id} className="user">
+									{" "}
+									{chat.message}{" "}
+								</div>
+							);
+						return (
+							<>
+								<div key={chat.id} className="friend">
+									<div className="flexContainer">
+										<img className="avatar" src={chat.sender.avatar} />
+										<div>
+											<h3>{chat.sender.name}</h3>
+											{chat.message}{" "}
+										</div>
+									</div>
+								</div>
+							</>
+						);
+					})}
+			</div> */}
 
 			<div className="send_container">
 				<input

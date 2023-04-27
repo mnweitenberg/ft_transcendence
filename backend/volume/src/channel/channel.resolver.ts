@@ -51,4 +51,12 @@ export class ChannelResolver {
 	async messages(@Parent() channel: Channel) {
 		return this.channel_service.getMessages(channel);
 	}
+
+	@ResolveField()
+	async lastMessage(@Parent() channel: Channel) { // NOTE: maybe there is a better way to do this
+		const messages = channel.messages ?? await this.messages(channel);
+		if (messages.length > 0)
+			return messages[messages.length - 1];
+		return null;
+	}
 }

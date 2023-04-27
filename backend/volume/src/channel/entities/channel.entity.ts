@@ -37,4 +37,7 @@ export class Channel {
 		description: 'logo of the channel',
 	})
 	logo: string;
+
+	@Field(() => Message, {nullable: true})
+	lastMessage: Message;
 }
