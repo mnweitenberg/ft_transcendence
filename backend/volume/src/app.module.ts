@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+// import { GraphQLModule } from '@nestjs/graphql';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
@@ -17,10 +18,15 @@ import { ExampleQLModule } from './example_ql/example_ql.module';
 		ExampleQLModule,
 
 		// Use graphql
-		GraphQLModule.forRoot<ApolloDriverConfig>({
+		GraphQLModule.forRoot({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
 			context: ({ req, res }) => ({ req, res }),
+			cors: {
+				origin: 'http://localhost:5574',
+				methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+				credetials: true,
+			},
 			// sortSchema: true, // Sort lexicographically
 		}),
 		// Other modules
