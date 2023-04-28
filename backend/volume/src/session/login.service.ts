@@ -5,6 +5,14 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 const axios = require('axios').default;
 
+export class JWTClass {
+	access_token: string;
+	expires_in: number;
+	refresh_token: string;
+	scope: string;
+	created_at: number;
+}
+
 @Injectable()
 export class LoginService {
 	constructor(private readonly httpService: HttpService) {}
@@ -33,6 +41,7 @@ export class LoginService {
 				code: 200,
 				nestedJson: response.data,
 			};
+			console.log(response.data);
 		} catch (error) {
 			tmp = {
 				code: 401,
