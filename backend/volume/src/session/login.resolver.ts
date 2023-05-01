@@ -30,9 +30,9 @@ export class LoginResolver {
 		);
 		if (sessionToken.code == 401) return sessionToken.code;
 		ctx.res.cookie('session_cookie', sessionToken, {
-			// httpOnly: true,
+			httpOnly: true,
 			expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-			sameSite: 'none',
+			sameSite: 'lax',
 		});
 		ctx.res.header('wow', 'wwowow');
 		return code;

@@ -5,6 +5,9 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	server: {
+		host: "http://localhost:5574",
+	},
 	plugins: [
 		react(),
 		eslintPlugin({

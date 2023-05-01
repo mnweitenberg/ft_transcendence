@@ -18,15 +18,12 @@ import { ExampleQLModule } from './example_ql/example_ql.module';
 		ExampleQLModule,
 
 		// Use graphql
-		GraphQLModule.forRoot({
+		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
-			context: ({ req, res }) => ({ req, res }),
-			cors: {
-				origin: 'http://localhost:5574',
-				methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-				credetials: true,
-			},
+			useFactory: () => ({
+				context: ({ req, res }) => ({ req, res }),
+			}),
 			// sortSchema: true, // Sort lexicographically
 		}),
 		// Other modules
