@@ -151,8 +151,8 @@ function JoinedQueue() {
 	if (data.matchFound.foundMatch) {
 		return (
 			<div>
-				Playerone = {data.matchFound.playerOneName}
-				PlayerTwo = {data.matchFound.playerTwoName}
+				Playerone = {data.matchFound.playerOneName} vs PlayerTwo ={" "}
+				{data.matchFound.playerTwoName}
 			</div>
 		);
 	}

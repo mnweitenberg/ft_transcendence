@@ -25,15 +25,6 @@ function findMatch(username: String) : Match {
 	return match;	
 }
 
-/*
-join que vindt of een match of zet iemand in de que
-
-in geval van match moet subscription event emitten, zodat tegen speler bericht krijgt dat hij gematched is
-en rest van mensen de zichtbare queue wordt upgedate met nieuw match
-
-in geval van que alleen bericht terug dat ze in queue zitten (of niks terug sturen)
-*/ 
-
 @Injectable()
 export class QueueService {
 	join(username: String) : Match {
@@ -52,7 +43,14 @@ export class QueueService {
 	
 	
 	
-	
+	testCreateMatch() : Match {
+		let match = new Match;
+
+		match.playerOneName = "111";
+		match.playerTwoName = "222";
+		match.foundMatch = true;
+		return (match);
+	}
 	
 	
 	

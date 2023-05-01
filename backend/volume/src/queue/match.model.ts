@@ -6,8 +6,10 @@ export class Match {
 	@Field()
 	foundMatch: boolean;
 
-	@Field()
-	id: number;
+	// @Field(  )
+	// id: number;
+	// @Field( { nullable: true } )
+	// id: number;
 
 	// @Field()
 	// playerOne: String;
@@ -15,9 +17,14 @@ export class Match {
 	// @Field()
 	// playerTwo: String;
 
-	@Field( { nullable: true })
+	@Field( )
 	playerOneName: String;
 
-	@Field( { nullable: true })
+	@Field( )
 	playerTwoName: String;
+	// @Field( { nullable: true })
+	// playerOneName: String;
+
+	// @Field( { nullable: true })
+	// playerTwoName: String;
 }

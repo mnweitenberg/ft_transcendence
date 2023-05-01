@@ -3,6 +3,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { QueueService } from './queue.service';
 import { Queue } from './queue.model'
 import { Match } from './match.model'
+import { queue } from 'rxjs';
 
 // 'npm install graphql-subscriptions graphql' to install package voor pubsub
 const pubSub = new PubSub();
@@ -18,6 +19,7 @@ export class QueueResolver {
 		return this.queueService.printQ();
 	}
 
+	
 	@Mutation((returns) => Boolean)
 	async joinGlobalQueue(
 		@Args('username', { type: () => String }) usernameParameter: string,
@@ -31,24 +33,48 @@ export class QueueResolver {
 		} else {
 			console.log("%s added to the queue", usernameParameter);
 		}
-
-		
 		return match.foundMatch;
 	}
 
-		
-		// To subscripe to the same event as the resolver
-		// asyncIterator subscribes to the event passed as parameter 
+	
 	@Subscription((returns) => Match)
 	matchFound() {
 		return pubSub.asyncIterator('matchFound');
 	}
 
-	// To subscribe to some other event
-	@Subscription(returns => Match, {
-		name: 'matchFound1',
+
+
+
+
+
+
+	@Subscription((returns) => Match, {
+		filter: (payload, variables) => payload.playerTwoName === variables.queue_number,
 	})
-	subscribeToMatchFound1() {
-		return pubSub.asyncIterator('matchFound1');
+	filterSub(@Args('queue_number') queue_number: string) {
+		return pubSub.asyncIterator('filterSub');
 	}
-}
+
+
+
+
+	@Mutation(returns => Boolean)
+	async testFilterMutation(@Args('queue_nub') queue_nub: String) {
+		// let match1 = new Match;
+		// match1.foundMatch = true;
+		// match1.playerOneName = "test1";
+		// match1.playerTwoName = queue_nub;
+		
+		const match1 = this.queueService.testCreateMatch();
+
+		pubSub.publish('filterSub', match1 );
+		return false;
+	}
+
+	@Subscription((returns) => Match, {	
+		filter: (match1: Match , queue_nb) => match1.playerTwoName === queue_nb.queue_nb
+	})
+	testFilterSubcription(@Args('queue_nb') queue_nb: string){
+		return pubSub.asyncIterator('testFilterSubscription')
+	}
+}	
