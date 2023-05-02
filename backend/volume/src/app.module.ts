@@ -11,6 +11,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';
 import { ChatModule } from './chat/chat.module';
+import { PubSub } from 'graphql-subscriptions';
+
+export const pubSub = new PubSub();
 
 @Module({
 	imports: [

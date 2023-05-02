@@ -1,10 +1,31 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { isNullableType } from 'graphql';
 
+
+/* 
+	idle = can invite ppl, can accept invite, can join queue
+	in_queue = can't do anything
+	in_game = can only quit game
+*/
+enum player_status {
+	idle,
+	in_queue,
+	in_game,
+}
+
 @ObjectType()
 export class Match {
 	@Field()
-	foundMatch: boolean;
+	matched: Boolean;
+
+	@Field()
+	playerOneId: String;
+
+	@Field()
+	playerTwoId: String;
+
+	@Field()
+	playerStatus: player_status;
 
 	// @Field(  )
 	// id: number;
@@ -17,11 +38,11 @@ export class Match {
 	// @Field()
 	// playerTwo: String;
 
-	@Field( )
-	playerOneName: String;
+	// @Field( )
+	// playerOneName: String;
 
-	@Field( )
-	playerTwoName: String;
+	// @Field( )
+	// playerTwoName: String;
 	// @Field( { nullable: true })
 	// playerOneName: String;
 
