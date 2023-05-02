@@ -5,14 +5,6 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 const axios = require('axios').default;
 
-export class JWTClass {
-	access_token: string;
-	expires_in: number;
-	refresh_token: string;
-	scope: string;
-	created_at: number;
-}
-
 @Injectable()
 export class LoginService {
 	constructor(private readonly httpService: HttpService) {}
@@ -23,8 +15,12 @@ export class LoginService {
 	baseUrl: string = 'https://api.intra.42.fr/oauth/token';
 	grantType: string = 'authorization_code';
 
-	async getClientUid() {
+	async getClientUid(): Promise<string> {
 		return this.login.client_uid;
+	}
+
+	async isCookieValid(): Promise<boolean> {
+		return true;
 	}
 
 	async getSessionToken(code: string) {

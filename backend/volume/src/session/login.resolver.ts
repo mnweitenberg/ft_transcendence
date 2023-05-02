@@ -19,6 +19,11 @@ export class LoginResolver {
 		return this.loginService.getClientUid();
 	}
 
+	@Query((returns) => Boolean)
+	async validateCookieQuery() {
+		return this.loginService.isCookieValid();
+	}
+
 	@Mutation((returns) => String)
 	async sessionTokenMutation(
 		@Context() context: GraphQLExecutionContext,
