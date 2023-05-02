@@ -7,7 +7,7 @@ import "./styles/style.css";
 
 const link = createHttpLink({
 	uri: "http://localhost:4242/graphql",
-	credentials: "same-origin",
+	credentials: "include",
 });
 
 const client = new ApolloClient({

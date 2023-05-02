@@ -29,12 +29,12 @@ export class LoginResolver {
 			await this.loginService.getSessionToken(code),
 		);
 		if (sessionToken.code == 401) return sessionToken.code;
-		ctx.res.cookie('session_cookie', sessionToken, {
+		ctx.res.cookie('session_cookie', sessionToken.nestedJson.access_token, {
 			httpOnly: true,
-			expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+			expires: new Date(Date.now() + 7199 * 1000),
+			secure: true,
 			sameSite: 'lax',
 		});
-		ctx.res.header('wow', 'wwowow');
 		return code;
 	}
 }

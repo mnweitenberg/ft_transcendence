@@ -9,8 +9,6 @@ const SEND_CODE = gql`
 	}
 `;
 
-// function queryAndSaveToken(sendCode: () => any): void {}
-
 function Loading({ LogIn }: { LogIn(): void }) {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const codeStr = searchParams.get("code");
