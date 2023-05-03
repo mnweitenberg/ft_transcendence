@@ -1,7 +1,5 @@
 export class Queue {
-	playerName: String;
+	playerName: string;
 
-	playerId: String;
-
-
+	playerId: string;
 }

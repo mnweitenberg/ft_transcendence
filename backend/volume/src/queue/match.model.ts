@@ -1,6 +1,5 @@
-import { Field, ObjectType } from '@nestjs/graphql'
+import { Field, ObjectType } from '@nestjs/graphql';
 import { isNullableType } from 'graphql';
-
 
 /* 
 	idle = can invite ppl, can accept invite, can join queue
@@ -16,16 +15,16 @@ enum player_status {
 @ObjectType()
 export class Match {
 	@Field()
-	matched: Boolean;
+	matched: boolean;
 
 	@Field()
-	playerOneId: String;
+	playerOneId: string;
 
 	@Field()
-	playerTwoId: String;
+	playerTwoId: string;
 
-	@Field()
-	playerStatus: player_status;
+	// @Field()
+	// playerStatus: player_status;
 
 	// @Field(  )
 	// id: number;

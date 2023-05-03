@@ -1,42 +1,15 @@
 import "src/styles/style.css";
-import React from "react";
 import UserStats from "src/components/common/UserStats";
 import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
-import { useRef, useState } from "react";
-import { useEffect } from "react";
-import { io, Socket } from "socket.io-client";
-import { GameScore } from "src/types/Interfaces";
-import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
+import { useState } from "react";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 
 export default function Queue(props: i.ModalProps) {
-	// onSubscriptionData: ({ subscriptionData }) => {
-	// const newMatch = subscriptionData.data.eventEmitter;
-
-	// 	if (loading)
-	// 		return <div> Queueing... </div>
-
-	// };
-
-	// alert(matchData.playerOne);
-
-	// query maken om queue object te vullen vanaf database zodat we deze kunnen pushen aan de queue.
-	// denk beter vanaf backend
-	// const match = new i.GamerScore;
-	// queue.push(match);
-
-	// return (
-	// 	<div>
-	// 		<h1>Match found!</h1>
-	// 		<p>Player One: {matchData.playerOneName} </p>
-	// 		<p>Player Two: {matchData.playerTwoName} </p>
-	// 	</div>
-	// );
-
 	return (
 		<>
 			{queue.map(function (game) {
-				if (!game.playerOne || !game.playerTwo) return <JoinQueue />;
+				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
 				return (
 					// TO DO: Add a unique key to the div
 					<div
@@ -65,67 +38,61 @@ export default function Queue(props: i.ModalProps) {
 					</div>
 				);
 			})}
-			<JoinQueue />
+			<JoinQueueElement />
 		</>
 	);
 }
 
-const JOIN_GLOBAL_QUEUE = gql`
-	mutation joinGlobalQueue($username: String!) {
-		joinGlobalQueue(username: $username)
+const JOIN_QUEUE = gql`
+	mutation joinQueue($userId: String!) {
+		joinQueue(userId: $userId) {
+			playerOneId
+			playerTwoId
+		}
 	}
 `;
+function JoinQueueElement() {
+	const [
+		joinQueue,
+		{
+			data: queue_data,
+			loading: queue_loading,
+			error: queue_error,
+			called: tried_joining_queue,
+		},
+	] = useMutation(JOIN_QUEUE);
 
-// const {
-// 	data: match_data,
-// 	error,
-// 	loading,
-// } = useSubscription(MATCH_FOUND, {
-// variable for query, so username?
-// variables: {
-// 	user: "user1",
-// }
-// });
-// useEffect(() => {
-// 	if (match_data) {
-// 		alert(match_data.playerOneName);
-// 	}
-// }, [match_data]);
-
-function JoinQueue() {
-	const [joinGlobalQueue, { data: queue_data, loading: queue_loading, error: queue_error }] =
-		useMutation(JOIN_GLOBAL_QUEUE);
-
-	// useEffect(() => {
-	// 	if (queue_data) {
-	// 		if (queue_data.joinGlobalQueue) {
-	// 			// alert("found match!");
-	// 			// `Match found! ${queue_data.joinGlobalQueue.playerOneName} vs ${queue_data.joinGlobalQueue.playerTwoName}`
-	// 		} else {
-	// 			// alert(`You were added to the queue!`);
-	// 		}
-	// 	}
-	// }, [queue_data]);
+	const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
 
 	const handleClick = (event) => {
 		event.preventDefault();
 
-		const usern = event.target.elements.username.value; // placeholder usern moet eigenlijk de ingelogde unieke usernaam meegeven
+		const user_id = event.target.elements.userId.value;
+		set_user_id(user_id); // TODO: remove together with the useState
 
-		// dan zetten we username als de input van de mutation en callen we de mutation
-		joinGlobalQueue({
+		joinQueue({
 			variables: {
-				username: usern,
+				userId: user_id,
 			},
 		});
 	};
 
-	if (queue_data) {
-		return <JoinedQueue />;
+	if (tried_joining_queue) {
+		if (queue_loading) {
+			return <>joining queue...</>;
+		}
+		if (queue_error) {
+			return <>error joining queue</>;
+		}
+		if (queue_data.joinQueue === null) {
+			return <JoinedQueue user_id={user_id} />;
+		} else {
+			return <>found a match: {JSON.stringify(queue_data.joinQueue)}</>;
+		}
 	} else {
 		return (
 			<form onSubmit={handleClick}>
-				<input type="text" name="username" placeholder="Voor testing only" />
+				<input type="text" name="userId" placeholder="Voor testing only" />
 				<button type="submit">Join queue</button>
 			</form>
 		);
@@ -133,27 +100,26 @@ function JoinQueue() {
 }
 
 const MATCH_FOUND = gql`
-	subscription {
-		matchFound {
-			foundMatch
-			playerOneName
-			playerTwoName
+	subscription matchFound($user_id: String!) {
+		matchFound(user_id: $user_id) {
+			matched
+			playerOneId
+			playerTwoId
 		}
 	}
 `;
-function JoinedQueue() {
-	const { data, loading, error } = useSubscription(MATCH_FOUND);
+function JoinedQueue({ user_id }: { user_id: string }) {
+	const { data, loading, error } = useSubscription(MATCH_FOUND, {
+		variables: { user_id: user_id },
+	});
 
 	if (error) alert(error.message);
 
 	if (loading) return <div> Joined the Queue! </div>;
 
-	if (data.matchFound.foundMatch) {
-		return (
-			<div>
-				Playerone = {data.matchFound.playerOneName} vs PlayerTwo ={" "}
-				{data.matchFound.playerTwoName}
-			</div>
-		);
-	}
+	return (
+		<div>
+			Playerone = {data.matchFound.playerOneId} vs PlayerTwo = {data.matchFound.playerTwoId}
+		</div>
+	);
 }
