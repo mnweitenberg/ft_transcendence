@@ -13,7 +13,7 @@ import Game, { createPongProps, handleFinishGame } from "src/components/game/Gam
 import { user } from "src/utils/data";
 import * as i from "src/types/Interfaces";
 
-function Home({ LogIn }: { LogIn(): void }) {
+function Home({ setLogin }: { setLogin(): any }) {
 	const modalProps: i.ModalProps = createModalProps();
 	const pongProps: i.PongProps = createPongProps();
 
@@ -30,7 +30,7 @@ function Home({ LogIn }: { LogIn(): void }) {
 			<Header />
 
 			<div id="right_top">
-				<a id="logout" onClick={LogIn}>
+				<a id="logout" onClick={setLogin}>
 					logout
 				</a>
 			</div>

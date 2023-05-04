@@ -24,6 +24,7 @@ export const pubSub = new PubSub();
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
+			context: ({ req, res }) => ({ req, res }),
 			subscriptions: {
 				'graphql-ws': true,
 				'subscriptions-transport-ws': false,
