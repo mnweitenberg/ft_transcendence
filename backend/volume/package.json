@@ -34,6 +34,7 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
+    "graphql-subscriptions": "^2.0.0",
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
