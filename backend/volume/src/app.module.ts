@@ -9,7 +9,11 @@ import { LoginModule } from './session/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';
-import { ChatModule } from './chat/chat.module';
+import { ChannelModule } from './channel/channel.module';
+import { MessageModule } from './message/message.module';
+import { PubSub } from 'graphql-subscriptions';
+
+export const pubSub = new PubSub();
 
 @Module({
 	imports: [
@@ -20,6 +24,10 @@ import { ChatModule } from './chat/chat.module';
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
+			subscriptions: {
+				'graphql-ws': true,
+				'subscriptions-transport-ws': false,
+			},
 			// sortSchema: true, // Sort lexicographically
 		}),
 		// Other modules
@@ -27,7 +35,8 @@ import { ChatModule } from './chat/chat.module';
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
 		UserModule,
 		LoginModule,
-		ChatModule,
+		ChannelModule,
+		MessageModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
