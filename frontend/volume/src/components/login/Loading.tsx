@@ -9,12 +9,12 @@ const SEND_CODE = gql`
 	}
 `;
 
-function Loading({ LogIn }: { LogIn(): void }) {
+function Loading() {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const codeStr = searchParams.get("code");
 	const [sendCode, { data, loading, error }] = useMutation(SEND_CODE, {
 		onCompleted: (data) => {
-			console.log(data);
+			// console.log(data);
 		},
 	});
 	useEffect(() => {
@@ -26,7 +26,8 @@ function Loading({ LogIn }: { LogIn(): void }) {
 	return (
 		<div id="auth">
 			<Link to="/">
-				<div onClick={LogIn} className="signin">
+				{/* <div onClick={LogIn} className="signin"> */}
+				<div className="signin">
 					loading...
 					<img className="logo42" src="/img/42logo.svg" />
 				</div>

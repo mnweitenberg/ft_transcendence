@@ -1,14 +1,7 @@
-import {
-	Args,
-	Context,
-	GraphQLExecutionContext,
-	Mutation,
-	Query,
-	Resolver,
-} from '@nestjs/graphql';
-import { Response } from '@nestjs/common';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LoginService } from './login.service';
 import { Login } from './login.model';
+import { GraphQLContext } from 'src/utils/graphql-context';
 
 @Resolver((of) => Login)
 export class LoginResolver {
@@ -20,26 +13,30 @@ export class LoginResolver {
 	}
 
 	@Query((returns) => Boolean)
-	async validateCookieQuery() {
-		return this.loginService.isCookieValid();
+	async validateCookieQuery(@Context() context: GraphQLContext) {
+		return this.loginService.isCookieValid(context.req);
 	}
 
 	@Mutation((returns) => String)
 	async sessionTokenMutation(
-		@Context() context: GraphQLExecutionContext,
+		// @Res() response: Response,
+		@Context() context: GraphQLContext,
 		@Args('code') code: string,
 	) {
-		const ctx = context as any;
 		const sessionToken = JSON.parse(
 			await this.loginService.getSessionToken(code),
 		);
 		if (sessionToken.code == 401) return sessionToken.code;
-		ctx.res.cookie('session_cookie', sessionToken.nestedJson.access_token, {
-			httpOnly: true,
-			expires: new Date(Date.now() + 7199 * 1000),
-			secure: true,
-			sameSite: 'lax',
-		});
+		context.res.cookie(
+			'session_cookie',
+			sessionToken.nestedJson.access_token,
+			{
+				httpOnly: true,
+				expires: new Date(Date.now() + 7199 * 1000),
+				secure: true,
+				sameSite: 'lax',
+			},
+		);
 		return code;
 	}
 }

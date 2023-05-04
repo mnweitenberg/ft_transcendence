@@ -1,5 +1,6 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { Request } from 'express';
 import { Login } from './login.model';
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -19,8 +20,9 @@ export class LoginService {
 		return this.login.client_uid;
 	}
 
-	async isCookieValid(): Promise<boolean> {
-		return true;
+	async isCookieValid(request: Request): Promise<boolean> {
+		const reqCookie = request.cookies['session_cookie'];
+		return reqCookie != undefined;
 	}
 
 	async getSessionToken(code: string) {

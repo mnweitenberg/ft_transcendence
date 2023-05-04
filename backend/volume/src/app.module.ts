@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-// import { GraphQLModule } from '@nestjs/graphql';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
@@ -9,7 +8,6 @@ import { UserModule } from './user/user.module';
 import { LoginModule } from './session/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { join } from 'path';
 import { ExampleQLModule } from './example_ql/example_ql.module';
 
 @Module({
