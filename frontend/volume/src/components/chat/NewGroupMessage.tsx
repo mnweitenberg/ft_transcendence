@@ -4,7 +4,7 @@ import * as i from "../../types/Interfaces";
 import { user } from "../../utils/data";
 import { createLeaveGroupChatAlert } from "../../utils/utils";
 import GroupStats from "./GroupStats";
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery } from "@apollo/client";
 
 const GET_CHANNEL = gql`
 	query getChannel($channel_id: String!) {
@@ -35,7 +35,8 @@ const SUBSCRIBE_MESSAGES = gql`
 `;
 
 const SEND_MESSAGE = gql`
-	mutation sendMessage($channel_id: String!, $content: String!, $author_id: String!) { # TODO: do something better than author_id
+	mutation sendMessage($channel_id: String!, $content: String!, $author_id: String!) {
+		# TODO: do something better than author_id
 		createMessage(channel_id: $channel_id, content: $content, author_id: $author_id) {
 			id
 		}
@@ -51,10 +52,10 @@ export default function NewGroupMessage({
 	channel_id: string;
 	renderOverview: () => void;
 }) {
-	let { loading, data, error, subscribeToMore } = useQuery(GET_CHANNEL, {
+	const { loading, data, error, subscribeToMore } = useQuery(GET_CHANNEL, {
 		variables: { channel_id: channel_id },
 	}); // FIXME: If a user is in the channel overview and a new message is sent, the user will not see the new message until he reloads the page
-	let [sendMessageMutation] = useMutation(SEND_MESSAGE);
+	const [sendMessageMutation] = useMutation(SEND_MESSAGE);
 
 	useEffect(() => {
 		return subscribeToMore({
@@ -73,14 +74,18 @@ export default function NewGroupMessage({
 		});
 	}, []);
 
-
-
 	const handleMessageInput = (e: any) => {
 		setMessage(e.target.value);
 	};
 
 	function sendMessage(): void {
-		sendMessageMutation({ variables: { content: message, channel_id, author_id: "d0515269-d76c-44ff-b518-25b9fcf67571" } });
+		sendMessageMutation({
+			variables: {
+				content: message,
+				channel_id,
+				author_id: "d0515269-d76c-44ff-b518-25b9fcf67571",
+			},
+		});
 		setMessage("");
 	}
 
@@ -128,26 +133,28 @@ export default function NewGroupMessage({
 			</div>
 
 			<div className="messages_container">
-				{data.getChannel.messages.map(function (message: any) { // TODO: use better type
-						if (message.author === user) // TODO: use real author
-							return (
-								<div key={message.id} className="user">
-									{" "}
-									{message.content}{" "}
-								</div>
-							);
+				{data.getChannel.messages.map(function (message: any) {
+					// TODO: use better type
+					if (message.author === user)
+						// TODO: use real author
 						return (
-							<div key={message.id} className="friend">
-								<div className="flexContainer">
-									<img className="avatar" src={message.author.avatar} />
-									<div>
-										<h3>{message.author.username}</h3>
-										{message.content}{" "}
-									</div>
-								</div>
+							<div key={message.id} className="user">
+								{" "}
+								{message.content}{" "}
 							</div>
 						);
-					})}
+					return (
+						<div key={message.id} className="friend">
+							<div className="flexContainer">
+								<img className="avatar" src={message.author.avatar} />
+								<div>
+									<h3>{message.author.username}</h3>
+									{message.content}{" "}
+								</div>
+							</div>
+						</div>
+					);
+				})}
 			</div>
 
 			<div className="send_container">
