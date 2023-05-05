@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from './queue.model';
 import { Match } from './match.model';
 import { pubSub } from 'src/app.module';
+import { InjectRepository } from '@nestjs/typeorm';
+import { GamerScore } from './entities/gamerscore.entity';
+import { Repository } from 'typeorm';
 
 const DEBUG_PRINT = true;
 
@@ -9,6 +12,11 @@ export var queue: Queue[] = [];
 
 @Injectable()
 export class QueueService {
+	constructor(
+		@InjectRepository(GamerScore)
+		private readonly gamerScoreRepo: Repository<GamerScore>,
+	) {}
+
 	canPlayerLookForMatch(playerId: string): boolean {
 		for (let i = 0; i < queue.length; i++)
 			if (playerId == queue[i].playerId) return false;
