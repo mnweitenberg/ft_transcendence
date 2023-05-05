@@ -4,7 +4,7 @@ import { user, chats, allUsers } from "../../utils/data";
 import * as i from "../../types/Interfaces";
 import { getChatsByUser } from "../../utils/utils";
 import { ChatState } from "../../utils/constants";
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery } from "@apollo/client";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
@@ -28,7 +28,7 @@ function Overview({
 	setSelectedChannel: (channel_id: string) => void;
 	setChatState: (state: ChatState) => void;
 }) {
-	let { loading, data, error } = useQuery(GET_CHANNELS, {
+	const { loading, data, error } = useQuery(GET_CHANNELS, {
 		fetchPolicy: "network-only", // TODO: Is this the best way to do this?
 	});
 	if (error) return <p>Error</p>;
@@ -42,28 +42,28 @@ function Overview({
 		setSelectedChannel(channel_id);
 		setChatState(ChatState.groupMessage);
 	}
-	return (<>
-		{data.allChannels.map((channel: any) => {
-			return (
-				<div
-					className="chat_container"
-					key={channel.id + "_key"}
-					onClick={() => renderGroupMessage(channel.id)}
-				>
-					<img className="avatar" src={channel.logo} />
-					<div className="wrap_name_message">
-						<div className="flex_row_spacebetween">
-							<h3 className="name">{channel.name}</h3>
-							<div className="status">{channel.status}</div>
-						</div>
-						<div className="chat_preview">
-							{channel.lastMessage?.content ?? ""}
+	return (
+		<>
+			{data.allChannels.map((channel: any) => {
+				return (
+					<div
+						className="chat_container"
+						key={channel.id + "_key"}
+						onClick={() => renderGroupMessage(channel.id)}
+					>
+						<img className="avatar" src={channel.logo} />
+						<div className="wrap_name_message">
+							<div className="flex_row_spacebetween">
+								<h3 className="name">{channel.name}</h3>
+								<div className="status">{channel.status}</div>
+							</div>
+							<div className="chat_preview">{channel.lastMessage?.content ?? ""}</div>
 						</div>
 					</div>
-				</div>
-			);
-		})}
-	</>)
+				);
+			})}
+		</>
+	);
 }
 
 function PersonalChat() {
