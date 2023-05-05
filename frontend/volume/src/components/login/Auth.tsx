@@ -26,7 +26,7 @@ function Auth() {
 		"?client_id=" +
 		data.clientUidQuery +
 		"&redirect_uri=" +
-		encodeURIComponent("http://localhost:5574/loading") +
+		encodeURIComponent("http://localhost:4242/callback") +
 		"&state=" +
 		generateState() +
 		"&response_type=code";

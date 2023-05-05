@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.service';
 import { UserModule } from './user/user.module';
-import { LoginModule } from './session/login.module';
+import { LoginModule } from './login/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';

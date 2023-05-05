@@ -33,7 +33,7 @@ export class LoginService {
 				client_id: this.login.client_uid,
 				client_secret: this.login.client_secret,
 				code: code,
-				redirect_uri: 'http://localhost:5574/loading',
+				redirect_uri: 'http://localhost:4242/callback',
 			});
 			tmp = {
 				code: 200,

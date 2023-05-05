@@ -37,6 +37,7 @@ export class LoginResolver {
 				sameSite: 'lax',
 			},
 		);
+		console.log(context.switchToHttp().getRequest);
 		return code;
 	}
 }
