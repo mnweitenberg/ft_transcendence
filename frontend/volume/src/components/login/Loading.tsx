@@ -1,12 +1,37 @@
+import { Link, useSearchParams } from "react-router-dom";
+import { gql, useMutation } from "@apollo/client";
+import { useEffect } from "react";
 import "src/styles/style.css";
 
-function Loading({ LogIn }: { LogIn(): void }) {
+const SEND_CODE = gql`
+	mutation sessionTokenMutation($codeStr: String!) {
+		sessionTokenMutation(code: $codeStr)
+	}
+`;
+
+function Loading() {
+	const [searchParams, setSearchParams] = useSearchParams();
+	const codeStr = searchParams.get("code");
+	const [sendCode, { data, loading, error }] = useMutation(SEND_CODE, {
+		onCompleted: (data) => {
+			// console.log(data);
+		},
+	});
+	useEffect(() => {
+		sendCode({ variables: { codeStr } });
+	}, []);
+
+	if (error) return <h1>Something went wrong!</h1>;
+	if (loading) return <h1>Loading...</h1>;
 	return (
-		<div id="loading">
-			<div onClick={LogIn} className="login">
-				loading...
-				<img className="logo42" src="/img/42logo.svg" />
-			</div>
+		<div id="auth">
+			<Link to="/">
+				{/* <div onClick={LogIn} className="signin"> */}
+				<div className="signin">
+					loading...
+					<img className="logo42" src="/img/42logo.svg" />
+				</div>
+			</Link>
 		</div>
 	);
 }

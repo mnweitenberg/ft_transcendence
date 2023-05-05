@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { split, HttpLink, ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, split } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { BrowserRouter } from "react-router-dom";
@@ -8,12 +8,10 @@ import App from "./App";
 import "./styles/style.css";
 import { getMainDefinition } from "@apollo/client/utilities";
 
-const httpLink = new HttpLink({ uri: "http://localhost:4242/graphql" });
+const httpLink = new HttpLink({ uri: "http://localhost:4242/graphql", credentials: "include" });
 
 const wsLink = new GraphQLWsLink(createClient({ url: "ws://localhost:4242/graphql" }));
 
-// Mutations and queries will use httplink, subscription will use ws link.
-// split will return wsLink on true and httpLink on false
 const splitLink = split(
 	({ query }) => {
 		const definition = getMainDefinition(query);

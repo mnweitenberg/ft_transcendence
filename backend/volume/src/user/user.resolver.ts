@@ -1,4 +1,11 @@
-import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import {
+	Args,
+	Mutation,
+	Parent,
+	Query,
+	ResolveField,
+	Resolver,
+} from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -27,7 +34,12 @@ export class UserResolver {
 	}
 
 	@ResolveField()
-	async chats(@Parent() user: User) {
-		return this.userService.getChats(user);
+	async channels(@Parent() user: User) {
+		return this.userService.getChannels(user);
+	}
+
+	@ResolveField()
+	async messages(@Parent() user: User) {
+		return this.userService.getMessages(user);
 	}
 }

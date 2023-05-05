@@ -87,7 +87,12 @@ function JoinQueueElement() {
 		if (queue_data.joinQueue === null) {
 			return <JoinedQueue user_id={user_id} />;
 		} else {
-			return <>found a match: {JSON.stringify(queue_data.joinQueue)}</>;
+			return (
+				<>
+					Match found: {queue_data.joinQueue.playerOneId} vs{" "}
+					{queue_data.joinQueue.playerTwoId}
+				</>
+			);
 		}
 	} else {
 		return (
@@ -119,7 +124,7 @@ function JoinedQueue({ user_id }: { user_id: string }) {
 
 	return (
 		<div>
-			Playerone = {data.matchFound.playerOneId} vs PlayerTwo = {data.matchFound.playerTwoId}
+			Match found: {data.matchFound.playerOneId} vs {data.matchFound.playerTwoId}
 		</div>
 	);
 }

@@ -10,7 +10,8 @@ import { LoginModule } from './session/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';
-import { ChatModule } from './chat/chat.module';
+import { ChannelModule } from './channel/channel.module';
+import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
 
 export const pubSub = new PubSub();
@@ -24,10 +25,11 @@ export const pubSub = new PubSub();
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
+			context: ({ req, res }) => ({ req, res }),
 			subscriptions: {
 				'graphql-ws': true,
 				'subscriptions-transport-ws': false,
-			}
+			},
 			// sortSchema: true, // Sort lexicographically
 		}),
 		// Other modules
@@ -36,7 +38,8 @@ export const pubSub = new PubSub();
 		UserModule,
 		QueueModule,
 		LoginModule,
-		ChatModule,
+		ChannelModule,
+		MessageModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
