@@ -13,6 +13,7 @@ import { ExampleQLModule } from './example_ql/example_ql.module';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
+import { AuthModule } from './auth/auth.module';
 
 export const pubSub = new PubSub();
 
@@ -35,6 +36,7 @@ export const pubSub = new PubSub();
 		// Other modules
 		ConfigModule.forRoot({ isGlobal: true }),
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+		AuthModule,
 		UserModule,
 		QueueModule,
 		LoginModule,
