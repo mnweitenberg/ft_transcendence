@@ -5,12 +5,12 @@ dotenv.config();
 const axios = require('axios').default;
 
 export interface IntraToken {
-	accessToken: string;
-	tokenType: string;
-	expiresIn: number;
-	refreshToken: string;
+	access_token: string;
+	token_type: string;
+	expires_in: number;
+	refresh_token: string;
 	scope: string;
-	createdAt: number;
+	created_at: number;
 }
 
 async function postTemporaryCode(intraCode: string): Promise<string> {
@@ -34,6 +34,7 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 @Injectable()
 export class AuthService {
 	constructor(private jwtService: JwtService) {}
+
 	async exchangeCodeForToken(intraCode: string): Promise<IntraToken> {
 		const response = await postTemporaryCode(intraCode);
 		if (!response) return null;
@@ -42,5 +43,23 @@ export class AuthService {
 		return responseJSON;
 	}
 
-	async getJwtCookie(intraToken: IntraToken) {}
+	async linkTokenToUser(intraToken: IntraToken) {
+		const axiosConfig = {
+			headers: {
+				Authorization:
+					intraToken.token_type + ' ' + intraToken.access_token,
+			},
+		};
+		const response = await axios.get(
+			'https://api.intra.42.fr/v2/me',
+			axiosConfig,
+		);
+		const intraId = response.data.id;
+
+		return null;
+	}
+
+	async getJwtCookie(userInfo) {
+		return null;
+	}
 }

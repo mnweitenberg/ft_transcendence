@@ -25,11 +25,14 @@ export class AuthController {
 			await this.authService.exchangeCodeForToken(
 				JSON.stringify(request.query),
 			);
+		// link token to user
+		// get id from intra
+		// check if user already exists
 		// add instance of user to database
+		const userInfo = await this.authService.linkTokenToUser(intraToken);
 
-		// const JwtCookie = this.authService.getJwtCookie();
-		const JwtCookie = null;
-		response.setHeader('Set-Cookie', JwtCookie);
+		const jwtCookie = await this.authService.getJwtCookie(userInfo);
+		response.setHeader('Set-Cookie', jwtCookie);
 		response.cookie('session_cookie', 'yeet');
 		response.status(200).redirect('http://localhost:5574/loading');
 	}
