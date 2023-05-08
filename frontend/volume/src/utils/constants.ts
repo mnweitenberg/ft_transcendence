@@ -1,11 +1,11 @@
-export const ESC = 27;
-export const SPACEBAR = 32;
-export const UP_ARROW = 38;
-export const DOWN_ARROW = 40;
-export const LEFT_ARROW = 37;
-export const RIGHT_ARROW = 39;
-export const W_KEY = 87;
-export const S_KEY = 83;
+// export const ESC = 27;
+// export const SPACEBAR = 32;
+// export const UP_ARROW = 38;
+// export const DOWN_ARROW = 40;
+// export const LEFT_ARROW = 37;
+// export const RIGHT_ARROW = 39;
+// export const W_KEY = 87;
+// export const S_KEY = 83;
 
 // GAME
 

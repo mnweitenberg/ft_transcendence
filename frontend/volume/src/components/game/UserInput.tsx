@@ -1,6 +1,7 @@
 import * as C from "../../utils/constants";
 import * as i from "../../types/Interfaces";
 import p5Types from "p5";
+import SocketSingleton from "../../utils/socketSingleton";
 
 function moveBallDuringLeftServe(ball: i.Ball, paddle: i.Paddle, serve: boolean) {
 	if (serve) {
@@ -25,10 +26,17 @@ function boundToWindow(gameState: i.GameState, paddleLeft: i.Paddle, paddleRight
 		paddleRight.y = gameState.canvasHeight - C.PADDLE_HEIGHT;
 }
 
-//p5 event on key press
 export function handleMouseInput(p5: p5Types, state: i.GameState) {
+	const socketSingleton = SocketSingleton.getInstance();
+	const sendMouseY = (mouseY: number) => {
+		socketSingleton.socket.emit("sendMouseY", { mouseY });
+	};
+
 	state.paddleRight.y = p5.mouseY;
 	boundToWindow(state, state.paddleLeft, state.paddleRight);
 	moveBallDuringLeftServe(state.ball, state.paddleLeft, state.serveLeft.state);
 	moveBallDuringRightServe(state.ball, state.paddleRight, state.serveRight.state);
+
+	// Call the sendMouseY function with the p5.mouseY value
+	sendMouseY(p5.mouseY);
 }

@@ -13,6 +13,7 @@ import { ExampleQLModule } from './example_ql/example_ql.module';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
+import { PongModule } from './pong/pong.module';
 
 export const pubSub = new PubSub();
 
@@ -40,6 +41,7 @@ export const pubSub = new PubSub();
 		LoginModule,
 		ChannelModule,
 		MessageModule,
+		PongModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
