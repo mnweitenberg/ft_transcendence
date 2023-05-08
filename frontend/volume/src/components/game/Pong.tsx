@@ -43,44 +43,58 @@ export default function PongComponent(props: any) {
 function initializeGameState(gameScore: i.GameScore, parentElement: Element | null): i.GameState {
 	if (!parentElement) throw new Error("parentElement is null");
 
+	const canvasHeight = parentElement.clientWidth / 2;
+	const paddleHeight = canvasHeight / 5;
+	const paddleWidth = paddleHeight / 10;
+	const ballDiameter = paddleWidth * 2;
+	const ballSpeed = ballDiameter;
+	const borderOffset = paddleWidth / 2;
+
 	const paddleLeft: i.Paddle = {
-		x: C.BORDER_OFFSET,
-		y: parentElement.clientHeight / 2,
+		x: borderOffset,
+		y: canvasHeight / 2,
+		height: paddleHeight,
+		width: paddleWidth,
 	};
 
 	const paddleRight: i.Paddle = {
-		x: parentElement.clientWidth - C.BORDER_OFFSET - C.PADDLE_WIDTH,
-		y: parentElement.clientHeight / 2,
+		x: parentElement.clientWidth - borderOffset - paddleWidth,
+		y: canvasHeight / 2,
+		height: paddleHeight,
+		width: paddleWidth,
 	};
 
 	const serveLeft: i.ServeState = {
 		state: false,
-		x: paddleLeft.x + C.PADDLE_WIDTH + C.BALL_DIAMETER / 2,
-		y: paddleLeft.y + 0.5 * C.PADDLE_HEIGHT,
+		x: paddleLeft.x + paddleWidth + ballDiameter / 2,
+		y: paddleLeft.y + 0.5 * paddleHeight,
 	};
 
 	const serveRight: i.ServeState = {
 		state: false,
-		x: paddleRight.x - C.BALL_DIAMETER / 2,
-		y: paddleRight.y + 0.5 * C.PADDLE_HEIGHT,
+		x: paddleRight.x - ballDiameter / 2,
+		y: paddleRight.y + 0.5 * paddleHeight,
 	};
 
 	const ball: i.Ball = {
 		x: serveLeft.x,
-		y: paddleLeft.y + C.PADDLE_HEIGHT / 2,
-		xSpeed: C.DEFAULT_BALL_SPEED,
-		ySpeed: C.DEFAULT_BALL_SPEED,
+		y: paddleLeft.y + paddleHeight / 2,
+		xSpeed: ballSpeed,
+		ySpeed: ballSpeed,
+		defaultSpeed: ballSpeed,
+		diameter: ballDiameter,
 	};
 
 	const state: i.GameState = {
 		started: false,
-		canvasHeight: parentElement.clientHeight,
+		canvasHeight: canvasHeight,
 		canvasWidth: parentElement.clientWidth,
 		paddleLeft,
 		paddleRight,
 		serveLeft,
 		serveRight,
 		ball,
+		borderOffset: borderOffset,
 	};
 
 	return state;

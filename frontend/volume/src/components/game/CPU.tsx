@@ -19,6 +19,6 @@ function Move(state: i.GameState): void {
 
 	// bound to play window
 	if (state.paddleLeft.y <= 0) state.paddleLeft.y = 0;
-	if (state.paddleLeft.y + C.PADDLE_HEIGHT >= state.canvasHeight)
-		state.paddleLeft.y = state.canvasHeight - C.PADDLE_HEIGHT;
+	if (state.paddleLeft.y + state.paddleLeft.height >= state.canvasHeight)
+		state.paddleLeft.y = state.canvasHeight - state.paddleLeft.height;
 }

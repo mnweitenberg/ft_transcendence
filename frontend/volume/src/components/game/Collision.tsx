@@ -1,6 +1,7 @@
 import * as C from "../../utils/constants";
 import * as i from "../../types/Interfaces";
 import { Side } from "../../utils/constants";
+import { stat } from "fs";
 
 export function handleCollisions(state: i.GameState, props: i.PongProps) {
 	// global pause - when not started or serve in progress
@@ -20,18 +21,18 @@ function handleCollisionPaddle(side: number, state: i.GameState): void {
 	if (side === Side.left) paddle = state.paddleLeft;
 	else paddle = state.paddleRight;
 
-	const topOfPaddle = paddle.y + C.PADDLE_HEIGHT;
-	const centerOfPaddle = paddle.y + 0.5 * C.PADDLE_HEIGHT;
+	const topOfPaddle = paddle.y + paddle.height;
+	const centerOfPaddle = paddle.y + 0.5 * paddle.height;
 	const bottomOfPaddle = paddle.y;
 	const ballHitsUpperHalf = state.ball.y >= centerOfPaddle && state.ball.y <= topOfPaddle;
 	const ballHitsLowerHalf = state.ball.y >= bottomOfPaddle && state.ball.y < centerOfPaddle;
 
 	// if hit with upper half of paddle, redirect up, if lower half, redirect down
 	const ballHitsPaddle = checkIfBallHitsPaddle(side, state);
-	if (ballHitsPaddle && side === Side.left) state.ball.xSpeed = C.DEFAULT_BALL_SPEED;
-	if (ballHitsPaddle && side === Side.right) state.ball.xSpeed = C.DEFAULT_BALL_SPEED * -1;
-	if (ballHitsPaddle && ballHitsLowerHalf) state.ball.ySpeed = C.DEFAULT_BALL_SPEED * -1;
-	if (ballHitsPaddle && ballHitsUpperHalf) state.ball.ySpeed = C.DEFAULT_BALL_SPEED;
+	if (ballHitsPaddle && side === Side.left) state.ball.xSpeed = state.ball.defaultSpeed;
+	if (ballHitsPaddle && side === Side.right) state.ball.xSpeed = state.ball.defaultSpeed * -1;
+	if (ballHitsPaddle && ballHitsLowerHalf) state.ball.ySpeed = state.ball.defaultSpeed * -1;
+	if (ballHitsPaddle && ballHitsUpperHalf) state.ball.ySpeed = state.ball.defaultSpeed;
 }
 
 function checkIfBallHitsPaddle(side: number, state: i.GameState): boolean {
@@ -39,8 +40,8 @@ function checkIfBallHitsPaddle(side: number, state: i.GameState): boolean {
 	if (side === Side.left) paddle = state.paddleLeft;
 	else paddle = state.paddleRight;
 
-	const offset = C.PADDLE_WIDTH + C.BORDER_OFFSET + C.BALL_DIAMETER / 2;
-	const ballIsAbovePaddle = state.ball.y > paddle.y + C.PADDLE_HEIGHT;
+	const offset = paddle.width + state.borderOffset + state.ball.diameter / 2;
+	const ballIsAbovePaddle = state.ball.y > paddle.y + paddle.height;
 	const ballIsBelowPaddle = state.ball.y < paddle.y;
 	const ballIsAtLeftLine = state.ball.x <= paddle.x + offset;
 	const ballIsAtRightLine = state.ball.x >= state.canvasWidth - offset;
@@ -51,14 +52,15 @@ function checkIfBallHitsPaddle(side: number, state: i.GameState): boolean {
 
 function handleBounceTopBottom(state: i.GameState): void {
 	const ballHitsTopOrBottom =
-		state.ball.y < C.BALL_DIAMETER / 2 || state.ball.y > state.canvasHeight - C.BALL_DIAMETER;
+		state.ball.y < state.ball.diameter / 2 ||
+		state.ball.y > state.canvasHeight - state.ball.diameter;
 
 	if (ballHitsTopOrBottom) state.ball.ySpeed *= -1;
 }
 
 function handleScore(state: i.GameState, props: i.PongProps) {
-	const ballIsBehindLeftWall = state.ball.x < C.BALL_DIAMETER / 2;
-	const ballIsBehindRightWall = state.ball.x + C.BALL_DIAMETER / 2 > state.canvasWidth;
+	const ballIsBehindLeftWall = state.ball.x < state.ball.diameter / 2;
+	const ballIsBehindRightWall = state.ball.x + state.ball.diameter / 2 > state.canvasWidth;
 
 	if (ballIsBehindLeftWall || ballIsBehindRightWall) {
 		state.ball.xSpeed *= -1;
@@ -68,16 +70,16 @@ function handleScore(state: i.GameState, props: i.PongProps) {
 	if (ballIsBehindLeftWall) {
 		props.incrementScorePlayerTwo();
 		// put ball for left serve
-		state.ball.x = state.paddleLeft.x + C.PADDLE_WIDTH + C.BALL_DIAMETER / 2;
-		state.ball.y = state.paddleLeft.y + 0.5 * C.PADDLE_HEIGHT;
+		state.ball.x = state.paddleLeft.x + state.paddleLeft.width + state.ball.diameter / 2;
+		state.ball.y = state.paddleLeft.y + 0.5 * state.paddleLeft.height;
 		state.serveLeft.state = true;
 	}
 
 	if (ballIsBehindRightWall) {
 		props.incrementScorePlayerOne();
 		// put ball for serve
-		state.ball.x = state.paddleRight.x - C.BALL_DIAMETER / 2;
-		state.ball.y = state.paddleRight.y + 0.5 * C.PADDLE_HEIGHT;
+		state.ball.x = state.paddleRight.x - state.ball.diameter / 2;
+		state.ball.y = state.paddleRight.y + 0.5 * state.paddleRight.height;
 		state.serveRight.state = true;
 	}
 

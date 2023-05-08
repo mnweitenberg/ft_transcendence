@@ -5,18 +5,23 @@ import * as i from "../../types/Interfaces";
 function drawPaddle(p5: p5Types, paddle: i.Paddle): void {
 	p5.fill(255, 255, 255);
 	p5.noStroke();
-	p5.rect(paddle.x, paddle.y, C.PADDLE_WIDTH, C.PADDLE_HEIGHT);
+	p5.rect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
 function drawMiddleLine(p5: p5Types, state: i.GameState): void {
 	p5.fill(56, 56, 56);
 	p5.noStroke();
-	p5.rect((state.canvasWidth - C.PADDLE_WIDTH) / 2, 0, C.PADDLE_WIDTH / 2, state.canvasHeight);
+	p5.rect(
+		(state.canvasWidth - C.MIDDLE_LINE_WIDTH) / 2,
+		0,
+		C.MIDDLE_LINE_WIDTH / 2,
+		state.canvasHeight
+	);
 }
 
 function drawBall(p5: p5Types, ball: i.Ball): void {
 	p5.fill(255, 255, 255);
-	p5.ellipse(ball.x, ball.y, C.BALL_DIAMETER, C.BALL_DIAMETER);
+	p5.ellipse(ball.x, ball.y, ball.diameter, ball.diameter);
 }
 
 export function drawItems(p5: p5Types, state: i.GameState) {
