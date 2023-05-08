@@ -1,7 +1,31 @@
-import * as C from "../../utils/constants";
 import * as i from "../../types/Interfaces";
 import p5Types from "p5";
 import SocketSingleton from "../../utils/socketSingleton";
+
+export function handleMouseInput(p5: p5Types, state: i.GameState) {
+	const socketSingleton = SocketSingleton.getInstance();
+	const sendMouseY = (mouseY: number) => {
+		socketSingleton.socket.emit("sendMouseY", { mouseY });
+	};
+
+	const sendMouseClick = (mouseClick: boolean) => {
+		socketSingleton.socket.emit("mouseClick", { mouseClick });
+	};
+
+	state.paddleRight.y = p5.mouseY;
+	boundToWindow(state, state.paddleLeft, state.paddleRight);
+	moveBallDuringLeftServe(state.ball, state.paddleLeft, state.serveLeft.state);
+	moveBallDuringRightServe(state.ball, state.paddleRight, state.serveRight.state);
+
+	// Call the sendMouseY function with the p5.mouseY value
+	let relativeMouseY = p5.mouseY / state.canvasHeight;
+	if (relativeMouseY < 0) relativeMouseY = 0;
+	if (relativeMouseY > 1) relativeMouseY = 1;
+	sendMouseY(relativeMouseY);
+
+	// Call the sendMouseClick function with the p5.mouseIsPressed value
+	sendMouseClick(p5.mouseIsPressed);
+}
 
 function moveBallDuringLeftServe(ball: i.Ball, paddle: i.Paddle, serve: boolean) {
 	if (serve) {
@@ -24,19 +48,4 @@ function boundToWindow(gameState: i.GameState, paddleLeft: i.Paddle, paddleRight
 	if (paddleRight.y <= 0) paddleRight.y = 0;
 	if (paddleRight.y + paddleRight.height >= gameState.canvasHeight)
 		paddleRight.y = gameState.canvasHeight - paddleRight.height;
-}
-
-export function handleMouseInput(p5: p5Types, state: i.GameState) {
-	const socketSingleton = SocketSingleton.getInstance();
-	const sendMouseY = (mouseY: number) => {
-		socketSingleton.socket.emit("sendMouseY", { mouseY });
-	};
-
-	state.paddleRight.y = p5.mouseY;
-	boundToWindow(state, state.paddleLeft, state.paddleRight);
-	moveBallDuringLeftServe(state.ball, state.paddleLeft, state.serveLeft.state);
-	moveBallDuringRightServe(state.ball, state.paddleRight, state.serveRight.state);
-
-	// Call the sendMouseY function with the p5.mouseY value
-	sendMouseY(p5.mouseY);
 }

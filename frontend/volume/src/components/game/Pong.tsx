@@ -1,19 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
-import * as C from "../../utils/constants";
 import * as CPU from "./CPU";
 import * as i from "../../types/Interfaces";
 import { drawItems } from "./DrawItems";
 import { handleCollisions } from "./Collision";
 import { handleMouseInput } from "./UserInput";
+import SocketSingleton from "../../utils/socketSingleton";
 
 export default function PongComponent(props: any) {
 	if (!document.getElementById("game")) return <>Game element not found</>;
 
-	const [state, setState] = useState(() =>
-		initializeGameState(props.gameScore, document.getElementById("game"))
-	);
+	const [state, setState] = useState(() => initializeGameState(document.getElementById("game")));
+
+	// useEffect(() => {
+	// 	const socketSingleton = SocketSingleton.getInstance();
+	// 	socketSingleton.socket.on("gameState", (gameState: i.GameState) => {
+	// 		gameState.canvasHeight = state.canvasHeight;
+	// 		gameState.canvasWidth = state.canvasWidth;
+	// 		gameState.paddleRight.x *= state.canvasHeight;
+	// 		console.log(gameState.paddleRight.x);
+	// 		setState(gameState);
+	// 	});
+	// }, []);
 
 	// resizeCanvasOnBrowserResize(state, props.gameScore);
 	function setupCanvas(p5: p5Types, canvasParentRef: Element) {
@@ -36,11 +45,10 @@ export default function PongComponent(props: any) {
 		state.serveLeft.state = false;
 		state.serveRight.state = false;
 	}
-
 	return <Sketch setup={setupCanvas} draw={drawCanvas} mouseClicked={handleMouseClick} />;
 }
 
-function initializeGameState(gameScore: i.GameScore, parentElement: Element | null): i.GameState {
+function initializeGameState(parentElement: Element | null): i.GameState {
 	if (!parentElement) throw new Error("parentElement is null");
 
 	const canvasHeight = parentElement.clientWidth / 2;
@@ -77,8 +85,8 @@ function initializeGameState(gameScore: i.GameScore, parentElement: Element | nu
 	};
 
 	const ball: i.Ball = {
-		x: serveLeft.x,
-		y: paddleLeft.y + paddleHeight / 2,
+		x: serveRight.x,
+		y: paddleRight.y + paddleHeight / 2,
 		xSpeed: ballSpeed,
 		ySpeed: ballSpeed,
 		defaultSpeed: ballSpeed,
