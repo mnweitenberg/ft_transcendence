@@ -1,9 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Generated, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
 @ObjectType()
-class Stats {
+export class Stats {
+	@PrimaryGeneratedColumn()
+	id: number;
+
 	@Column()
 	@Field()
 	ranking: number;
@@ -23,38 +26,46 @@ class Stats {
 
 @Entity()
 @ObjectType()
-class UserGame {
+export class UserGame {
+	@PrimaryColumn()
+	@Field()
+	user_id: string;
+
+
 	@Column()
 	@Field()
 	name: string;
 
 	@Column()
 	@Field()
-	avatar: string;
+	avatar: string = "";
 
-	@Column()
-	@Field()
+	@OneToOne(Type => Stats)
+	@Field({ nullable: true })
 	stats: Stats;
 
 	@Column()
 	@Field()
 	status: string;
 
-	@Column()
-	@Field({ nullable: true })
-	friends: UserGame[];
+	// @ManyToMany(type => UserGame) @JoinTable()
+	// @Field({ nullable: true })
+	// friends: UserGame[];
 }
 
 @Entity()
 @ObjectType()
-class Score {
-	@Column()
-	@Field()
-	playerOne: number;
+export class Score {
+	@PrimaryGeneratedColumn()
+	id: number;
 
 	@Column()
 	@Field()
-	playerTwo: number;
+	playerOne: number = 0;
+
+	@Column()
+	@Field()
+	playerTwo: number = 0;
 }
 
 @Entity()
@@ -62,21 +73,25 @@ class Score {
 export class GamerScore {
 	@PrimaryGeneratedColumn()
 	@Field()
-	queue_id: string;
+	match_id: string;
 
 	@Column()
-	@Field()
-	id: number;
+	@Generated("uuid")
+	uuid: string;
 
-	@Column()
+	// @Column()
+	// @Field()
+	// id: number;
+
+	@OneToOne(type => UserGame)
 	@Field()
 	playerOne: UserGame;
 
-	@Column()
+	@OneToOne(type => UserGame)
 	@Field()
 	playerTwo: UserGame;
 
-	@Column()
+	@OneToOne(type => Score)
 	@Field()
 	score: Score;
 }

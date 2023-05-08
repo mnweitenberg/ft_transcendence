@@ -3,27 +3,19 @@ import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { Match } from './match.model';
 import { pubSub } from 'src/app.module';
+import { GamerScore, UserGame } from './entities/gamerscore.entity';
 
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	// When client joins (global) queue
-	// userId zou moeten corresponderen met userId in database. Dit zodat er een query kan worden
-	// gedaan op de user waardoor de gamerScore data gevuld kan worden.
-	// @Mutation((returns) => Boolean)
+	// TODO joinQueue moet complete GamerScore returnen bij gevonden match
 	@Mutation((returns) => Match, { nullable: true })
 	joinQueue(@Args('userId') userId: string) {
 		return this.queueService.lookForMatch(userId);
 	}
 
-	// 		De filter is afhankelijk van hoe wij de queue inrichten. Onderstaande
-	// manier zou geschikt zijn voor een queue-methode waarbij spelers in een global queue
-	// komen. Front end zou dan geen queue weergeven en er zouden 'oneindig' veel matches tegelijk
-	// kunnen plaatsvinden.
-	// 		Filter zou bv ook kunnen op basis van een 'room id' waarbij er tot X aantal matches kunnen
-	// queuen in een room. Frontend laat dan gequeude matches zien. Hierbij dus niet oneindig veel matches
-	// matches tegelijk.
+	// TODO dit moet ook complete gamerscore returnen
 	@Subscription((returns) => Match, {
 		filter: (payload, variable) => {
 			return (
@@ -34,5 +26,31 @@ export class QueueResolver {
 	})
 	matchFound(@Args('user_id') user_id: string) {
 		return pubSub.asyncIterator('matchFound');
+	}
+
+
+
+
+	/*
+	TESTING
+	*/
+	// @Mutation(returns => GamerScore)
+	// createGScore(@Args('userId') userId:string) {
+	// 	return this.queueService.createGamerScore();
+	// }
+	@Mutation(returns => GamerScore)
+	createGScore(@Args('player1Id') playerOneId:string, @Args('player2Id')playerTwoId: string) {
+		return this.queueService.createGame(playerOneId, playerTwoId);
+	}
+
+	@Mutation(returns => UserGame)
+	createUserGame(@Args('userId') userid: string)
+	{
+		return this.queueService.userGameCreate(userid);
+	}
+
+	@Mutation(returns => UserGame)
+	createRandomUserGame(@Args('some') some:string) {
+		return this.queueService.randomUserGame(some);
 	}
 }
