@@ -25,6 +25,8 @@ export class AuthController {
 			await this.authService.exchangeCodeForToken(
 				JSON.stringify(request.query),
 			);
+		// add instance of user to database
+
 		// const JwtCookie = this.authService.getJwtCookie();
 		const JwtCookie = null;
 		response.setHeader('Set-Cookie', JwtCookie);
