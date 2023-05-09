@@ -1,22 +1,20 @@
 import { Module } from '@nestjs/common';
-// import { PongResolver } from './pong.resolver';
 import { PongService } from './pong.service';
 import { Server } from 'socket.io';
-import {
-	handleCollisions,
-	CPU,
-	initializeGameState,
-} from './gameLogic/gameLogic';
-import * as i from './gameLogic/interfaces';
+import { initCanvas, initializeGameState, handleScore, CPU, handleCollisions } from './game/PongLogic';
+import * as i from './game/interfaces';
 
 @Module({
 	providers: [PongService],
 })
 export class PongModule {
 	private state: i.GameState;
+	private canvas: i.Canvas;
+	private gameInterval: NodeJS.Timeout | null = null;
 	constructor(private readonly pongService: PongService) {
 		this.setupSocketServer();
-		this.state = initializeGameState();
+		this.canvas = initCanvas();
+		this.state = initializeGameState(this.canvas);
 	}
 
 	private setupSocketServer(): void {
@@ -33,6 +31,16 @@ export class PongModule {
 				this.pongService.handleMouseClick(data.mouseClick, this.state);
 			});
 
+			if (this.gameInterval) clearInterval(this.gameInterval);
+
+			this.gameInterval = setInterval(() => {
+				if (this.state.started) {
+					CPU.Action(this.state);
+					handleCollisions(this.canvas, this.state);
+					handleScore(this.canvas, this.state);
+				}
+			}, 1000 / 24);
+
 			socket.on('disconnect', () => {
 				console.log('Client disconnected:', socket.id);
 				this.state.started = false;
@@ -40,3 +48,4 @@ export class PongModule {
 		});
 	}
 }
+

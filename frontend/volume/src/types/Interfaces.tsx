@@ -66,7 +66,6 @@ export interface GameScore {
 export interface Ball {
 	x: number;
 	y: number;
-	diameter: number;
 	xSpeed: number;
 	ySpeed: number;
 	defaultSpeed: number;
@@ -75,8 +74,6 @@ export interface Ball {
 export interface Paddle {
 	x: number;
 	y: number;
-	height: number;
-	width: number;
 }
 
 export interface ServeState {
@@ -85,16 +82,22 @@ export interface ServeState {
 	y: number;
 }
 
+export interface Canvas {
+	height: number;
+	width: number;
+	borderOffset: number;
+	paddleHeight: number;
+	paddleWidth: number;
+	ballDiameter: number;
+}
+
 export interface GameState {
-	canvasHeight: number;
-	canvasWidth: number;
 	serveLeft: ServeState;
 	serveRight: ServeState;
 	started: boolean;
 	ball: Ball;
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
-	borderOffset: number;
 	score?: Score;
 }
 ///////////

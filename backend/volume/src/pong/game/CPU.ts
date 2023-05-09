@@ -1,5 +1,5 @@
-import * as C from "../../utils/constants";
-import * as i from "../../types/Interfaces";
+import * as C from "./constants";
+import * as i from "./interfaces";
 
 export function Action(state: i.GameState): void {
 	if (state.serveLeft.state) setTimeout(() => Serve(state), C.CPU_TIMEMOUT);
