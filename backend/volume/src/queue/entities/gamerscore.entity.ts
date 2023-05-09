@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Generated, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Generated, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -9,19 +9,19 @@ export class Stats {
 
 	@Column()
 	@Field()
-	ranking: number;
+	ranking: number = 999;
 
 	@Column()
 	@Field()
-	wins: number;
+	wins: number = 0;
 
 	@Column()
 	@Field()
-	losses: number;
+	losses: number = 0;
 
 	@Column()
 	@Field()
-	score: number;
+	score: number = 0;
 }
 
 @Entity()
@@ -29,7 +29,7 @@ export class Stats {
 export class UserGame {
 	@PrimaryColumn()
 	@Field()
-	user_id: string;
+	userId: string;
 
 
 	@Column()
@@ -41,7 +41,8 @@ export class UserGame {
 	avatar: string = "";
 
 	@OneToOne(Type => Stats)
-	@Field({ nullable: true })
+	@JoinColumn()
+	@Field()
 	stats: Stats;
 
 	@Column()
@@ -73,7 +74,7 @@ export class Score {
 export class GamerScore {
 	@PrimaryGeneratedColumn()
 	@Field()
-	match_id: string;
+	matchId: string;
 
 	@Column()
 	@Generated("uuid")
@@ -84,10 +85,12 @@ export class GamerScore {
 	// id: number;
 
 	@OneToOne(type => UserGame)
+	@JoinColumn()
 	@Field()
 	playerOne: UserGame;
 
 	@OneToOne(type => UserGame)
+	@JoinColumn()
 	@Field()
 	playerTwo: UserGame;
 

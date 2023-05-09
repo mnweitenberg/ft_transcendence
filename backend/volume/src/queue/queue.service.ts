@@ -22,28 +22,21 @@ export class QueueService {
 		private readonly statsRepository: Repository<Stats>,
 	) {}
 
-	async createGame(playerOneId: string, playerTwoId: string) : Promise<GamerScore> {
+	async createGame(player_one_id: string, player_two_id: string) : Promise<GamerScore> {
 		
 		const player_one = await this.userGameRepository.findOne({
-							where: {user_id: playerOneId}
+							where: {userId: player_one_id}
 						});
 		const player_two = await this.userGameRepository.findOne({
-							where: {user_id: playerTwoId}
+							where: {userId: player_two_id}
 						});
+
+		// TODO 
+		// stats etc lijken nog niet gelinkt te worden, in database is dat wel zo
 
 		const newGame = new GamerScore();
 		const score = new Score();
-		const stats = new Stats();
 
-		// TODO add query to database voor stats, dit zou moeten kunnen via @JoinTable oid
-		stats.losses = 9;
-		stats.ranking = 11;
-		stats.score = 38282;
-		stats.wins = 3838;
-
-	
-		player_one.stats = stats;
-		player_two.stats = stats;
 		newGame.score = score;
 		newGame.playerOne = player_one;
 		newGame.playerTwo = player_two;
@@ -62,26 +55,27 @@ export class QueueService {
 		return true;
 	}
 
-	lookForMatch(playerId: string): Match | null {
-		if (!this.canPlayerLookForMatch(playerId)) return null;
+	async lookForMatch(player_id: string): Promise<GamerScore> | null {
+		if (!this.canPlayerLookForMatch(player_id)) return null;
 
 		for (let i = 0; i < queue.length; i++) {
-			if (queue[i].playerId != playerId) {
-				const match = new Match();
-				match.matched = true;
-				match.playerOneId = playerId;
-				match.playerTwoId = queue[i].playerId;
-				queue.splice(i, 1);
+			if (queue[i].playerId != player_id) {
+				const newGame = await this.createGame(queue[i].playerId, player_id);
+
+
 				if (DEBUG_PRINT) {
-					console.log('Found match: ', match);
+					console.log('Found game: ', newGame);
+					console.log(newGame.playerOne.stats);
+					console.log(newGame.playerTwo.stats);
 				}
-				pubSub.publish('matchFound', { matchFound: match });
-				return match;
+				pubSub.publish('gamerScoreFound', { gamerScoreFound: newGame });
+				return newGame;
 			}
 		}
-		this.addToQueue(playerId);
+		this.addToQueue(player_id);
 		return null;
 	}
+
 
 	addToQueue(playerId: string) {
 		const add = new Queue();
@@ -96,28 +90,28 @@ export class QueueService {
 	/*
 	TESTING	
 	*/
-	async userGameCreate(userid: string) : Promise<UserGame> {
+	async userGameCreate(user_id: string) : Promise<UserGame> {
 		const userGame = await this.userGameRepository.create();
 		userGame.avatar = "";
-		userGame.name = userid;
-		userGame.user_id = userid;
+		userGame.name = user_id;
+		userGame.userId = user_id;
 		userGame.status = "idle";
 
 		return this.userGameRepository.save(userGame);
 	}
 
-	async randomUserGame(some: string) {
+	async randomUserGame(name: string, minus: number) {
 		const userGame = await this.userGameRepository.create();
-		userGame.avatar = some;
-		userGame.name = Math.random().toString(16).substr(2, 8);
-		userGame.user_id = Math.random().toString(16).substr(2, 8);
+		userGame.avatar = name;
+		userGame.name = name;
+		userGame.userId = name;
 		userGame.status = "idle";
 
 		const userStats = this.statsRepository.create();
-		userStats.losses = Math.random();
-		userStats.ranking = Math.random();
-		userStats.score = Math.random();
-		userStats.wins = Math.random();
+		userStats.losses = 322 - minus;
+		userStats.ranking = 523 - minus;
+		userStats.score = 344 - minus;
+		userStats.wins = 133 - minus;
 
 		userGame.stats = userStats;
 		
