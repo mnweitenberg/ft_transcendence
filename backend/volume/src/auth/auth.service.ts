@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
+import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 dotenv.config();
 const axios = require('axios').default;
 
@@ -11,6 +13,11 @@ export interface IntraToken {
 	refresh_token: string;
 	scope: string;
 	created_at: number;
+}
+
+export interface UserInfo {
+	intraId: string;
+	userUid: string;
 }
 
 async function postTemporaryCode(intraCode: string): Promise<string> {
@@ -33,7 +40,10 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 
 @Injectable()
 export class AuthService {
-	constructor(private jwtService: JwtService) {}
+	constructor(
+		private readonly jwtService: JwtService,
+		private readonly userService: UserService,
+	) {}
 
 	async exchangeCodeForToken(intraCode: string): Promise<IntraToken> {
 		const response = await postTemporaryCode(intraCode);
@@ -43,7 +53,7 @@ export class AuthService {
 		return responseJSON;
 	}
 
-	async linkTokenToUser(intraToken: IntraToken) {
+	async linkTokenToUser(intraToken: IntraToken): Promise<UserInfo> {
 		const axiosConfig = {
 			headers: {
 				Authorization:
@@ -54,12 +64,23 @@ export class AuthService {
 			'https://api.intra.42.fr/v2/me',
 			axiosConfig,
 		);
-		const intraId = response.data.id;
-
-		return null;
+		var user: User = await this.userService.getUserByIntraId(
+			response.data.id,
+		);
+		if (!user) {
+			user = await this.userService.create({
+				intraId: response.data.id,
+				username: response.data.login,
+			});
+		}
+		console.log(user);
+		return { userUid: user.id, intraId: user.intraId };
 	}
 
-	async getJwtCookie(userInfo) {
-		return null;
+	async getJwtCookie(userInfo: UserInfo): Promise<string> {
+		const token = await this.jwtService.signAsync(userInfo);
+		return JSON.stringify({
+			access_token: token,
+		});
 	}
 }

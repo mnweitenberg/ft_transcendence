@@ -29,7 +29,7 @@ export class UserService {
 		});
 	}
 
-	async getUserByIntra(intraId: string) {
+	async getUserByIntraId(intraId: string) {
 		return this.userRepository.findOne({
 			where: { intraId: intraId },
 		});
