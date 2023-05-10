@@ -3,29 +3,27 @@ import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { Match } from './match.model';
 import { pubSub } from 'src/app.module';
-import { GamerScore, UserGame } from './entities/gamerscore.entity';
-
-// TODO gamERscore moet zijn gamEscore
+import { GameScore, UserGame } from './entities/gamescore.entity';
 
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	@Mutation((returns) => GamerScore, { nullable: true })
+	@Mutation((returns) => GameScore, { nullable: true })
 	joinQueue(@Args('user_id') user_id: string) {
 		return this.queueService.lookForMatch(user_id);
 	}
 
-	@Subscription((returns) => GamerScore, {
+	@Subscription((returns) => GameScore, {
 		filter: (payload, variable) => {
 			return (
-				payload.gamerScoreFound.playerOne.user_id === variable.user_id ||
-				payload.gamerScoreFound.playerTwo.user_id === variable.user_id
+				payload.gameScoreFound.playerOne.user_id === variable.user_id ||
+				payload.gameScoreFound.playerTwo.user_id === variable.user_id
 			);
 		},
 	})
-	gamerScoreFound(@Args('user_id') user_id: string) {
-		return pubSub.asyncIterator('gamerScoreFound')
+	gameScoreFound(@Args('user_id') user_id: string) {
+		return pubSub.asyncIterator('gameScoreFound')
 	}
 
 
@@ -54,7 +52,7 @@ export class QueueResolver {
 	TESTING
 	*/
 
-	@Mutation(returns => GamerScore)
+	@Mutation(returns => GameScore)
 	createGScore(@Args('player1Id') playerOneId:string, @Args('player2Id')playerTwoId: string) {
 		return this.queueService.createGame(playerOneId, playerTwoId);
 	}

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 
 export default function Queue(props: i.ModalProps) {
-	// TODO
+	// TODO:
 	// queue niet meer importen maar bijhouden op backend en dan hier queryen. Dan
 	// subscription op queue die update als er nieuwe match is gevonden.
 	//
@@ -132,8 +132,8 @@ const MATCH_FOUND = gql`
 `;
 
 const GAMER_SCORE_FOUND = gql`
-	subscription gamerScoreFound($user_id: String!) {
-		gamerScoreFound(user_id: $user_id) {
+	subscription gameScoreFound($user_id: String!) {
+		gameScoreFound(user_id: $user_id) {
 			playerOne {
 				userId
 			}
@@ -154,8 +154,8 @@ function JoinedQueue({ user_id }: { user_id: string }) {
 
 	return (
 		<div>
-			Match found: {data.gamerScoreFound.playerOne.userId} vs{" "}
-			{data.gamerScoreFound.playerTwo.userId}
+			Match found: {data.gameScoreFound.playerOne.userId} vs{" "}
+			{data.gameScoreFound.playerTwo.userId}
 		</div>
 	);
 }

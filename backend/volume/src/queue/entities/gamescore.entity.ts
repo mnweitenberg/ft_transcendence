@@ -31,7 +31,6 @@ export class UserGame {
 	@Field()
 	userId: string;
 
-
 	@Column()
 	@Field()
 	name: string;
@@ -49,6 +48,7 @@ export class UserGame {
 	@Field()
 	status: string;
 
+	// FIXME: is nodig voor gameScore
 	// @ManyToMany(type => UserGame) @JoinTable()
 	// @Field({ nullable: true })
 	// friends: UserGame[];
@@ -71,7 +71,7 @@ export class Score {
 
 @Entity()
 @ObjectType()
-export class GamerScore {
+export class GameScore {
 	@PrimaryGeneratedColumn()
 	@Field()
 	matchId: string;

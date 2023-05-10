@@ -3,7 +3,7 @@ import { Queue } from './queue.model';
 import { Match } from './match.model';
 import { pubSub } from 'src/app.module';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserGame, GamerScore, Score, Stats } from './entities/gamerscore.entity';
+import { UserGame, GameScore, Score, Stats } from './entities/gamescore.entity';
 import { Repository } from 'typeorm';
 
 
@@ -14,28 +14,30 @@ export var queue: Queue[] = [];
 @Injectable()
 export class QueueService {
 	constructor(
-		@InjectRepository(GamerScore)
-		private readonly gamerScoreRepo: Repository<GamerScore>,
+		@InjectRepository(GameScore)
+		private readonly gameScoreRepo: Repository<GameScore>,
 		@InjectRepository(UserGame)
 		private readonly userGameRepository: Repository<UserGame>,
 		@InjectRepository(Stats)
 		private readonly statsRepository: Repository<Stats>,
 	) {}
 
-	async createGame(player_one_id: string, player_two_id: string) : Promise<GamerScore> {
+	async createGame(player_one_id: string, player_two_id: string) : Promise<GameScore> {
 		
 		const player_one = await this.userGameRepository.findOne({
-							where: {userId: player_one_id}
+							where: {userId: player_one_id},
+							relations: {stats: true},
 						});
-		const player_two = await this.userGameRepository.findOne({
-							where: {userId: player_two_id}
+						const player_two = await this.userGameRepository.findOne({
+							where: {userId: player_two_id},
+							relations: {stats: true},
 						});
 
-		// TODO 
-		// stats etc lijken nog niet gelinkt te worden, in database is dat wel zo
-
-		const newGame = new GamerScore();
+		const newGame = new GameScore();
 		const score = new Score();
+
+					console.log(player_one.stats);
+					console.log(player_two.stats);
 
 		newGame.score = score;
 		newGame.playerOne = player_one;
@@ -48,14 +50,14 @@ export class QueueService {
 		for (let i = 0; i < queue.length; i++)
 			if (playerId == queue[i].playerId) return false;
 
-		// TODO
+		// TODO:
 		// Voeg check toe waarbij wordt gekeken of player niet al in een match zit
 		// of een invite oid heeft verstuurd
 
 		return true;
 	}
 
-	async lookForMatch(player_id: string): Promise<GamerScore> | null {
+	async lookForMatch(player_id: string): Promise<GameScore> | null {
 		if (!this.canPlayerLookForMatch(player_id)) return null;
 
 		for (let i = 0; i < queue.length; i++) {
@@ -65,17 +67,16 @@ export class QueueService {
 
 				if (DEBUG_PRINT) {
 					console.log('Found game: ', newGame);
-					console.log(newGame.playerOne.stats);
-					console.log(newGame.playerTwo.stats);
+					// console.log(newGame.playerOne.stats.losses);
+					// console.log(newGame.playerTwo.stats.losses);
 				}
-				pubSub.publish('gamerScoreFound', { gamerScoreFound: newGame });
+				pubSub.publish('gameScoreFound', { gameScoreFound: newGame });
 				return newGame;
 			}
 		}
 		this.addToQueue(player_id);
 		return null;
 	}
-
 
 	addToQueue(playerId: string) {
 		const add = new Queue();
