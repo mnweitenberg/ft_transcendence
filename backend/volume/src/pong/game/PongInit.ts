@@ -20,16 +20,16 @@ export function initCanvas(): i.Canvas {
 }
 
 export function initializeGameState(canvas: i.Canvas): i.GameState {
-	const ballSpeed = canvas.ballDiameter;
-
 	const paddleLeft: i.Paddle = {
 		x: canvas.borderOffset,
 		y: canvas.height / 2,
+		height: canvas.paddleHeight,
 	};
 
 	const paddleRight: i.Paddle = {
 		x: canvas.width - canvas.borderOffset - canvas.paddleWidth,
 		y: canvas.height / 2,
+		height: canvas.paddleHeight,
 	};
 
 	const serveLeft: i.ServeState = {
@@ -47,14 +47,40 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 	const ball: i.Ball = {
 		x: serveRight.x,
 		y: paddleRight.y + canvas.paddleHeight / 2,
-		xSpeed: ballSpeed,
-		ySpeed: ballSpeed,
-		defaultSpeed: ballSpeed,
+		xSpeed: C.BALL_SPEED,
+		ySpeed: C.BALL_SPEED,
 	};
 
-	const score: i.Score = {
-		playerOne: 0,
-		playerTwo: 0,
+	const gameScore: i.GameScore = {
+		id: 0,
+		playerOne: {
+			name: "One",
+			avatar: "",
+			stats: {
+				ranking: 0,
+				wins: 0,
+				losses: 0,
+				score: 0,
+			},
+			status: "online",
+			friends: [],
+		},
+		playerTwo: {
+			name: "Two",
+			avatar: "",
+			stats: {
+				ranking: 0,
+				wins: 0,
+				losses: 0,
+				score: 0,
+			},
+			status: "online",
+			friends: [],
+		},
+		score: {
+			playerOne: 0,
+			playerTwo: 0,
+		},
 	}
 
 	const state: i.GameState = {
@@ -64,14 +90,8 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 		serveLeft,
 		serveRight,
 		ball,
-		score,
+		gameScore,
 	};
 
 	return state;
 }
-
-// function resizeCanvasOnBrowserResize(state: i.GameState, gameScore: i.GameScore) {
-// 	window.addEventListener("resize", () => {
-// 		state = initializeGameState(gameScore, document.getElementById("game"));
-// 	});
-// }

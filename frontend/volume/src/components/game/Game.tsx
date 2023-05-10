@@ -2,11 +2,29 @@ import { useState } from "react";
 import Pong from "./Pong";
 import { matchHistory, queue, ranking } from "../../utils/data";
 import * as i from "../../types/Interfaces";
+import SocketSingleton from "../../utils/socketSingleton";
+
+function updateScore(props: i.PongProps) {
+	const socketSingleton = SocketSingleton.getInstance();
+
+	// update score
+	socketSingleton.socket.on("gameScore", (gameScore: i.GameScore) => {
+		props.setScorePlayerOne(gameScore.score.playerOne);
+		props.setScorePlayerTwo(gameScore.score.playerTwo);
+	});
+	socketSingleton.socket.on("endOfGame", (gameScore: i.GameScore) => {
+		props.setScorePlayerOne(gameScore.score.playerOne);
+		props.setScorePlayerTwo(gameScore.score.playerTwo);
+		props.setFinished(true);
+	});
+}
 
 function Game(props: i.PongProps) {
 	if (!props.gameScore) return <h1 className="game_menu">No one wants to play</h1>;
 
-	if (props.bothPlayersReady) return <Pong {...props} />;
+	updateScore(props);
+
+	if (props.bothPlayersReady) return <Pong />;
 
 	const winner = determineWinner();
 	return (
@@ -37,18 +55,6 @@ export function createPongProps(): i.PongProps {
 	const [finished, setFinished] = useState(false);
 	const [goToMenu, setGoToMenu] = useState(false);
 
-	function incrementScorePlayerOne() {
-		setScorePlayerOne((score) => score + 1);
-	}
-	function incrementScorePlayerTwo() {
-		setScorePlayerTwo((score) => score + 1);
-	}
-
-	function resetScore() {
-		setScorePlayerOne(0);
-		setScorePlayerTwo(0);
-	}
-
 	const nextGame = queue[0] || null;
 
 	if (nextGame) {
@@ -58,9 +64,8 @@ export function createPongProps(): i.PongProps {
 
 	const pongProps: i.PongProps = {
 		gameScore: nextGame,
-		incrementScorePlayerOne,
-		incrementScorePlayerTwo,
-		resetScore,
+		setScorePlayerOne,
+		setScorePlayerTwo,
 		bothPlayersReady,
 		setBothPlayersReady,
 		finished,
@@ -79,7 +84,6 @@ export function handleFinishGame(pongProps: i.PongProps) {
 		queue.shift();
 	}
 	updateRanking(pongProps.gameScore);
-	pongProps.resetScore();
 	pongProps.setGoToMenu(false);
 	pongProps.setFinished(false);
 }

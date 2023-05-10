@@ -1,11 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import * as i from './game/interfaces';
+import * as C from './game/constants';
 
 @Injectable()
 export class PongService {
+	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
+		if (state.paddleRight.height < canvas.height) {
+			state.paddleRight.height *= 1.2;
+		}
+	}
+
+	reducePaddle(canvas: i.Canvas, state: i.GameState): void {
+		if (state.paddleRight.height > canvas.paddleHeight) {
+			state.paddleRight.height *= 0.8;
+		}
+	}
+
 	handleMouseYUpdate(mouseY: number, state: i.GameState): void {
 		state.paddleRight.y = mouseY;
-		// console.log(state.paddleRight.y);
 	}
 
 	handleMouseClick(mouseClick: boolean, state: i.GameState): void {
@@ -19,7 +31,7 @@ export class PongService {
 		console.log('Game started');
 
 		if (state.serveRight.state) {
-			state.ball.xSpeed = state.ball.defaultSpeed * -1;
+			state.ball.xSpeed = C.BALL_SPEED * -1;
 			console.log('Right player served');
 		}
 		state.serveRight.state = false;

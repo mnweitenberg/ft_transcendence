@@ -66,14 +66,15 @@ export interface GameScore {
 export interface Ball {
 	x: number;
 	y: number;
-	xSpeed: number;
-	ySpeed: number;
-	defaultSpeed: number;
+	xSpeed?: number;
+	ySpeed?: number;
+	defaultSpeed?: number;
 }
 
 export interface Paddle {
 	x: number;
 	y: number;
+	height: number;
 }
 
 export interface ServeState {
@@ -98,8 +99,9 @@ export interface GameState {
 	ball: Ball;
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
-	score?: Score;
+	gameScore?: GameScore;
 }
+
 ///////////
 // PROPS //
 ///////////
@@ -118,9 +120,8 @@ export interface PongProps {
 	bothPlayersReady: boolean;
 	setBothPlayersReady: (bothPlayersReady: boolean) => void;
 	gameScore: GameScore;
-	resetScore: () => void;
-	incrementScorePlayerOne: () => void;
-	incrementScorePlayerTwo: () => void;
+	setScorePlayerOne: (score: number) => void;
+	setScorePlayerTwo: (score: number) => void;
 	finished: boolean;
 	setFinished: (finished: boolean) => void;
 	goToMenu: boolean;

@@ -31,21 +31,27 @@ export class PongModule {
 				this.pongService.handleMouseClick(data.mouseClick, this.state);
 			});
 
-			if (this.gameInterval) clearInterval(this.gameInterval);
+			socket.on('enlargePaddle', () => {
+				this.pongService.enlargePaddle(this.canvas, this.state);
+			});
 
-			socket.emit('gameState', this.state);
+			socket.on('reducePaddle', () => {
+				this.pongService.reducePaddle(this.canvas, this.state);
+			});
+
+			if (this.gameInterval) clearInterval(this.gameInterval);
 
 			this.gameInterval = setInterval(() => {
 				CPU.Action(this.state);
 				handleCollisions(this.canvas, this.state);
-				handleScore(this.canvas, this.state);
+				handleScore(this.canvas, this.state, socket);
 				socket.emit('gameState', this.state);
 			}, 1000 / 24);
 
 			socket.on('disconnect', () => {
 				console.log('Client disconnected:', socket.id);
-				this.state.score.playerOne = 0;
-				this.state.score.playerTwo = 0;
+				this.state.gameScore.score.playerOne = 0;
+				this.state.gameScore.score.playerTwo = 0;
 				this.state.started = false;
 			});
 		});

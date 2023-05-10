@@ -2,25 +2,46 @@ import * as i from "../../types/Interfaces";
 import p5Types from "p5";
 import SocketSingleton from "../../utils/socketSingleton";
 
-export function handleMouseInput(canvas: i.Canvas, p5: p5Types, state: i.GameState) {
+export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 	const socketSingleton = SocketSingleton.getInstance();
-	const sendMouseY = (mouseY: number) => {
-		socketSingleton.socket.emit("sendMouseY", { mouseY });
-	};
+	sendMouseY(canvas, p5, socketSingleton);
+	sendMouseClick(p5, socketSingleton);
+	handlePaddleSizeChange(p5, socketSingleton);
+}
 
-	const sendMouseClick = (mouseClick: boolean) => {
-		socketSingleton.socket.emit("mouseClick", { mouseClick });
-	};
-
-	// state.paddleRight.y = p5.mouseY;
-	// sendMouseY(p5.mouseY);
-
-	// Call the sendMouseY function with the p5.mouseY value
+function sendMouseY(canvas: i.Canvas, p5: p5Types, socketSingleton: SocketSingleton) {
 	let relativeMouseY = p5.mouseY / canvas.height;
-	if (relativeMouseY < 0) relativeMouseY = 0;
-	if (relativeMouseY > 1) relativeMouseY = 1;
-	sendMouseY(relativeMouseY);
+	relativeMouseY = clamp(relativeMouseY, 0, 1);
+	socketSingleton.socket.emit("sendMouseY", { mouseY: relativeMouseY });
+}
 
-	// Call the sendMouseClick function with the p5.mouseIsPressed value
-	sendMouseClick(p5.mouseIsPressed);
+function sendMouseClick(p5: p5Types, socketSingleton: SocketSingleton) {
+	socketSingleton.socket.emit("mouseClick", { mouseClick: p5.mouseIsPressed });
+}
+
+let isUpArrowPressed = false;
+let isDownArrowPressed = false;
+
+function handlePaddleSizeChange(p5: p5Types, socketSingleton: SocketSingleton) {
+	if (p5.key === "=" && !isUpArrowPressed) {
+		isUpArrowPressed = true;
+		socketSingleton.socket.emit("enlargePaddle");
+	}
+	if (p5.key === "-" && !isDownArrowPressed) {
+		isDownArrowPressed = true;
+		socketSingleton.socket.emit("reducePaddle");
+	}
+
+	p5.keyReleased = () => {
+		if (p5.key === "=") {
+			isUpArrowPressed = false;
+		}
+		if (p5.key === "-") {
+			isDownArrowPressed = false;
+		}
+	};
+}
+
+function clamp(num: number, min: number, max: number): number {
+	return num <= min ? min : num >= max ? max : num;
 }

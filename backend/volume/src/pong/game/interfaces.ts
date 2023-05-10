@@ -43,7 +43,7 @@ export interface User {
 // GAMESTATE //
 ///////////////
 
-export interface Score {
+interface Score {
 	playerOne: number;
 	playerTwo: number;
 }
@@ -60,12 +60,12 @@ export interface Ball {
 	y: number;
 	xSpeed: number;
 	ySpeed: number;
-	defaultSpeed: number;
 }
 
 export interface Paddle {
 	x: number;
 	y: number;
+	height?: number;
 }
 
 export interface ServeState {
@@ -90,5 +90,5 @@ export interface GameState {
 	ball: Ball;
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
-	score?: Score;
+	gameScore?: GameScore;
 }

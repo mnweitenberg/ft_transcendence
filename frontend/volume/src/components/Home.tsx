@@ -1,8 +1,5 @@
-import { useState, useEffect } from "react";
-import { ReactDOM } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { useEffect } from "react";
 import "src/styles/style.css";
-import Auth from "src/components/login/Auth";
 import Chat from "src/components/chat/Chat";
 import Header from "src/components/sections/Header";
 import Profile from "src/components/sections/Profile";

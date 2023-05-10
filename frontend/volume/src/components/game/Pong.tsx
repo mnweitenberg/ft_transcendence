@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 import { drawItems } from "./DrawItems";
-import { handleMouseInput } from "./UserInput";
+import { handleUserInput } from "./UserInput";
 import { initCanvas, initializeGameState } from "./PongInit";
 import * as i from "../../types/Interfaces";
 import SocketSingleton from "../../utils/socketSingleton";
@@ -43,7 +43,7 @@ function useWindowResize(
 	}, []);
 }
 
-export default function Pong(props: any) {
+export default function Pong() {
 	if (!document.getElementById("game") || document.getElementById("game") === undefined)
 		return <h1>Game element not found</h1>;
 
@@ -64,8 +64,7 @@ export default function Pong(props: any) {
 
 	function drawCanvas(p5: p5Types) {
 		drawItems(canvas, p5, state);
-		handleMouseInput(canvas, p5, state);
-		// handleScore(canvas, state, props);
+		handleUserInput(canvas, p5);
 	}
 
 	return <Sketch setup={setupCanvas} draw={drawCanvas} />;
