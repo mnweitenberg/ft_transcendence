@@ -31,8 +31,8 @@ export function handleScore(canvas: i.Canvas, state: i.GameState) {
 	}
 
 	// if (
-	// 	props.gameScore.score.playerOne === C.MAX_SCORE ||
-	// 	props.gameScore.score.playerTwo === C.MAX_SCORE
+		// state.score.playerOne === C.MAX_SCORE ||
+		// state.score.playerTwo === C.MAX_SCORE
 	// )
 	// 	props.setFinished(true);
 }
@@ -69,11 +69,11 @@ function handleCollisionPaddle(canvas: i.Canvas, state: i.GameState, side: numbe
 	const ballHitsPaddle = checkIfBallHitsPaddle(canvas, state, side);
 	if (ballHitsPaddle && side === Side.left) {
 		state.ball.xSpeed = state.ball.defaultSpeed;
-		console.log("left paddle hit", paddle.x, paddle.y);
+		// console.log("left paddle hit", paddle.x, paddle.y);
 	}
 	if (ballHitsPaddle && side === Side.right) {
 		state.ball.xSpeed = state.ball.defaultSpeed * -1;
-		console.log("right paddle hit", paddle.x, paddle.y);
+		// console.log("right paddle hit", paddle.x, paddle.y);
 	}
 	if (ballHitsPaddle && ballHitsLowerHalf) state.ball.ySpeed = state.ball.defaultSpeed * -1;
 	if (ballHitsPaddle && ballHitsUpperHalf) state.ball.ySpeed = state.ball.defaultSpeed;

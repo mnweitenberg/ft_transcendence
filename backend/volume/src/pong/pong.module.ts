@@ -33,16 +33,19 @@ export class PongModule {
 
 			if (this.gameInterval) clearInterval(this.gameInterval);
 
+			socket.emit('gameState', this.state);
+
 			this.gameInterval = setInterval(() => {
-				if (this.state.started) {
-					CPU.Action(this.state);
-					handleCollisions(this.canvas, this.state);
-					handleScore(this.canvas, this.state);
-				}
+				CPU.Action(this.state);
+				handleCollisions(this.canvas, this.state);
+				handleScore(this.canvas, this.state);
+				socket.emit('gameState', this.state);
 			}, 1000 / 24);
 
 			socket.on('disconnect', () => {
 				console.log('Client disconnected:', socket.id);
+				this.state.score.playerOne = 0;
+				this.state.score.playerTwo = 0;
 				this.state.started = false;
 			});
 		});

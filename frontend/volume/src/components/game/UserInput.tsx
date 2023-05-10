@@ -12,7 +12,8 @@ export function handleMouseInput(canvas: i.Canvas, p5: p5Types, state: i.GameSta
 		socketSingleton.socket.emit("mouseClick", { mouseClick });
 	};
 
-	state.paddleRight.y = p5.mouseY;
+	// state.paddleRight.y = p5.mouseY;
+	// sendMouseY(p5.mouseY);
 
 	// Call the sendMouseY function with the p5.mouseY value
 	let relativeMouseY = p5.mouseY / canvas.height;

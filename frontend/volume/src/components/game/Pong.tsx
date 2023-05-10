@@ -1,33 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
-import * as CPU from "./CPU";
 import { drawItems } from "./DrawItems";
-import { handleCollisions, handleScore } from "./PongLogic";
 import { handleMouseInput } from "./UserInput";
 import { initCanvas, initializeGameState } from "./PongInit";
+import * as i from "../../types/Interfaces";
+import SocketSingleton from "../../utils/socketSingleton";
+
+function useGameSocket(initialGameState: i.GameState) {
+	const [state, setState] = useState(() => initialGameState);
+
+	useEffect(() => {
+		const socketSingleton = SocketSingleton.getInstance();
+		socketSingleton.socket.on("gameState", (gameState: i.GameState) => {
+			setState(gameState);
+		});
+	}, []);
+
+	return state;
+}
+
+function useWindowResize(
+	p5: React.MutableRefObject<p5Types | null>,
+	canvasSetter: (canvas: i.Canvas) => void
+) {
+	useEffect(() => {
+		const handleResize = () => {
+			const gameElement = document.getElementById("game");
+			if (gameElement && p5.current) {
+				const newWidth = gameElement.clientWidth;
+				const newHeight = newWidth / 2;
+				canvasSetter(initCanvas(newWidth));
+				p5.current.resizeCanvas(newWidth, newHeight);
+			}
+		};
+
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+}
 
 export default function Pong(props: any) {
 	if (!document.getElementById("game") || document.getElementById("game") === undefined)
-		return <>Game element not found</>;
+		return <h1>Game element not found</h1>;
 
-	const canvas = initCanvas(document.getElementById("game")?.clientWidth);
-	const [state, setState] = useState(() => initializeGameState(canvas));
+	const initialCanvas = initCanvas(document.getElementById("game")?.clientWidth);
+	const [canvas, setCanvas] = useState(initialCanvas);
+	const p5Ref = useRef<p5Types | null>(null);
 
-	// useEffect(() => {
-	// 	const socketSingleton = SocketSingleton.getInstance();
-	// 	socketSingleton.socket.on("gameState", (gameState: i.GameState) => {
-	// 		gameState.canvasHeight = state.canvasHeight;
-	// 		gameState.canvasWidth = state.canvasWidth;
-	// 		gameState.paddleRight.x *= state.canvasHeight;
-	// 		console.log(gameState.paddleRight.x);
-	// 		setState(gameState);
-	// 	});
-	// }, []);
+	const state = useGameSocket(initializeGameState(canvas));
 
-	// resizeCanvasOnBrowserResize(state, props.gameScore);
+	useWindowResize(p5Ref, setCanvas);
 
 	function setupCanvas(p5: p5Types, canvasParentRef: Element) {
+		p5Ref.current = p5;
 		p5.createCanvas(canvasParentRef.clientWidth, canvasParentRef.clientHeight, "p2d").parent(
 			canvasParentRef
 		);
@@ -36,21 +65,8 @@ export default function Pong(props: any) {
 	function drawCanvas(p5: p5Types) {
 		drawItems(canvas, p5, state);
 		handleMouseInput(canvas, p5, state);
-		CPU.Action(state);
-		handleCollisions(canvas, state);
-		handleScore(canvas, state, props);
+		// handleScore(canvas, state, props);
 	}
 
-	function handleMouseClick() {
-		state.started = true;
-		if (state.serveRight.state) state.ball.xSpeed = state.ball.defaultSpeed * -1;
-		state.serveRight.state = false;
-	}
-	return <Sketch setup={setupCanvas} draw={drawCanvas} mouseClicked={handleMouseClick} />;
+	return <Sketch setup={setupCanvas} draw={drawCanvas} />;
 }
-
-// function resizeCanvasOnBrowserResize(state: i.GameState, gameScore: i.GameScore) {
-// 	window.addEventListener("resize", () => {
-// 		state = initializeGameState(gameScore, document.getElementById("game"));
-// 	});
-// }
