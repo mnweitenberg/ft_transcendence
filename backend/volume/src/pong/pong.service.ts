@@ -30,10 +30,10 @@ export class PongService {
 		state.started = true;
 		console.log('Game started');
 
-		if (state.serveRight.state) {
-			state.ball.xSpeed = C.BALL_SPEED * -1;
-			console.log('Right player served');
-		}
+		if (state.serveLeft.state)
+			state.ball.xSpeed = C.BALL_SPEED;
+		if (state.serveRight.state)
+			state.ball.xSpeed = -C.BALL_SPEED;
 		state.serveRight.state = false;
 	}
 }

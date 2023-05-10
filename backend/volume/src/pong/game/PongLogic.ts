@@ -8,79 +8,63 @@ import { initCanvas ,initializeGameState } from './PongInit';
 export { initCanvas, initializeGameState, CPU };
 
 export function handleScore(canvas: i.Canvas, state: i.GameState, socket: any) {
-	const ballIsBehindLeftWall = state.ball.x < canvas.ballDiameter / 2;
-	const ballIsBehindRightWall = state.ball.x + canvas.ballDiameter / 2 > canvas.width;
+	const ballIsBehindLeftPaddle = state.ball.x < canvas.ballDiameter / 2;
+	const ballIsBehindRightPaddle = state.ball.x + canvas.ballDiameter / 2 > canvas.width;
 
-	if (ballIsBehindLeftWall || ballIsBehindRightWall) {
-		state.ball.xSpeed *= -1;
-		state.started = false;
-	}
-
-	if (ballIsBehindLeftWall) {
-		state.gameScore.score.playerTwo += 1;
+	const score = state.gameScore.score;
+	if (ballIsBehindLeftPaddle) {
+		score.playerTwo += 1;
 		state.serveLeft.state = true;
-		socket.emit('gameScore', state.gameScore);
-		console.log("score", state.gameScore.score)
 	}
 
-	if (ballIsBehindRightWall) {
-		state.gameScore.score.playerOne += 1;
+	if (ballIsBehindRightPaddle) {
+		score.playerOne += 1;
 		state.serveRight.state = true;
-		socket.emit('gameScore', state.gameScore);
-		console.log("score", state.gameScore.score)
 	}
 
-	if (
-		state.gameScore.score.playerOne === C.MAX_SCORE ||
-		state.gameScore.score.playerTwo === C.MAX_SCORE
-	) {
+	if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
+		state.started = false;
+		console.log("score", score)
+		socket.emit('gameScore', state.gameScore);
+	}
+
+	if (score.playerOne === C.MAX_SCORE || score.playerTwo === C.MAX_SCORE) {
 		socket.emit('endOfGame', state.gameScore);
-		state.gameScore.score.playerOne = 0;
-		state.gameScore.score.playerTwo = 0;
+		score.playerOne = 0;
+		score.playerTwo = 0;
+		state.ball.xSpeed = 0;
 		socket.emit('gameScore', state.gameScore)
 	}
 }
 
 export function handleCollisions(canvas: i.Canvas, state: i.GameState) {
-	// global pause - when not started or serve in progress
-	if (state.started === true) {
-		state.ball.x += state.ball.xSpeed;
-		state.ball.y += state.ball.ySpeed;
-	}
-
-	handleCollisionPaddle(canvas, state, Side.left);
-	handleCollisionPaddle(canvas, state, Side.right);
-	handleBounceTopBottom(canvas, state);
-
 	boundPaddleToWindow(canvas, state.paddleLeft);
 	boundPaddleToWindow(canvas, state.paddleRight);
 
-	moveBallDuringServe(canvas, state);
+	if (state.started) {
+		moveBall(state);
+		
+		handleCollisionPaddle(canvas, state, Side.left);
+		handleCollisionPaddle(canvas, state, Side.right);
+		handleBounceTopBottom(canvas, state);
+	}
+
+	if (!state.started)
+		moveBallDuringServe(canvas, state);
+}
+
+function moveBall(state: i.GameState){
+	state.ball.x += state.ball.xSpeed;
+	state.ball.y += state.ball.ySpeed;
 }
 
 function handleCollisionPaddle(canvas: i.Canvas, state: i.GameState, side: number): void {
-	let paddle: i.Paddle;
-	if (side === Side.left) paddle = state.paddleLeft;
-	else paddle = state.paddleRight;
-
-	const topOfPaddle = paddle.y + paddle.height;
-	const centerOfPaddle = paddle.y + 0.5 * paddle.height;
-	const bottomOfPaddle = paddle.y;
-	const ballHitsUpperHalf = state.ball.y >= centerOfPaddle && state.ball.y <= topOfPaddle;
-	const ballHitsLowerHalf = state.ball.y >= bottomOfPaddle && state.ball.y < centerOfPaddle;
-
-	// if hit with upper half of paddle, redirect up, if lower half, redirect down
-	const ballHitsPaddle = checkIfBallHitsPaddle(canvas, state, side);
-	if (ballHitsPaddle && side === Side.left) state.ball.xSpeed = C.BALL_SPEED;
-	if (ballHitsPaddle && side === Side.right) state.ball.xSpeed = -C.BALL_SPEED;
-	if (ballHitsPaddle && ballHitsLowerHalf) state.ball.ySpeed = -C.BALL_SPEED;
-	if (ballHitsPaddle && ballHitsUpperHalf) state.ball.ySpeed = C.BALL_SPEED;
+	if (!checkIfBallHitsPaddle(canvas, state, side)) return;
+	redirectUpOrDownBasedOnPositionOfPaddleHit(state, side);
 }
 
 function checkIfBallHitsPaddle(canvas: i.Canvas, state: i.GameState, side: number): boolean {
-	let paddle: i.Paddle;
-	if (side === Side.left) paddle = state.paddleLeft;
-	else paddle = state.paddleRight;
+	let paddle = getPaddleBySide(state, side);
 
 	const offset = canvas.paddleWidth + canvas.borderOffset + canvas.ballDiameter / 2;
 	const ballIsAbovePaddle = state.ball.y > paddle.y + paddle.height;
@@ -90,6 +74,27 @@ function checkIfBallHitsPaddle(canvas: i.Canvas, state: i.GameState, side: numbe
 
 	if (side === Side.left) return ballIsAtLeftLine && !ballIsAbovePaddle && !ballIsBelowPaddle;
 	return ballIsAtRightLine && !ballIsAbovePaddle && !ballIsBelowPaddle;
+}
+
+function redirectUpOrDownBasedOnPositionOfPaddleHit(state: i.GameState, side: number){
+	let paddle = getPaddleBySide(state, side);
+
+	const topOfPaddle = paddle.y + paddle.height;
+	const centerOfPaddle = paddle.y + 0.5 * paddle.height;
+	const bottomOfPaddle = paddle.y;
+
+	const ballHitsUpperHalf = state.ball.y >= centerOfPaddle && state.ball.y <= topOfPaddle;
+	const ballHitsLowerHalf = state.ball.y >= bottomOfPaddle && state.ball.y < centerOfPaddle;
+
+	if (side === Side.left) state.ball.xSpeed = C.BALL_SPEED;
+	if (side === Side.right) state.ball.xSpeed = -C.BALL_SPEED;
+	if (ballHitsLowerHalf) state.ball.ySpeed = -C.BALL_SPEED;
+	if (ballHitsUpperHalf) state.ball.ySpeed = C.BALL_SPEED;
+}
+
+function getPaddleBySide(state: i.GameState, side: number): i.Paddle {
+	if (side === Side.left) return state.paddleLeft;
+	return state.paddleRight;
 }
 
 function handleBounceTopBottom(canvas: i.Canvas, state: i.GameState): void {
@@ -106,12 +111,13 @@ function boundPaddleToWindow(canvas: i.Canvas, paddle: i.Paddle) {
 }
 
 function moveBallDuringServe(canvas: i.Canvas, state: i.GameState) {
-	if (state.serveLeft.state) {
-		state.ball.x = state.paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2;
-		state.ball.y = state.paddleLeft.y + 0.5 * state.paddleLeft.height;
+	const { serveLeft, serveRight, paddleLeft, paddleRight, ball } = state;
+	if (serveLeft.state) {
+		ball.x = paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2;
+		ball.y = paddleLeft.y + 0.5 * paddleLeft.height;
 	}
-	if (state.serveRight.state) {
-		state.ball.x = state.paddleRight.x - canvas.ballDiameter / 2;
-		state.ball.y = state.paddleRight.y + 0.5 * state.paddleRight.height;
+	if (serveRight.state) {
+		ball.x = paddleRight.x - canvas.ballDiameter / 2;
+		ball.y = paddleRight.y + 0.5 * paddleRight.height;
 	}
 }

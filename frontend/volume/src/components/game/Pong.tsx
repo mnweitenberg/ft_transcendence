@@ -47,12 +47,10 @@ export default function Pong() {
 	if (!document.getElementById("game") || document.getElementById("game") === undefined)
 		return <h1>Game element not found</h1>;
 
-	const initialCanvas = initCanvas(document.getElementById("game")?.clientWidth);
-	const [canvas, setCanvas] = useState(initialCanvas);
-	const p5Ref = useRef<p5Types | null>(null);
-
+	const [canvas, setCanvas] = useState(initCanvas(document.getElementById("game")?.clientWidth));
 	const state = useGameSocket(initializeGameState(canvas));
 
+	const p5Ref = useRef<p5Types | null>(null);
 	useWindowResize(p5Ref, setCanvas);
 
 	function setupCanvas(p5: p5Types, canvasParentRef: Element) {

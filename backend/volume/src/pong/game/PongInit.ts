@@ -47,8 +47,8 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 	const ball: i.Ball = {
 		x: serveRight.x,
 		y: paddleRight.y + canvas.paddleHeight / 2,
-		xSpeed: C.BALL_SPEED,
-		ySpeed: C.BALL_SPEED,
+		xSpeed: 0,
+		ySpeed: 0,
 	};
 
 	const gameScore: i.GameScore = {

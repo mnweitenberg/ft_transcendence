@@ -1,7 +1,6 @@
 import * as i from "../../types/Interfaces";
 
-export function initCanvas(width: number | undefined): i.Canvas {
-	if (!width) width = 800;
+export function initCanvas(width = 800): i.Canvas {
 	const height = width / 2;
 	const paddleHeight = height / 5;
 	const paddleWidth = paddleHeight / 10;
@@ -19,33 +18,35 @@ export function initCanvas(width: number | undefined): i.Canvas {
 }
 
 export function initializeGameState(canvas: i.Canvas): i.GameState {
+	const { borderOffset, paddleHeight, paddleWidth, ballDiameter, height, width } = canvas;
+
 	const paddleLeft: i.Paddle = {
-		x: canvas.borderOffset,
-		y: canvas.height / 2,
-		height: canvas.paddleHeight,
+		x: borderOffset,
+		y: height / 2,
+		height: paddleHeight,
 	};
 
 	const paddleRight: i.Paddle = {
-		x: canvas.width - canvas.borderOffset - canvas.paddleWidth,
-		y: canvas.height / 2,
-		height: canvas.paddleHeight,
+		x: width - borderOffset - paddleWidth,
+		y: height / 2,
+		height: paddleHeight,
 	};
 
 	const serveLeft: i.ServeState = {
 		state: false,
-		x: paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2,
-		y: paddleLeft.y + 0.5 * canvas.paddleHeight,
+		x: paddleLeft.x + paddleWidth + ballDiameter / 2,
+		y: paddleLeft.y + 0.5 * paddleHeight,
 	};
 
 	const serveRight: i.ServeState = {
 		state: false,
-		x: paddleRight.x - canvas.ballDiameter / 2,
-		y: paddleRight.y + 0.5 * canvas.paddleHeight,
+		x: paddleRight.x - ballDiameter / 2,
+		y: paddleRight.y + 0.5 * paddleHeight,
 	};
 
 	const ball: i.Ball = {
 		x: serveRight.x,
-		y: paddleRight.y + canvas.paddleHeight / 2,
+		y: paddleRight.y + paddleHeight / 2,
 	};
 
 	const state: i.GameState = {
