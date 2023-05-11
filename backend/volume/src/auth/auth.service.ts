@@ -64,7 +64,7 @@ export class AuthService {
 			'https://api.intra.42.fr/v2/me',
 			axiosConfig,
 		);
-		var user: User = await this.userService.getUserByIntraId(
+		let user: User = await this.userService.getUserByIntraId(
 			response.data.id,
 		);
 		if (!user) {

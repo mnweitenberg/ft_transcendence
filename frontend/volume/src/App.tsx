@@ -39,7 +39,7 @@ function App() {
 	return (
 		<>
 			<Routes>
-				<Route path="/" element={<Home setLogin={setLogin} />} />
+				<Route path="/" element={<Home />} />
 				<Route path="/login" element={<Auth />} />
 				<Route path="/loading" element={<Loading />} />
 			</Routes>
