@@ -54,6 +54,7 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 	const gameScore: i.GameScore = {
 		id: 0,
 		playerOne: {
+			id: 'One',
 			name: "One",
 			avatar: "",
 			stats: {
@@ -66,6 +67,7 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 			friends: [],
 		},
 		playerTwo: {
+			id: 'Two',
 			name: "Two",
 			avatar: "",
 			stats: {

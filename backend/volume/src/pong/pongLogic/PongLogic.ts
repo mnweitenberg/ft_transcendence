@@ -1,9 +1,9 @@
 import * as C from "./constants";
 import * as i from "./interfaces";
 import { Side } from "./constants";
-
 import * as CPU from './CPU';
 import { initCanvas ,initializeGameState } from './PongInit';
+import * as pongService from '../pong.service';
 
 export { initCanvas, initializeGameState, CPU };
 
@@ -26,14 +26,6 @@ export function handleScore(canvas: i.Canvas, state: i.GameState, socket: any) {
 		state.started = false;
 		console.log("score", score)
 		socket.emit('gameScore', state.gameScore);
-	}
-
-	if (score.playerOne === C.MAX_SCORE || score.playerTwo === C.MAX_SCORE) {
-		socket.emit('endOfGame', state.gameScore);
-		score.playerOne = 0;
-		score.playerTwo = 0;
-		state.ball.xSpeed = 0;
-		socket.emit('gameScore', state.gameScore)
 	}
 }
 
@@ -112,6 +104,7 @@ function boundPaddleToWindow(canvas: i.Canvas, paddle: i.Paddle) {
 
 function moveBallDuringServe(canvas: i.Canvas, state: i.GameState) {
 	const { serveLeft, serveRight, paddleLeft, paddleRight, ball } = state;
+	ball.xSpeed = 0;
 	if (serveLeft.state) {
 		ball.x = paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2;
 		ball.y = paddleLeft.y + 0.5 * paddleLeft.height;

@@ -32,6 +32,7 @@ interface Stats {
 }
 
 export interface User {
+	id: string;
 	name: string;
 	avatar: string;
 	stats: Stats;
