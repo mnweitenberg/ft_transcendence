@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver, Subscription } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { Match } from './match.model';
@@ -9,11 +9,12 @@ import { GameScore, UserGame } from './entities/gamescore.entity';
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
+
 	@Mutation((returns) => GameScore, { nullable: true })
 	joinQueue(@Args('user_id') user_id: string) {
 		return this.queueService.lookForMatch(user_id);
 	}
-
+	
 	@Subscription((returns) => GameScore, {
 		filter: (payload, variable) => {
 			return (
@@ -23,11 +24,16 @@ export class QueueResolver {
 		},
 	})
 	gameScoreFound(@Args('user_id') user_id: string) {
-		return pubSub.asyncIterator('gameScoreFound')
+		return pubSub.asyncIterator('gameScoreFound');
+	}
+
+	@Query((returns) => [GameScore])
+	async currentQueueQuery() : Promise<GameScore[]> {
+		return this.queueService.currentQueue();
 	}
 
 
-
+	
 
 	/*
 	REMOVE
@@ -52,19 +58,19 @@ export class QueueResolver {
 	TESTING
 	*/
 
-	@Mutation(returns => GameScore)
-	createGScore(@Args('player1Id') playerOneId:string, @Args('player2Id')playerTwoId: string) {
-		return this.queueService.createGame(playerOneId, playerTwoId);
+	@Query((returns) => Number)
+	create3matchesQuery() {
+		return this.queueService.createMatches();
 	}
 
-	@Mutation(returns => UserGame)
-	createUserGame(@Args('userId') userid: string)
-	{
-		return this.queueService.userGameCreate(userid);
+	@Query((returns) => Number) 
+	fillDbUserGameQuery() {
+		return this.queueService.fillDbUserGame();
 	}
 
-	@Mutation(returns => UserGame)
-	createRandomUserGame(@Args('name') name:string, @Args('minus')minus:number) {
-		return this.queueService.randomUserGame(name, minus);
+	@Query((returns) => Number)
+	printQueue() {
+		return this.queueService.queuePrint();
 	}
+
 }

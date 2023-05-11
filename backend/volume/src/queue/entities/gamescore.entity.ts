@@ -72,13 +72,13 @@ export class Score {
 @Entity()
 @ObjectType()
 export class GameScore {
-	@PrimaryGeneratedColumn()
-	@Field()
-	matchId: string;
-
 	@Column()
-	@Generated("uuid")
+	@PrimaryGeneratedColumn("uuid")
 	uuid: string;
+
+	@Field()
+	matchId: number;
+
 
 	// @Column()
 	// @Field()

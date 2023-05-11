@@ -2,8 +2,54 @@ import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+
+const CURRENT_QUEUE_QUERY = gql`
+	query {
+		currentQueueQuery {
+			matchId
+			playerOne {
+				name
+				avatar
+				stats {
+					ranking
+					wins
+					losses
+					score
+				}
+				status
+			}
+			playerTwo {
+				name
+				avatar
+				stats {
+					ranking
+					wins
+					losses
+					score
+				}
+				status
+			}
+			score {
+				playerOne
+				playerTwo
+			}
+		}
+	}
+`;
+const GAMER_SCORE_FOUND = gql`
+	subscription gameScoreFound($user_id: String!) {
+		gameScoreFound(user_id: $user_id) {
+			playerOne {
+				userId
+			}
+			playerTwo {
+				userId
+			}
+		}
+	}
+`;
 
 export default function Queue(props: i.ModalProps) {
 	// TODO:
@@ -18,9 +64,33 @@ export default function Queue(props: i.ModalProps) {
 	// const {loading, error, data, subscribeToMore} = useQuery(CURRENT_QUEUE);
 	// zie ook NewGroupMessage.tsx
 
+	const { loading, error, data, subscribeToMore } = useQuery(CURRENT_QUEUE_QUERY);
+
+	useEffect(() => {
+		return subscribeToMore({
+			document: GAMER_SCORE_FOUND,
+			variables: { user_id: user_id },
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newMatch = subscriptionData.data.gameScore;
+				return Object.assign({}, prev, {
+					// getChannel: {
+					// 	...prev.getChannel,
+					// 	messages: [...prev.getChannel.messages, newMessage],
+					// },
+				});
+			},
+		});
+	}, []);
+
+	console.log("data = ");
+	console.log([data]);
+
+	const rij: Array<i.GameScore> = [data];
+
 	return (
 		<>
-			{queue.map(function (game) {
+			{rij.map(function (game) {
 				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
 				return (
 					// TODO: Add a unique key to the div
@@ -54,6 +124,44 @@ export default function Queue(props: i.ModalProps) {
 		</>
 	);
 }
+
+// TODO: remove if above works
+// 	return (
+// 		<>
+// 			{queue.map(function (game) {
+// 				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
+// 				return (
+//
+// 					<div
+// 						className="flex_row_spacebetween"
+// 						key={game.playerOne.name + game.playerTwo.name}
+// 					>
+// 						<div
+// 							className="player player--one"
+// 							onClick={() =>
+// 								props.toggleModal(game.playerOne, <UserStats {...props} />)
+// 							}
+// 						>
+// 							<h3 className="name">{game.playerOne.name}</h3>
+// 							<img className="avatar" src={game.playerOne.avatar} />
+// 						</div>
+
+// 						<div
+// 							className="player player--two"
+// 							onClick={() =>
+// 								props.toggleModal(game.playerTwo, <UserStats {...props} />)
+// 							}
+// 						>
+// 							<img className="avatar" src={game.playerTwo.avatar} />
+// 							<h3 className="name">{game.playerTwo.name}</h3>
+// 						</div>
+// 					</div>
+// 				);
+// 			})}
+// 			<JoinQueueElement />
+// 		</>
+// 	);
+// }
 
 const JOIN_QUEUE = gql`
 	mutation joinQueue($userId: String!) {
@@ -131,18 +239,6 @@ const MATCH_FOUND = gql`
 	}
 `;
 
-const GAMER_SCORE_FOUND = gql`
-	subscription gameScoreFound($user_id: String!) {
-		gameScoreFound(user_id: $user_id) {
-			playerOne {
-				userId
-			}
-			playerTwo {
-				userId
-			}
-		}
-	}
-`;
 function JoinedQueue({ user_id }: { user_id: string }) {
 	const { data, loading, error } = useSubscription(GAMER_SCORE_FOUND, {
 		variables: { user_id: user_id },
