@@ -1,6 +1,6 @@
 #game {
 	grid-area: game;
-	background-color: black;
+	background-color: $color-bg;
 	width: 100%;
 	aspect-ratio: 2 / 1;
 	display: flex;
@@ -9,11 +9,14 @@
 }
 
 .game_menu {
+	background-color: black;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	gap: 2em;
+	width: 100%;
+	aspect-ratio: 2 / 1;
 	cursor: pointer;
 }
 
