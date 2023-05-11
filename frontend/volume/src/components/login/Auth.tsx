@@ -1,11 +1,5 @@
 import "src/styles/style.css";
-import { gql, useQuery } from "@apollo/client";
 
-const GET_CLIENT_UID = gql`
-	query clientUidQuery {
-		clientUidQuery
-	}
-`;
 function dec2hex(dec: any) {
 	return dec.toString(16).padStart(2, "0");
 }
@@ -17,16 +11,12 @@ function generateState(): string {
 }
 
 function Auth() {
-	const { loading, error, data } = useQuery(GET_CLIENT_UID);
-	if (error) return <h1>Something went wrong!</h1>;
-	if (loading) return <h1>Loading...</h1>;
-
 	const url =
 		"https://api.intra.42.fr/oauth/authorize" +
 		"?client_id=" +
-		data.clientUidQuery +
+		import.meta.env.VITE_CLIENT_UID +
 		"&redirect_uri=" +
-		encodeURIComponent("http://localhost:5574/loading") +
+		encodeURIComponent("http://localhost:4242/callback") +
 		"&state=" +
 		generateState() +
 		"&response_type=code";
