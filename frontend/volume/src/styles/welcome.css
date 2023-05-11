@@ -1,0 +1,12 @@
+.div-1 {
+    margin: auto;
+    background-size: 200% 200%;
+    text-align: center;
+    background-color: #94bbe9;
+}
+
+.div-2 {
+    margin: auto;
+    text-align: center;
+    background-color: gainsboro;
+}

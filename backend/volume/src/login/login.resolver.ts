@@ -9,7 +9,7 @@ export class LoginResolver {
 	constructor(private loginService: LoginService) {}
 
 	@Query((returns) => Boolean)
-	async validateCookieQuery(@Context() context: GraphQLContext) {
+	async loginQuery(@Context() context: GraphQLContext) {
 		return this.loginService.isCookieValid(context.req);
 	}
 
