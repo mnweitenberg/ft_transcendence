@@ -1,9 +1,13 @@
+import { Link } from "react-router-dom";
 import "src/styles/welcome.css";
 
 function Welcome() {
 	return (
 		<div className="div-1">
-			<div className="div-2">Welcome</div>
+			<div className="div-2">PONG</div>
+			<div className="play-button">
+				<Link to={"/home"}>PLAY</Link>
+			</div>
 		</div>
 	);
 }
