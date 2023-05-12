@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "src/styles/welcome.css";
 
-function Welcome() {
+function Welcome(): JSX.Element {
 	return (
 		<div className="div-1">
 			<div className="div-2">PONG</div>
