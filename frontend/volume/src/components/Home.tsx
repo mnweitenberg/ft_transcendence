@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ReactDOM } from "react";
 import { BrowserRouter } from "react-router-dom";
+import { gql, useMutation } from "@apollo/client";
 import "src/styles/style.css";
 import Auth from "src/components/login/Auth";
 import Chat from "src/components/chat/Chat";
@@ -13,9 +14,17 @@ import Game, { createPongProps, handleFinishGame } from "src/components/game/Gam
 import { user } from "src/utils/data";
 import * as i from "src/types/Interfaces";
 
-function Home({ setLogin }: { setLogin(): any }) {
+const LOGOUT_MUTATION = gql`
+	mutation logoutMutation {
+		logoutMutation
+	}
+`;
+
+function Home() {
 	const modalProps: i.ModalProps = createModalProps();
 	const pongProps: i.PongProps = createPongProps();
+
+	const [logoutMutation, { data, loading, error }] = useMutation(LOGOUT_MUTATION);
 
 	// This useEffect will execute only when the "finished" state variable changes
 	useEffect(() => {
@@ -23,6 +32,7 @@ function Home({ setLogin }: { setLogin(): any }) {
 			handleFinishGame(pongProps);
 		}
 	}, [pongProps.finished]);
+
 	return (
 		<div className="grid-container">
 			<div id="left_top"></div>
@@ -30,7 +40,13 @@ function Home({ setLogin }: { setLogin(): any }) {
 			<Header />
 
 			<div id="right_top">
-				<a id="logout" onClick={setLogin}>
+				<a
+					id="logout"
+					onClick={() => {
+						logoutMutation();
+						window.location.reload();
+					}}
+				>
 					logout
 				</a>
 			</div>

@@ -13,5 +13,6 @@ import { Message } from 'src/message/entities/message.entity';
 		TypeOrmModule.forFeature([Message]),
 	],
 	providers: [UserResolver, UserService],
+	exports: [UserService],
 })
 export class UserModule {}
