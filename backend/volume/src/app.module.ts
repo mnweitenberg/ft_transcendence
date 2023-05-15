@@ -14,6 +14,7 @@ import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthModule } from './auth/auth.module';
+import { PongModule } from './pong/pong.module';
 
 export const pubSub = new PubSub();
 
