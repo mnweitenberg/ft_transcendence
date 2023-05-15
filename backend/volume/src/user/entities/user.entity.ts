@@ -16,17 +16,17 @@ export class User {
 	@Field()
 	id: string;
 
-	@Column()
+	@Column({
+		unique: true,
+	})
+	@Field()
+	intraId: string;
+
+	@Column({
+		unique: true,
+	})
 	@Field()
 	username: string;
-
-	@Column()
-	@Field()
-	email: string;
-
-	@Column()
-	@Field()
-	password: string;
 
 	@Column()
 	@Field((type) => Int)
