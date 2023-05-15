@@ -36,7 +36,7 @@ export class QueueResolver {
 	
 
 	/*
-	REMOVE
+	TODO: REMOVE
 	*/
 
 	@Subscription((returns) => Match, {

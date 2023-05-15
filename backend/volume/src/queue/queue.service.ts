@@ -126,7 +126,6 @@ export class QueueService {
 		return 3;
 	}
 
-	// Let op volgorde van stats. Eerst save in de database dan pas koppelen aan userGame
 	async randomUserGame(name: string, minus: number) {
 		const userGame = await this.userGameRepository.create();
 		userGame.avatar = name + "avatar";

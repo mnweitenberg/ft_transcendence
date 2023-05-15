@@ -64,6 +64,7 @@ export default function Queue(props: i.ModalProps) {
 	// const {loading, error, data, subscribeToMore} = useQuery(CURRENT_QUEUE);
 	// zie ook NewGroupMessage.tsx
 
+	/*
 	const { loading, error, data, subscribeToMore } = useQuery(CURRENT_QUEUE_QUERY);
 
 	useEffect(() => {
@@ -74,26 +75,20 @@ export default function Queue(props: i.ModalProps) {
 				if (!subscriptionData.data) return prev;
 				const newMatch = subscriptionData.data.gameScore;
 				return Object.assign({}, prev, {
-					// getChannel: {
-					// 	...prev.getChannel,
-					// 	messages: [...prev.getChannel.messages, newMessage],
-					// },
+					// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
 				});
 			},
 		});
 	}, []);
 
-	console.log("data = ");
-	console.log([data]);
-
-	const rij: Array<i.GameScore> = [data];
+	const rij: Array<i.GameScore> = [data];  		rij wordt dan queue
+	*/
 
 	return (
 		<>
-			{rij.map(function (game) {
+			{queue.map(function (game) {
 				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
 				return (
-					// TODO: Add a unique key to the div
 					<div
 						className="flex_row_spacebetween"
 						key={game.playerOne.name + game.playerTwo.name}
@@ -124,44 +119,6 @@ export default function Queue(props: i.ModalProps) {
 		</>
 	);
 }
-
-// TODO: remove if above works
-// 	return (
-// 		<>
-// 			{queue.map(function (game) {
-// 				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
-// 				return (
-//
-// 					<div
-// 						className="flex_row_spacebetween"
-// 						key={game.playerOne.name + game.playerTwo.name}
-// 					>
-// 						<div
-// 							className="player player--one"
-// 							onClick={() =>
-// 								props.toggleModal(game.playerOne, <UserStats {...props} />)
-// 							}
-// 						>
-// 							<h3 className="name">{game.playerOne.name}</h3>
-// 							<img className="avatar" src={game.playerOne.avatar} />
-// 						</div>
-
-// 						<div
-// 							className="player player--two"
-// 							onClick={() =>
-// 								props.toggleModal(game.playerTwo, <UserStats {...props} />)
-// 							}
-// 						>
-// 							<img className="avatar" src={game.playerTwo.avatar} />
-// 							<h3 className="name">{game.playerTwo.name}</h3>
-// 						</div>
-// 					</div>
-// 				);
-// 			})}
-// 			<JoinQueueElement />
-// 		</>
-// 	);
-// }
 
 const JOIN_QUEUE = gql`
 	mutation joinQueue($userId: String!) {
