@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ReactDOM } from "react";
 import { BrowserRouter } from "react-router-dom";
-import { gql, useMutation } from "@apollo/client";
 import "src/styles/style.css";
 import Chat from "src/components/chat/Chat";
 import Header from "src/components/sections/Header";
@@ -12,20 +11,13 @@ import Modal, { createModalProps } from "src/components/common/Modal";
 import Game, { createPongProps, handleFinishGame } from "src/components/game/Game";
 import { user } from "src/utils/data";
 import * as i from "src/types/Interfaces";
+import { useAuth } from "src/utils/authLogic";
 
-const LOGOUT_MUTATION = gql`
-	mutation logoutMutation {
-		logoutMutation
-	}
-`;
-
-function Home() {
+function Home(): JSX.Element {
 	const modalProps: i.ModalProps = createModalProps();
 	const pongProps: i.PongProps = createPongProps();
 
-	const [logoutMutation, { data, loading, error }] = useMutation(LOGOUT_MUTATION);
-
-	// This useEffect will execute only when the "finished" state variable changes
+	const { onLogout } = useAuth();
 	useEffect(() => {
 		if (pongProps.finished) {
 			handleFinishGame(pongProps);
@@ -42,8 +34,7 @@ function Home() {
 				<a
 					id="logout"
 					onClick={() => {
-						logoutMutation();
-						window.location.reload();
+						onLogout();
 					}}
 				>
 					logout
