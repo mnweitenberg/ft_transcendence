@@ -1,30 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import * as i from './pongLogic/interfaces';
 import * as C from './pongLogic/constants';
-import { Score } from './gameScore/entities/gamescore.entity';
-import { GameScoreRepository } from './gameScore/GameScore.repository';
-import { GameScoreDto } from './gameScore/dto/gamescore.dto';
+import { Match } from './match/entities/match.entity';
+import { MatchRepository } from './match/Match.repository';
+import { GameScoreDto } from './match/dto/match.dto';
 
 @Injectable()
 export class PongService {
-	constructor(private readonly gameScoreRepository: GameScoreRepository) {}
+	constructor(private readonly matchRepository: MatchRepository) {}
 
-	public async saveGameScore(score: i.GameScore): Promise<Score> {
-		const gameScoreDto: GameScoreDto = {
-			playerOneID: score.playerOne.id,
-			playerOneScore: score.score.playerOne,
-			playerTwoID: score.playerTwo.id,
-			playerTwoScore: score.score.playerTwo,
-		};
+	// public async saveMatch(score: i.GameScore): Promise<Match> {
+	// 	const gameScoreDto: GameScoreDto = {
+	// 		playerOne: score.playerOne,
+	// 		playerOneScore: score.score.playerOne,
+	// 		playerTwo: score.playerTwo,
+	// 		playerTwoScore: score.score.playerTwo,
+	// 	};
 
-		const scoreEntity = new Score();
-		scoreEntity.playerOneID = gameScoreDto.playerOneID;
-		scoreEntity.playerOneScore = gameScoreDto.playerOneScore;
-		scoreEntity.playerTwoID = gameScoreDto.playerTwoID;
-		scoreEntity.playerTwoScore = gameScoreDto.playerTwoScore;
+	// 	const scoreEntity = new Match();
+	// 	scoreEntity.playerOne = gameScoreDto.playerOne;
+	// 	scoreEntity.playerOneScore = gameScoreDto.playerOneScore;
+	// 	scoreEntity.playerTwo = gameScoreDto.playerTwo;
+	// 	scoreEntity.playerTwoScore = gameScoreDto.playerTwoScore;
 
-		return this.gameScoreRepository.saveGameScore(scoreEntity);
-	}
+	// 	return this.matchRepository.saveMatch(scoreEntity);
+	// }
 
 	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
 		if (state.paddleRight.height < canvas.height) {

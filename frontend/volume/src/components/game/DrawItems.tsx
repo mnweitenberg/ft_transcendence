@@ -54,7 +54,7 @@ const lightGrey = [200, 200, 200];
 const darkGrey = [50, 50, 50];
 const black = [10, 10, 10];
 
-let colorScheme = [white, black, lightGrey];
+let colorScheme = [black, white, darkGrey];
 
 function keyPressed(p5: p5Types, color: number) {
 	if (p5.key === "w") colorScheme = [white, black, lightGrey];

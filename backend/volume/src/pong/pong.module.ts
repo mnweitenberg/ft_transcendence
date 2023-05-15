@@ -10,13 +10,13 @@ import {
 } from './pongLogic/PongLogic';
 import * as i from './pongLogic/interfaces';
 import * as C from './pongLogic/constants';
-import { Score } from './gameScore/entities/gamescore.entity';
+import { Match } from './match/entities/match.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GameScoreRepository } from './gameScore/GameScore.repository';
+import { MatchRepository } from './match/Match.repository';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Score])],
-	providers: [PongService, GameScoreRepository],
+	imports: [TypeOrmModule.forFeature([Match])],
+	providers: [PongService, MatchRepository],
 })
 export class PongModule {
 	private state: i.GameState;
@@ -25,7 +25,7 @@ export class PongModule {
 
 	constructor(
 		private readonly pongService: PongService,
-		private readonly gameScoreRepository: GameScoreRepository, // Inject the GameScoreRepository
+		private readonly gameScoreRepository: MatchRepository, // Inject the MatchRepository
 	) {
 		this.canvas = initCanvas();
 		this.state = initializeGameState(this.canvas);
@@ -79,24 +79,24 @@ export class PongModule {
 			this.state.gameScore.score.playerOne >= C.MAX_SCORE ||
 			this.state.gameScore.score.playerTwo >= C.MAX_SCORE
 		) {
-			this.pongService
-				.saveGameScore(this.state.gameScore)
-				.then((score) => {
-					socket.emit('endOfGame', this.state.gameScore);
-					this.state.gameScore.score.playerOne = 0;
-					this.state.gameScore.score.playerTwo = 0;
-					socket.emit('gameScore', this.state.gameScore);
-					console.log('Succesfully saved');
+			this.pongService;
+			// .saveMatch(this.state.gameScore)
+			// .then((score) => {
+			socket.emit('endOfGame', this.state.gameScore);
+			this.state.gameScore.score.playerOne = 0;
+			this.state.gameScore.score.playerTwo = 0;
+			socket.emit('gameScore', this.state.gameScore);
+			console.log('Succesfully saved');
 
-					this.gameScoreRepository
-						.findAllGameScores()
-						.then((allGameScores) => {
-							console.log('All game scores:', allGameScores);
-						});
-				})
-				.catch((error) => {
-					console.log('Error saving GameScore', error);
-				});
+			// this.gameScoreRepository
+			// .findAllMatches()
+			// .then((allGameScores) => {
+			// console.log('All game scores:', allGameScores);
+			// });
+			// })
+			// .catch((error) => {
+			// console.log('Error saving GameScore', error);
+			// });
 		}
 	}
 

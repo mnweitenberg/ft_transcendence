@@ -41,7 +41,7 @@ export interface User {
 }
 
 ///////////////
-// GAMESTATE //
+//   SCORE   //
 ///////////////
 
 interface Score {
@@ -55,6 +55,10 @@ export interface GameScore {
 	playerTwo: User;
 	score: Score;
 }
+
+///////////////
+// GAMESTATE //
+///////////////
 
 export interface Ball {
 	x: number;

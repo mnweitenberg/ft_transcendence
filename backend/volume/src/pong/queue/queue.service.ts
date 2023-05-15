@@ -1,56 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { Queue } from './queue.model';
-import { Match } from './match.model';
 import { pubSub } from 'src/app.module';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserGame, GameScore, Score, Stats } from './entities/gamescore.entity';
 import { Repository } from 'typeorm';
+import { Match } from '../match/entities/match.entity';
+import { User } from '../../user/entities/user.entity';
 
 const DEBUG_PRINT = true;
 
 @Injectable()
 export class QueueService {
 	constructor(
-		@InjectRepository(GameScore)
-		private readonly gameScoreRepo: Repository<GameScore>,
-		@InjectRepository(UserGame)
-		private readonly userGameRepository: Repository<UserGame>,
-		@InjectRepository(Stats)
-		private readonly statsRepository: Repository<Stats>,
+		@InjectRepository(Match)
+		private readonly gameScoreRepo: Repository<Match>,
+		@InjectRepository(User)
+		private readonly userRepo: Repository<User>,
 	) {}
 
 	static match_id: number;
 	users_looking_for_match: string[] = [];
-	queue_game_score: GameScore[] = [];
+	queue_game_score: Match[] = [];
 
 	async createGame(
 		player_one_id: string,
 		player_two_id: string,
-	): Promise<GameScore> {
-		const player_one = await this.userGameRepository.findOne({
-			where: { userId: player_one_id },
-			relations: { stats: true },
+	): Promise<Match> {
+		const player_one = await this.userRepo.findOne({
+			where: { id: player_one_id },
+			// relations: { stats: true },
 		});
-		const player_two = await this.userGameRepository.findOne({
-			where: { userId: player_two_id },
-			relations: { stats: true },
+		const player_two = await this.userRepo.findOne({
+			where: { id: player_two_id },
+			// relations: { stats: true },
 		});
 
-		const new_game = new GameScore();
-		const score = new Score();
+		const new_game = new Match();
 
-		new_game.score = score;
+		new_game.playerOneScore = 0;
+		new_game.playerTwoScore = 0;
 		new_game.playerOne = player_one;
 		new_game.playerTwo = player_two;
-		new_game.matchId = QueueService.match_id;
-		QueueService.match_id++;
 
 		this.queue_game_score.push(new_game);
 
 		return new_game;
 	}
 
-	currentQueue(): GameScore[] {
+	currentQueue(): Match[] {
 		return this.queue_game_score;
 	}
 
@@ -65,7 +60,7 @@ export class QueueService {
 		return true;
 	}
 
-	async lookForMatch(player_id: string): Promise<GameScore> | null {
+	async lookForMatch(player_id: string): Promise<Match> | null {
 		if (!this.canPlayerLookForMatch(player_id)) return null;
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
@@ -81,7 +76,7 @@ export class QueueService {
 					// console.log(newGame.playerOne.stats.losses);
 					// console.log(newGame.playerTwo.stats.losses);
 				}
-				pubSub.publish('gameScoreFound', { gameScoreFound: newGame });
+				pubSub.publish('gameScoreFound', { MatchFound: newGame });
 				return newGame;
 			}
 		}
@@ -94,7 +89,7 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		this.fillDbUserGame();
+		// this.fillDbUserGame();
 		await this.lookForMatch('Henk');
 		await this.lookForMatch('Henk1');
 		await this.lookForMatch('Henk2');
@@ -104,15 +99,15 @@ export class QueueService {
 		return 4;
 	}
 
-	async fillDbUserGame() {
-		this.randomUserGame('Henk', 1);
-		this.randomUserGame('Henk1', 2);
-		this.randomUserGame('Henk2', 3);
-		this.randomUserGame('Henk3', 4);
-		this.randomUserGame('Henk4', 5);
-		this.randomUserGame('Henk5', 6);
-		return 3;
-	}
+	// async fillDbUserGame() {
+	// this.randomUserGame('Henk', 1);
+	// this.randomUserGame('Henk1', 2);
+	// this.randomUserGame('Henk2', 3);
+	// this.randomUserGame('Henk3', 4);
+	// this.randomUserGame('Henk4', 5);
+	// this.randomUserGame('Henk5', 6);
+	// return 3;
+	// }
 
 	queuePrint() {
 		console.log('\t\t\t QUEUE op backend');
@@ -122,22 +117,22 @@ export class QueueService {
 		return 3;
 	}
 
-	async randomUserGame(name: string, minus: number) {
-		const userGame = await this.userGameRepository.create();
-		userGame.avatar = name + 'avatar';
-		userGame.name = name + ' name';
-		userGame.userId = name;
-		userGame.status = 'online';
+	// async randomUserGame(name: string, minus: number) {
+	// 	const userGame = await this.userRepo.create();
+	// 	userGame.avatar = name + 'avatar';
+	// 	userGame.name = name + ' name';
+	// 	userGame.userId = name;
+	// 	userGame.status = 'online';
 
-		const userStats = await this.statsRepository.create();
-		userStats.losses = 322 - minus;
-		userStats.ranking = 523 - minus;
-		userStats.score = 344 - minus;
-		userStats.wins = 133 - minus;
+	// 	const userStats = await this.statsRepository.create();
+	// 	userStats.losses = 322 - minus;
+	// 	userStats.ranking = 523 - minus;
+	// 	userStats.score = 344 - minus;
+	// 	userStats.wins = 133 - minus;
 
-		await this.statsRepository.save(userStats);
-		userGame.stats = userStats;
+	// 	await this.statsRepository.save(userStats);
+	// 	userGame.stats = userStats;
 
-		return this.userGameRepository.save(userGame);
-	}
+	// 	return this.userRepo.save(userGame);
+	// }
 }
