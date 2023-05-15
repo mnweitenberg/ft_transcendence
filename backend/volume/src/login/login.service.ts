@@ -16,36 +16,8 @@ export class LoginService {
 	baseUrl: string = 'https://api.intra.42.fr/oauth/token';
 	grantType: string = 'authorization_code';
 
-	async getClientUid(): Promise<string> {
-		return this.login.client_uid;
-	}
-
 	async isCookieValid(request: Request): Promise<boolean> {
 		const reqCookie = request.cookies['session_cookie'];
 		return reqCookie != undefined;
-	}
-
-	async getSessionToken(code: string) {
-		var tmp: any;
-		try {
-			const response: any = await axios.post(this.baseUrl, {
-				grant_type: this.grantType,
-				client_id: this.login.client_uid,
-				client_secret: this.login.client_secret,
-				code: code,
-				redirect_uri: 'http://localhost:5574/loading',
-			});
-			tmp = {
-				code: 200,
-				nestedJson: response.data,
-			};
-			console.log(response.data);
-		} catch (error) {
-			tmp = {
-				code: 401,
-				nestedJson: error,
-			};
-		}
-		return JSON.stringify(tmp);
 	}
 }

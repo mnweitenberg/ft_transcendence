@@ -6,14 +6,14 @@ import { QueueModule } from './queue/queue.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.service';
 import { UserModule } from './user/user.module';
-import { LoginModule } from './session/login.module';
+import { LoginModule } from './login/login.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExampleQLModule } from './example_ql/example_ql.module';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
-import { PongModule } from './pong/pong.module';
+import { AuthModule } from './auth/auth.module';
 
 export const pubSub = new PubSub();
 
@@ -36,6 +36,7 @@ export const pubSub = new PubSub();
 		// Other modules
 		ConfigModule.forRoot({ isGlobal: true }),
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+		AuthModule,
 		UserModule,
 		QueueModule,
 		LoginModule,

@@ -1,29 +1,44 @@
-import { Args, Mutation, Resolver, Subscription } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { Match } from './match.model';
 import { pubSub } from 'src/app.module';
+import { GameScore, UserGame } from './entities/gamescore.entity';
 
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	// When client joins (global) queue
-	// userId zou moeten corresponderen met userId in database. Dit zodat er een query kan worden
-	// gedaan op de user waardoor de gamerScore data gevuld kan worden.
-	// @Mutation((returns) => Boolean)
-	@Mutation((returns) => Match, { nullable: true })
-	joinQueue(@Args('userId') userId: string) {
-		return this.queueService.lookForMatch(userId);
+
+	@Mutation((returns) => GameScore, { nullable: true })
+	joinQueue(@Args('user_id') user_id: string) {
+		return this.queueService.lookForMatch(user_id);
+	}
+	
+	@Subscription((returns) => GameScore, {
+		filter: (payload, variable) => {
+			return (
+				payload.gameScoreFound.playerOne.user_id === variable.user_id ||
+				payload.gameScoreFound.playerTwo.user_id === variable.user_id
+			);
+		},
+	})
+	gameScoreFound(@Args('user_id') user_id: string) {
+		return pubSub.asyncIterator('gameScoreFound');
 	}
 
-	// 		De filter is afhankelijk van hoe wij de queue inrichten. Onderstaande
-	// manier zou geschikt zijn voor een queue-methode waarbij spelers in een global queue
-	// komen. Front end zou dan geen queue weergeven en er zouden 'oneindig' veel matches tegelijk
-	// kunnen plaatsvinden.
-	// 		Filter zou bv ook kunnen op basis van een 'room id' waarbij er tot X aantal matches kunnen
-	// queuen in een room. Frontend laat dan gequeude matches zien. Hierbij dus niet oneindig veel matches
-	// matches tegelijk.
+	@Query((returns) => [GameScore])
+	async currentQueueQuery() : Promise<GameScore[]> {
+		return this.queueService.currentQueue();
+	}
+
+
+	
+
+	/*
+	TODO: REMOVE
+	*/
+
 	@Subscription((returns) => Match, {
 		filter: (payload, variable) => {
 			return (
@@ -35,4 +50,27 @@ export class QueueResolver {
 	matchFound(@Args('user_id') user_id: string) {
 		return pubSub.asyncIterator('matchFound');
 	}
+
+
+
+
+	/*
+	TESTING
+	*/
+
+	@Query((returns) => Number)
+	create3matchesQuery() {
+		return this.queueService.createMatches();
+	}
+
+	@Query((returns) => Number) 
+	fillDbUserGameQuery() {
+		return this.queueService.fillDbUserGame();
+	}
+
+	@Query((returns) => Number)
+	printQueue() {
+		return this.queueService.queuePrint();
+	}
+
 }
