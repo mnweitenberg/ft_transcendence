@@ -11,10 +11,10 @@ export class PongService {
 
 	public async saveGameScore(score: i.GameScore): Promise<Score> {
 		const gameScoreDto: GameScoreDto = {
-		  playerOneID: score.playerOne.id,
-		  playerOneScore: score.score.playerOne,
-		  playerTwoID: score.playerTwo.id,
-		  playerTwoScore: score.score.playerTwo,
+			playerOneID: score.playerOne.id,
+			playerOneScore: score.score.playerOne,
+			playerTwoID: score.playerTwo.id,
+			playerTwoScore: score.score.playerTwo,
 		};
 
 		const scoreEntity = new Score();
@@ -24,7 +24,7 @@ export class PongService {
 		scoreEntity.playerTwoScore = gameScoreDto.playerTwoScore;
 
 		return this.gameScoreRepository.saveGameScore(scoreEntity);
-	  }
+	}
 
 	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
 		if (state.paddleRight.height < canvas.height) {
@@ -52,10 +52,8 @@ export class PongService {
 		state.started = true;
 		console.log('Ball is in play');
 
-		if (state.serveLeft.state)
-			state.ball.xSpeed = C.BALL_SPEED;
-		if (state.serveRight.state)
-			state.ball.xSpeed = -C.BALL_SPEED;
+		if (state.serveLeft.state) state.ball.xSpeed = C.BALL_SPEED;
+		if (state.serveRight.state) state.ball.xSpeed = -C.BALL_SPEED;
 		state.serveRight.state = false;
 	}
 }

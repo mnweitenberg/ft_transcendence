@@ -5,20 +5,20 @@ import { Score } from './entities/gamescore.entity';
 
 @Injectable()
 export class GameScoreRepository {
-  constructor(
-    @InjectRepository(Score)
-    private readonly gameScoreRepository: Repository<Score>,
-  ) {}
+	constructor(
+		@InjectRepository(Score)
+		private readonly gameScoreRepository: Repository<Score>,
+	) {}
 
-  public async findAllGameScores(): Promise<Score[]> {
-    return this.gameScoreRepository.find();
-  }
+	public async findAllGameScores(): Promise<Score[]> {
+		return this.gameScoreRepository.find();
+	}
 
-  // public async findGameScoreById(id: string): Promise<GameScore> {
-  //   return this.gameScoreRepository.findOne(id);
-  // }
+	// public async findGameScoreById(id: string): Promise<GameScore> {
+	//   return this.gameScoreRepository.findOne(id);
+	// }
 
-  public async saveGameScore(gameScore: Score): Promise<Score> {
-    return this.gameScoreRepository.save(gameScore);
-  }
+	public async saveGameScore(gameScore: Score): Promise<Score> {
+		return this.gameScoreRepository.save(gameScore);
+	}
 }

@@ -1,5 +1,5 @@
-import * as C from "./constants";
-import * as i from "./interfaces";
+import * as C from './constants';
+import * as i from './interfaces';
 
 export function initCanvas(): i.Canvas {
 	const width = 2;
@@ -55,35 +55,35 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 		id: 0,
 		playerOne: {
 			id: 'One',
-			name: "One",
-			avatar: "",
+			name: 'One',
+			avatar: '',
 			stats: {
 				ranking: 0,
 				wins: 0,
 				losses: 0,
 				score: 0,
 			},
-			status: "online",
+			status: 'online',
 			friends: [],
 		},
 		playerTwo: {
 			id: 'Two',
-			name: "Two",
-			avatar: "",
+			name: 'Two',
+			avatar: '',
 			stats: {
 				ranking: 0,
 				wins: 0,
 				losses: 0,
 				score: 0,
 			},
-			status: "online",
+			status: 'online',
 			friends: [],
 		},
 		score: {
 			playerOne: 0,
 			playerTwo: 0,
 		},
-	}
+	};
 
 	const state: i.GameState = {
 		started: false,
