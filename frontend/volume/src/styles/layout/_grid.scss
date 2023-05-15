@@ -3,7 +3,7 @@
 
 	@media screen and (max-width: 1200px) {
 		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 0.3fr 1fr minmax(400px, 1fr) 1fr;
+		// grid-template-rows: 0.3fr 1fr minmax(400px, 1fr) 1fr;
 		grid-template-areas:
 			"header	header"
 			"game 	game"
@@ -12,10 +12,10 @@
 	}
 
 	grid-template-columns: minmax(250px, 350px) 1fr 1fr minmax(250px, 350px);
-	grid-template-rows: 0.3fr 1fr minmax(250px, 0.7fr);
+	// grid-template-rows: 0.3fr 1fr minmax(250px, 0.7fr);
 	grid-template-areas: "left_top 	header	header		right_top"
 	"chat 		game 	game		profile"
 	"chat	 	queue	ranking		profile";
-	height: 100vh;
+	// height: 100vh;
 	margin:0;
 }

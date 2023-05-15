@@ -3,9 +3,10 @@ header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	height: 120px;
 
 	@media screen and (max-width: 1201px) {
-		margin: 3em 3em 2em 3em;
+		margin: 1.5em 2em 0em 2em;
 	}
 
 	.player {

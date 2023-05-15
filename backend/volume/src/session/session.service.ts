@@ -10,7 +10,7 @@ export class SessionService {
 	private _sessionList: Session[] = [];
 
 	findSession(tokenToMatch: string): Session {
-		for (let i of this.sessionList) {
+		for (const i of this.sessionList) {
 			if (i.access_token == tokenToMatch) return i;
 		}
 		return null;

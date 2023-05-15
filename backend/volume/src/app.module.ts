@@ -2,26 +2,23 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
-import { QueueModule } from './queue/queue.module';
+import { QueueModule } from './pong/queue/queue.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.service';
 import { UserModule } from './user/user.module';
 import { LoginModule } from './login/login.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ExampleQLModule } from './example_ql/example_ql.module';
+// import { AppController } from './app.controller';
+// import { AppService } from './app.service';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthModule } from './auth/auth.module';
+import { PongModule } from './pong/pong.module';
 
 export const pubSub = new PubSub();
 
 @Module({
 	imports: [
-		// Here go all the graphql modules that we create
-		ExampleQLModule,
-
 		// Use graphql
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
@@ -42,8 +39,9 @@ export const pubSub = new PubSub();
 		LoginModule,
 		ChannelModule,
 		MessageModule,
+		PongModule,
 	],
-	controllers: [AppController],
-	providers: [AppService],
+	// controllers: [AppController],
+	// providers: [AppService],
 })
 export class AppModule {}

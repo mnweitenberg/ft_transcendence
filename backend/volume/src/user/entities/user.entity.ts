@@ -28,14 +28,6 @@ export class User {
 	@Field()
 	username: string;
 
-	@Column()
-	@Field((type) => Int)
-	wins: number = 0;
-
-	@Column()
-	@Field((type) => Int)
-	losses: number = 0;
-
 	@ManyToMany((type) => Channel, (channel) => channel.members)
 	@Field((type) => [Channel], { nullable: true })
 	channels: Channel[];
