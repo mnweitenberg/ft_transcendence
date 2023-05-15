@@ -69,6 +69,7 @@ export class Score {
 	playerTwo: number = 0;
 }
 
+// FIXME: waarschijnlijk is dit geen entity (hoeft niet in de database)
 @Entity()
 @ObjectType()
 export class GameScore {
