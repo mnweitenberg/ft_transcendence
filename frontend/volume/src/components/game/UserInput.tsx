@@ -1,34 +1,47 @@
-import * as C from "../../utils/constants";
 import * as i from "../../types/Interfaces";
 import p5Types from "p5";
+import SocketSingleton from "../../utils/socketSingleton";
 
-function moveBallDuringLeftServe(ball: i.Ball, paddle: i.Paddle, serve: boolean) {
-	if (serve) {
-		ball.x = paddle.x + C.PADDLE_WIDTH + C.BALL_DIAMETER / 2;
-		ball.y = paddle.y + 0.5 * C.PADDLE_HEIGHT;
+export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
+	const socketSingleton = SocketSingleton.getInstance();
+	sendMouseY(canvas, p5, socketSingleton);
+	sendMouseClick(p5, socketSingleton);
+	handlePaddleSizeChange(p5, socketSingleton);
+}
+
+function sendMouseY(canvas: i.Canvas, p5: p5Types, socketSingleton: SocketSingleton) {
+	let relativeMouseY = p5.mouseY / canvas.height;
+	relativeMouseY = clamp(relativeMouseY, 0, 1);
+	socketSingleton.socket.emit("sendMouseY", { mouseY: relativeMouseY });
+}
+
+function sendMouseClick(p5: p5Types, socketSingleton: SocketSingleton) {
+	socketSingleton.socket.emit("mouseClick", { mouseClick: p5.mouseIsPressed });
+}
+
+let isUpArrowPressed = false;
+let isDownArrowPressed = false;
+
+function handlePaddleSizeChange(p5: p5Types, socketSingleton: SocketSingleton) {
+	if (p5.key === "=" && !isUpArrowPressed) {
+		isUpArrowPressed = true;
+		socketSingleton.socket.emit("enlargePaddle");
 	}
-}
-
-function moveBallDuringRightServe(ball: i.Ball, paddle: i.Paddle, serve: boolean) {
-	if (serve) {
-		ball.x = paddle.x - C.BALL_DIAMETER / 2;
-		ball.y = paddle.y + 0.5 * C.PADDLE_HEIGHT;
+	if (p5.key === "-" && !isDownArrowPressed) {
+		isDownArrowPressed = true;
+		socketSingleton.socket.emit("reducePaddle");
 	}
+
+	p5.keyReleased = () => {
+		if (p5.key === "=") {
+			isUpArrowPressed = false;
+		}
+		if (p5.key === "-") {
+			isDownArrowPressed = false;
+		}
+	};
 }
 
-function boundToWindow(gameState: i.GameState, paddleLeft: i.Paddle, paddleRight: i.Paddle) {
-	if (paddleLeft.y <= 0) paddleLeft.y = 0;
-	if (paddleLeft.y + C.PADDLE_HEIGHT >= gameState.canvasHeight)
-		paddleLeft.y = gameState.canvasHeight - C.PADDLE_HEIGHT;
-	if (paddleRight.y <= 0) paddleRight.y = 0;
-	if (paddleRight.y + C.PADDLE_HEIGHT >= gameState.canvasHeight)
-		paddleRight.y = gameState.canvasHeight - C.PADDLE_HEIGHT;
-}
-
-//p5 event on key press
-export function handleMouseInput(p5: p5Types, state: i.GameState) {
-	state.paddleRight.y = p5.mouseY;
-	boundToWindow(state, state.paddleLeft, state.paddleRight);
-	moveBallDuringLeftServe(state.ball, state.paddleLeft, state.serveLeft.state);
-	moveBallDuringRightServe(state.ball, state.paddleRight, state.serveRight.state);
+function clamp(num: number, min: number, max: number): number {
+	return num <= min ? min : num >= max ? max : num;
 }

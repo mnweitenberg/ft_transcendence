@@ -1,93 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
-import * as C from "../../utils/constants";
-import * as CPU from "./CPU";
-import * as i from "../../types/Interfaces";
 import { drawItems } from "./DrawItems";
-import { handleCollisions } from "./Collision";
-import { handleMouseInput } from "./UserInput";
+import { handleUserInput } from "./UserInput";
+import { initCanvas, initializeGameState } from "./PongInit";
+import * as i from "../../types/Interfaces";
+import SocketSingleton from "../../utils/socketSingleton";
 
-export default function PongComponent(props: any) {
-	if (!document.getElementById("game")) return <>Game element not found</>;
+function useGameSocket(initialGameState: i.GameState) {
+	const [state, setState] = useState(() => initialGameState);
 
-	const [state, setState] = useState(() =>
-		initializeGameState(props.gameScore, document.getElementById("game"))
-	);
+	useEffect(() => {
+		const socketSingleton = SocketSingleton.getInstance();
+		socketSingleton.socket.on("gameState", (gameState: i.GameState) => {
+			setState(gameState);
+		});
+	}, []);
 
-	// resizeCanvasOnBrowserResize(state, props.gameScore);
+	return state;
+}
+
+function useWindowResize(
+	p5: React.MutableRefObject<p5Types | null>,
+	canvasSetter: (canvas: i.Canvas) => void
+) {
+	useEffect(() => {
+		const handleResize = () => {
+			const gameElement = document.getElementById("game");
+			if (gameElement && p5.current) {
+				const newWidth = gameElement.clientWidth;
+				const newHeight = newWidth / 2;
+				canvasSetter(initCanvas(newWidth));
+				p5.current.resizeCanvas(newWidth, newHeight);
+			}
+		};
+
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+}
+
+export default function Pong() {
+	if (!document.getElementById("game") || document.getElementById("game") === undefined)
+		return <h1>Game element not found</h1>;
+
+	const [canvas, setCanvas] = useState(initCanvas(document.getElementById("game")?.clientWidth));
+	const state = useGameSocket(initializeGameState(canvas));
+
+	const p5Ref = useRef<p5Types | null>(null);
+	useWindowResize(p5Ref, setCanvas);
+
 	function setupCanvas(p5: p5Types, canvasParentRef: Element) {
+		p5Ref.current = p5;
 		p5.createCanvas(canvasParentRef.clientWidth, canvasParentRef.clientHeight, "p2d").parent(
 			canvasParentRef
 		);
 	}
 
 	function drawCanvas(p5: p5Types) {
-		handleMouseInput(p5, state);
-		drawItems(p5, state);
-		handleCollisions(state, props);
-		CPU.Action(state);
+		drawItems(canvas, p5, state);
+		handleUserInput(canvas, p5);
 	}
 
-	function handleMouseClick() {
-		state.started = true;
-		if (state.serveLeft.state) state.ball.xSpeed = Math.abs(state.ball.xSpeed);
-		if (state.serveRight.state) state.ball.xSpeed = Math.abs(state.ball.xSpeed) * -1;
-		state.serveLeft.state = false;
-		state.serveRight.state = false;
-	}
-
-	return <Sketch setup={setupCanvas} draw={drawCanvas} mouseClicked={handleMouseClick} />;
+	return <Sketch setup={setupCanvas} draw={drawCanvas} />;
 }
-
-function initializeGameState(gameScore: i.GameScore, parentElement: Element | null): i.GameState {
-	if (!parentElement) throw new Error("parentElement is null");
-
-	const paddleLeft: i.Paddle = {
-		x: C.BORDER_OFFSET,
-		y: parentElement.clientHeight / 2,
-	};
-
-	const paddleRight: i.Paddle = {
-		x: parentElement.clientWidth - C.BORDER_OFFSET - C.PADDLE_WIDTH,
-		y: parentElement.clientHeight / 2,
-	};
-
-	const serveLeft: i.ServeState = {
-		state: false,
-		x: paddleLeft.x + C.PADDLE_WIDTH + C.BALL_DIAMETER / 2,
-		y: paddleLeft.y + 0.5 * C.PADDLE_HEIGHT,
-	};
-
-	const serveRight: i.ServeState = {
-		state: false,
-		x: paddleRight.x - C.BALL_DIAMETER / 2,
-		y: paddleRight.y + 0.5 * C.PADDLE_HEIGHT,
-	};
-
-	const ball: i.Ball = {
-		x: serveLeft.x,
-		y: paddleLeft.y + C.PADDLE_HEIGHT / 2,
-		xSpeed: C.DEFAULT_BALL_SPEED,
-		ySpeed: C.DEFAULT_BALL_SPEED,
-	};
-
-	const state: i.GameState = {
-		started: false,
-		canvasHeight: parentElement.clientHeight,
-		canvasWidth: parentElement.clientWidth,
-		paddleLeft,
-		paddleRight,
-		serveLeft,
-		serveRight,
-		ball,
-	};
-
-	return state;
-}
-
-// function resizeCanvasOnBrowserResize(state: i.GameState, gameScore: i.GameScore) {
-// 	window.addEventListener("resize", () => {
-// 		state = initializeGameState(gameScore, document.getElementById("game"));
-// 	});
-// }

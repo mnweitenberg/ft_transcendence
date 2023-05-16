@@ -2,42 +2,42 @@ import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
-import { useState, useEffect } from "react";
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { useState } from "react";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 
-const CURRENT_QUEUE_QUERY = gql`
-	query {
-		currentQueueQuery {
-			matchId
-			playerOne {
-				name
-				avatar
-				stats {
-					ranking
-					wins
-					losses
-					score
-				}
-				status
-			}
-			playerTwo {
-				name
-				avatar
-				stats {
-					ranking
-					wins
-					losses
-					score
-				}
-				status
-			}
-			score {
-				playerOne
-				playerTwo
-			}
-		}
-	}
-`;
+// const CURRENT_QUEUE_QUERY = gql`
+// 	query {
+// 		currentQueueQuery {
+// 			matchId
+// 			playerOne {
+// 				name
+// 				avatar
+// 				stats {
+// 					ranking
+// 					wins
+// 					losses
+// 					score
+// 				}
+// 				status
+// 			}
+// 			playerTwo {
+// 				name
+// 				avatar
+// 				stats {
+// 					ranking
+// 					wins
+// 					losses
+// 					score
+// 				}
+// 				status
+// 			}
+// 			score {
+// 				playerOne
+// 				playerTwo
+// 			}
+// 		}
+// 	}
+// `;
 const GAMER_SCORE_FOUND = gql`
 	subscription gameScoreFound($user_id: String!) {
 		gameScoreFound(user_id: $user_id) {
@@ -145,7 +145,7 @@ function JoinQueueElement() {
 
 	const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
 
-	const handleClick = (event) => {
+	const handleClick = (event: any) => {
 		event.preventDefault();
 
 		const user_id = event.target.elements.userId.value;
@@ -186,15 +186,15 @@ function JoinQueueElement() {
 	}
 }
 
-const MATCH_FOUND = gql`
-	subscription matchFound($user_id: String!) {
-		matchFound(user_id: $user_id) {
-			matched
-			playerOneId
-			playerTwoId
-		}
-	}
-`;
+// const MATCH_FOUND = gql`
+// 	subscription matchFound($user_id: String!) {
+// 		matchFound(user_id: $user_id) {
+// 			matched
+// 			playerOneId
+// 			playerTwoId
+// 		}
+// 	}
+// `;
 
 function JoinedQueue({ user_id }: { user_id: string }) {
 	const { data, loading, error } = useSubscription(GAMER_SCORE_FOUND, {

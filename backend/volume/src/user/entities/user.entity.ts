@@ -29,12 +29,8 @@ export class User {
 	username: string;
 
 	@Column()
-	@Field((type) => Int)
-	wins: number = 0;
-
-	@Column()
-	@Field((type) => Int)
-	losses: number = 0;
+	@Field()
+	avatar: string;
 
 	@ManyToMany((type) => Channel, (channel) => channel.members)
 	@Field((type) => [Channel], { nullable: true })
