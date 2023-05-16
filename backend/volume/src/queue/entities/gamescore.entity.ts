@@ -9,19 +9,19 @@ export class Stats {
 
 	@Column()
 	@Field()
-	ranking: number = 999;
+	ranking: number;
 
 	@Column()
 	@Field()
-	wins: number = 0;
+	wins: number;
 
 	@Column()
 	@Field()
-	losses: number = 0;
+	losses: number;
 
 	@Column()
 	@Field()
-	score: number = 0;
+	score: number;
 }
 
 @Entity()
@@ -37,7 +37,7 @@ export class UserGame {
 
 	@Column()
 	@Field()
-	avatar: string = "";
+	avatar: string;
 
 	@OneToOne(Type => Stats)
 	@JoinColumn()
@@ -62,14 +62,15 @@ export class Score {
 
 	@Column()
 	@Field()
-	playerOne: number = 0;
+	// playerOne: number = 0;
+	playerOne: number;
 
 	@Column()
 	@Field()
-	playerTwo: number = 0;
+	playerTwo: number;
 }
 
-// FIXME: waarschijnlijk is dit geen entity (hoeft niet in de database)
+// FIXME: waarschijnlijk is dit geen entity (hoeft niet in de database)_
 @Entity()
 @ObjectType()
 export class GameScore {

@@ -59,7 +59,13 @@ export class QueueService {
 
 	canPlayerLookForMatch(playerId: string): boolean {
 		for (let i = 0; i < this.users_looking_for_match.length; i++)
-			if (playerId == this.users_looking_for_match[i]) return false;
+		{
+
+			if (playerId == this.users_looking_for_match[i]) {
+				return false;
+			} 
+				
+		}
 
 		// TODO:
 		// Voeg check toe waarbij wordt gekeken of player niet al in een match zit
@@ -69,8 +75,13 @@ export class QueueService {
 	}
 
 	async lookForMatch(player_id: string): Promise<GameScore> | null {
-		if (!this.canPlayerLookForMatch(player_id)) return null;
+		console.log(this.users_looking_for_match);
 
+		if (!this.canPlayerLookForMatch(player_id)) {
+			if (DEBUG_PRINT)
+				console.log("player cannot look for match ", player_id);	
+			return null;
+		}
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
 				const newGame = await this.createGame(this.users_looking_for_match[i], player_id);
@@ -78,8 +89,6 @@ export class QueueService {
 
 				if (DEBUG_PRINT) {
 					console.log('Found game: ', newGame);
-					// console.log(newGame.playerOne.stats.losses);
-					// console.log(newGame.playerTwo.stats.losses);
 				}
 				pubSub.publish('gameScoreFound', { gameScoreFound: newGame });
 				return newGame;
