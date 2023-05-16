@@ -47,12 +47,4 @@ export class UserService {
 		});
 		return user_with_channels.channels;
 	}
-
-	async getMessages(user: User): Promise<Array<Message>> {
-		const user_with_messages = await this.userRepository.findOne({
-			relations: { messages: true },
-			where: { id: user.id },
-		});
-		return user_with_messages.messages;
-	}
 }
