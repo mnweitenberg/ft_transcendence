@@ -11,15 +11,16 @@ const DEBUG_PRINT = true;
 export class QueueService {
 	constructor(
 		@InjectRepository(Match)
-		private readonly gameScoreRepo: Repository<Match>,
+		private readonly matchRepo: Repository<Match>,
 		@InjectRepository(User)
 		private readonly userRepo: Repository<User>,
 	) {}
 
 	static match_id: number;
 	users_looking_for_match: string[] = [];
-	queue_game_score: Match[] = [];
+	queue_matches: Match[] = [];
 
+	
 	async createGame(
 		player_one_id: string,
 		player_two_id: string,
@@ -33,20 +34,21 @@ export class QueueService {
 			// relations: { stats: true },
 		});
 
-		const new_game = new Match();
+		const new_game = this.matchRepo.create();
 
 		new_game.playerOneScore = 0;
 		new_game.playerTwoScore = 0;
 		new_game.playerOne = player_one;
 		new_game.playerTwo = player_two;
 
-		this.queue_game_score.push(new_game);
+		this.queue_matches.push(new_game); // redundant?
+		this.matchRepo.save(new_game);
 
 		return new_game;
 	}
 
-	currentQueue(): Match[] {
-		return this.queue_game_score;
+	getQueue(): Match[] {
+		return this.queue_matches;
 	}
 
 	canPlayerLookForMatch(playerId: string): boolean {
@@ -73,10 +75,8 @@ export class QueueService {
 
 				if (DEBUG_PRINT) {
 					console.log('Found game: ', newGame);
-					// console.log(newGame.playerOne.stats.losses);
-					// console.log(newGame.playerTwo.stats.losses);
 				}
-				pubSub.publish('gameScoreFound', { MatchFound: newGame });
+				pubSub.publish('matchFound', { MatchFound: newGame });
 				return newGame;
 			}
 		}
@@ -89,13 +89,38 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		// this.fillDbUserGame();
-		await this.lookForMatch('Henk');
-		await this.lookForMatch('Henk1');
-		await this.lookForMatch('Henk2');
-		await this.lookForMatch('Henk3');
-		await this.lookForMatch('Henk4');
-		await this.lookForMatch('Henk5');
+		let name : string = "Henk";
+		let id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+
+		name = "Henk1";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk2";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk3";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk4";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk5";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+
 		return 4;
 	}
 
@@ -113,7 +138,7 @@ export class QueueService {
 		console.log('\t\t\t QUEUE op backend');
 		console.log(this.users_looking_for_match);
 		console.log('\t\t\t GAMESCORE queue');
-		console.log(this.queue_game_score);
+		console.log(this.queue_matches);
 		return 3;
 	}
 
