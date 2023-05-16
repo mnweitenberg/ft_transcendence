@@ -2,12 +2,13 @@ import {
 	Column,
 	Entity,
 	ManyToMany,
-	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Channel } from 'src/channel/entities/channel.entity';
-import { Message } from 'src/message/entities/message.entity';
+import { Ranking } from 'src/pong/ranking/entities/ranking.entity';
+import { Match } from 'src/pong/match/entities/match.entity';
 
 @Entity()
 @ObjectType()
@@ -32,11 +33,15 @@ export class User {
 	@Field()
 	avatar: string;
 
-	@ManyToMany((type) => Channel, (channel) => channel.members)
-	@Field((type) => [Channel], { nullable: true })
+	@ManyToMany(() => Channel, (channel) => channel.members)
+	@Field(() => [Channel], { nullable: true })
 	channels: Channel[];
 
-	@OneToMany(() => Message, (message) => message.author)
-	@Field((type) => [Message], { nullable: true })
-	messages: Message[];
+	@OneToOne(() => Ranking, (ranking) => ranking.user)
+	@Field(() => Ranking)
+	ranking: Ranking;
+
+	@ManyToMany(() => Match, (match) => match.players)
+	@Field(() => [Match])
+	match_history: Match[];
 }

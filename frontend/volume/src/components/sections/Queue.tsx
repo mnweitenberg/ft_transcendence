@@ -58,30 +58,25 @@ export default function Queue(props: i.ModalProps) {
 	// const {loading, error, data, subscribeToMore} = useQuery(CURRENT_QUEUE);
 	// zie ook NewGroupMessage.tsx
 
-	/*
-	const { loading, error, data, subscribeToMore } = useQuery(CURRENT_QUEUE_QUERY);
+	// const { loading, data, error, subscribeToMore } = useQuery(GET_QUEUE);
 
-	useEffect(() => {
-		return subscribeToMore({
-			document: MATCH_FOUND,
-			variables: { user_id: user_id },
-			updateQuery: (prev, { subscriptionData }) => {
-				if (!subscriptionData.data) return prev;
-				const newMatch = subscriptionData.data.gameScore;
-				return Object.assign({}, prev, {
-					// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
-				});
-			},
-		});
-	}, []);
-
-	const rij: Array<i.GameScore> = [data];  		rij wordt dan queue
-	*/
+	// let user_id = "Henk1";
 
 	// useEffect(() => {
-	// 	const getQueue = useQuery(GET_QUEUE);
-	// 	console.log(getQueue.data);
-	// });
+	// 	return subscribeToMore({
+	// 		document: MATCH_FOUND,
+	// 		variables: { user_id: user_id },
+	// 		updateQuery: (prev, { subscriptionData }) => {
+	// 			if (!subscriptionData.data) return prev;
+	// 			const newMatch = subscriptionData.data.match;
+	// 			return Object.assign({}, prev, {
+	// 				// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
+	// 			});
+	// 		},
+	// 	});
+	// }, []);
+
+	// const rij: Array<i.GameScore> = [data];  		// rij wordt dan queue
 
 	return (
 		<>

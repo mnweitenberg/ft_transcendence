@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Match } from '../match/entities/match.entity';
 import { User } from '../../user/entities/user.entity';
+import { Ranking } from '../../pong/ranking/entities/ranking.entity';
 
 const DEBUG_PRINT = true;
 
@@ -14,6 +15,8 @@ export class QueueService {
 		private readonly matchRepo: Repository<Match>,
 		@InjectRepository(User)
 		private readonly userRepo: Repository<User>,
+		@InjectRepository(Ranking)
+		private readonly rankingRepo: Repository<Ranking>,
 	) {}
 
 	static match_id: number;
@@ -27,19 +30,20 @@ export class QueueService {
 	): Promise<Match> {
 		const player_one = await this.userRepo.findOne({
 			where: { id: player_one_id },
-			// relations: { stats: true },
+			relations: { ranking: true },
 		});
 		const player_two = await this.userRepo.findOne({
 			where: { id: player_two_id },
-			// relations: { stats: true },
+			relations: { ranking: true },
 		});
 
 		const new_game = this.matchRepo.create();
 
 		new_game.playerOneScore = 0;
 		new_game.playerTwoScore = 0;
-		new_game.playerOne = player_one;
-		new_game.playerTwo = player_two;
+
+		new_game.players = [player_one, player_two];
+		
 
 		this.queue_matches.push(new_game); // redundant?
 		this.matchRepo.save(new_game);
@@ -150,12 +154,12 @@ export class QueueService {
 		user.intraId = name + '_intra_id';
 		// user.status = 'online';
 
-		// FIXME: nadat nieuwe opzet data structuur is verwerkt kan dit aangepast worden
-		// const user_ranking = await this.rankingRepository.create();
+		// const user_ranking = await this.rankingRepo.create();
 		// user_ranking.losses = 322 - minus;
 		// user_ranking.score = 344 - minus;
 		// user_ranking.wins = 133 - minus;
-		// await this.rankingRepository.save(user_ranking);
+		// user_ranking.rank = 999 - minus;
+		// await this.rankingRepo.save(user_ranking);
 		// user.ranking = user_ranking;
 
 		return this.userRepo.save(user);
