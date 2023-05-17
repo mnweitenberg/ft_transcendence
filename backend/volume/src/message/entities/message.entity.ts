@@ -20,10 +20,10 @@ export class Message {
 	content: string;
 
 	@ManyToOne(() => Channel, (channel) => channel.messages)
-	@Field((type) => Channel)
+	@Field(() => Channel)
 	channel: Channel;
 
-	@ManyToOne(() => User, (user) => user.messages)
-	@Field((type) => User)
+	@ManyToOne(() => User)
+	@Field(() => User)
 	author: User;
 }

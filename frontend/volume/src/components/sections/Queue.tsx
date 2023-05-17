@@ -3,49 +3,43 @@ import UserStats from "src/components/common/UserStats";
 import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const CURRENT_QUEUE_QUERY = gql`
-	query {
-		currentQueueQuery {
-			matchId
+const MATCH_FOUND = gql`
+	subscription matchFound($user_id: String!) {
+		matchFound(user_id: $user_id) {
 			playerOne {
-				name
-				avatar
-				stats {
-					ranking
-					wins
-					losses
-					score
-				}
-				status
+				id
 			}
 			playerTwo {
-				name
-				avatar
-				stats {
-					ranking
-					wins
-					losses
-					score
-				}
-				status
-			}
-			score {
-				playerOne
-				playerTwo
+				id
 			}
 		}
 	}
 `;
-const GAMER_SCORE_FOUND = gql`
-	subscription gameScoreFound($user_id: String!) {
-		gameScoreFound(user_id: $user_id) {
+
+const GET_QUEUE = gql`
+	query getQueueQuery {
+		getQueueQuery {
+			gameId
 			playerOne {
-				userId
+				username
 			}
 			playerTwo {
-				userId
+				username
+			}
+		}
+	}
+`;
+
+const JOIN_QUEUE = gql`
+	mutation joinQueue($userId: String!) {
+		joinQueue(user_id: $userId) {
+			playerOne {
+				id
+			}
+			playerTwo {
+				id
 			}
 		}
 	}
@@ -64,25 +58,25 @@ export default function Queue(props: i.ModalProps) {
 	// const {loading, error, data, subscribeToMore} = useQuery(CURRENT_QUEUE);
 	// zie ook NewGroupMessage.tsx
 
-	/*
-	const { loading, error, data, subscribeToMore } = useQuery(CURRENT_QUEUE_QUERY);
+	// const { loading, data, error, subscribeToMore } = useQuery(GET_QUEUE);
 
-	useEffect(() => {
-		return subscribeToMore({
-			document: GAMER_SCORE_FOUND,
-			variables: { user_id: user_id },
-			updateQuery: (prev, { subscriptionData }) => {
-				if (!subscriptionData.data) return prev;
-				const newMatch = subscriptionData.data.gameScore;
-				return Object.assign({}, prev, {
-					// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
-				});
-			},
-		});
-	}, []);
+	// let user_id = "Henk1";
 
-	const rij: Array<i.GameScore> = [data];  		rij wordt dan queue
-	*/
+	// useEffect(() => {
+	// 	return subscribeToMore({
+	// 		document: MATCH_FOUND,
+	// 		variables: { user_id: user_id },
+	// 		updateQuery: (prev, { subscriptionData }) => {
+	// 			if (!subscriptionData.data) return prev;
+	// 			const newMatch = subscriptionData.data.match;
+	// 			return Object.assign({}, prev, {
+	// 				// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
+	// 			});
+	// 		},
+	// 	});
+	// }, []);
+
+	// const rij: Array<i.GameScore> = [data];  		// rij wordt dan queue
 
 	return (
 		<>
@@ -120,18 +114,6 @@ export default function Queue(props: i.ModalProps) {
 	);
 }
 
-const JOIN_QUEUE = gql`
-	mutation joinQueue($userId: String!) {
-		joinQueue(user_id: $userId) {
-			playerOne {
-				userId
-			}
-			playerTwo {
-				userId
-			}
-		}
-	}
-`;
 function JoinQueueElement() {
 	const [
 		joinQueue,
@@ -145,7 +127,7 @@ function JoinQueueElement() {
 
 	const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
 
-	const handleClick = (event) => {
+	const handleClick = (event: any) => {
 		event.preventDefault();
 
 		const user_id = event.target.elements.userId.value;
@@ -186,18 +168,8 @@ function JoinQueueElement() {
 	}
 }
 
-const MATCH_FOUND = gql`
-	subscription matchFound($user_id: String!) {
-		matchFound(user_id: $user_id) {
-			matched
-			playerOneId
-			playerTwoId
-		}
-	}
-`;
-
 function JoinedQueue({ user_id }: { user_id: string }) {
-	const { data, loading, error } = useSubscription(GAMER_SCORE_FOUND, {
+	const { data, loading, error } = useSubscription(MATCH_FOUND, {
 		variables: { user_id: user_id },
 	});
 
@@ -207,8 +179,7 @@ function JoinedQueue({ user_id }: { user_id: string }) {
 
 	return (
 		<div>
-			Match found: {data.gameScoreFound.playerOne.userId} vs{" "}
-			{data.gameScoreFound.playerTwo.userId}
+			Match found: {data.matchFound.playerOne.userId} vs {data.matchFound.playerTwo.userId}
 		</div>
 	);
 }

@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class Match {
+export class MatchBackendTemp {
 	@Field()
 	matched: boolean;
 

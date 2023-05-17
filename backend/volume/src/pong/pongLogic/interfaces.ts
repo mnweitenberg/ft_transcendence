@@ -2,15 +2,8 @@
 // CHAT //
 //////////
 
-// export interface Chat {
-// 	content: string;
-// 	name?: string;
-// 	class: 'user' | 'friend';
-// }
-
 export interface Chat {
 	id: number;
-	// date: Date;
 	message: string;
 	sender: User;
 	reciever: User;
@@ -39,16 +32,16 @@ interface Stats {
 }
 
 export interface User {
+	id: string;
 	name: string;
 	avatar: string;
 	stats: Stats;
-	status: "in game" | "online" | "offline" | "";
-	// chat?: Array<Chat>;
+	status: 'in game' | 'online' | 'offline' | '';
 	friends?: Array<User>;
 }
 
 ///////////////
-// GAMESTATE //
+//   SCORE   //
 ///////////////
 
 interface Score {
@@ -63,18 +56,21 @@ export interface GameScore {
 	score: Score;
 }
 
+///////////////
+// GAMESTATE //
+///////////////
+
 export interface Ball {
 	x: number;
 	y: number;
-	xSpeed?: number;
-	ySpeed?: number;
-	defaultSpeed?: number;
+	xSpeed: number;
+	ySpeed: number;
 }
 
 export interface Paddle {
 	x: number;
 	y: number;
-	height: number;
+	height?: number;
 }
 
 export interface ServeState {
@@ -100,30 +96,4 @@ export interface GameState {
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
 	gameScore?: GameScore;
-}
-
-///////////
-// PROPS //
-///////////
-
-export interface ModalProps {
-	toggleModal: (user: User | null, content: JSX.Element) => void;
-	selectedUser: User;
-	setSelectedUser: (user: User) => void;
-	showModal: boolean;
-	setShowModal: (showModal: boolean) => void;
-	modalContent: JSX.Element;
-	setContent: (content: JSX.Element) => void;
-}
-
-export interface PongProps {
-	bothPlayersReady: boolean;
-	setBothPlayersReady: (bothPlayersReady: boolean) => void;
-	gameScore: GameScore;
-	setScorePlayerOne: (score: number) => void;
-	setScorePlayerTwo: (score: number) => void;
-	finished: boolean;
-	setFinished: (finished: boolean) => void;
-	goToMenu: boolean;
-	setGoToMenu: (goToMenu: boolean) => void;
 }
