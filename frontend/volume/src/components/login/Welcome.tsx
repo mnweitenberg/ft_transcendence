@@ -20,7 +20,7 @@ function Welcome(): JSX.Element {
 	else if (error) {
 		console.log(error.message);
 		username = "unavailable";
-	} else username = data.username;
+	} else username = data.currentUserQuery.username;
 
 	return (
 		<div className="div-1">

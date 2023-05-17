@@ -33,7 +33,6 @@ export class UserResolver {
 	@UseGuards(JwtAuthGuard)
 	@Query((returns) => User)
 	async currentUserQuery(@AuthUser() user: UserInfo) {
-		console.log(user);
 		return this.userService.getUserByIntraId(user.intraId);
 	}
 
