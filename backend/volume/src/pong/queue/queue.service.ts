@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Match } from '../match/entities/match.entity';
 import { User } from '../../user/entities/user.entity';
+import { Ranking } from '../../pong/ranking/entities/ranking.entity';
 
 const DEBUG_PRINT = true;
 
@@ -11,42 +12,47 @@ const DEBUG_PRINT = true;
 export class QueueService {
 	constructor(
 		@InjectRepository(Match)
-		private readonly gameScoreRepo: Repository<Match>,
+		private readonly matchRepo: Repository<Match>,
 		@InjectRepository(User)
 		private readonly userRepo: Repository<User>,
+		@InjectRepository(Ranking)
+		private readonly rankingRepo: Repository<Ranking>,
 	) {}
 
 	static match_id: number;
 	users_looking_for_match: string[] = [];
-	queue_game_score: Match[] = [];
+	queue_matches: Match[] = [];
 
+	
 	async createGame(
 		player_one_id: string,
 		player_two_id: string,
 	): Promise<Match> {
 		const player_one = await this.userRepo.findOne({
 			where: { id: player_one_id },
-			// relations: { stats: true },
+			relations: { ranking: true },
 		});
 		const player_two = await this.userRepo.findOne({
 			where: { id: player_two_id },
-			// relations: { stats: true },
+			relations: { ranking: true },
 		});
 
-		const new_game = new Match();
+		const new_game = this.matchRepo.create();
 
 		new_game.playerOneScore = 0;
 		new_game.playerTwoScore = 0;
-		new_game.playerOne = player_one;
-		new_game.playerTwo = player_two;
 
-		this.queue_game_score.push(new_game);
+		new_game.players = [player_one, player_two];
+		
+
+		this.queue_matches.push(new_game); // redundant?
+		this.matchRepo.save(new_game);
 
 		return new_game;
 	}
 
-	currentQueue(): Match[] {
-		return this.queue_game_score;
+	getQueue(): Match[] {
+		return this.queue_matches;
 	}
 
 	canPlayerLookForMatch(playerId: string): boolean {
@@ -73,10 +79,8 @@ export class QueueService {
 
 				if (DEBUG_PRINT) {
 					console.log('Found game: ', newGame);
-					// console.log(newGame.playerOne.stats.losses);
-					// console.log(newGame.playerTwo.stats.losses);
 				}
-				pubSub.publish('gameScoreFound', { MatchFound: newGame });
+				pubSub.publish('matchFound', { MatchFound: newGame });
 				return newGame;
 			}
 		}
@@ -89,50 +93,75 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		// this.fillDbUserGame();
-		await this.lookForMatch('Henk');
-		await this.lookForMatch('Henk1');
-		await this.lookForMatch('Henk2');
-		await this.lookForMatch('Henk3');
-		await this.lookForMatch('Henk4');
-		await this.lookForMatch('Henk5');
+		let name : string = "Henk";
+		let id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+
+		name = "Henk1";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk2";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk3";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk4";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+		name = "Henk5";
+		id = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		await this.lookForMatch(id.id);
+
 		return 4;
 	}
 
-	// async fillDbUserGame() {
-	// this.randomUserGame('Henk', 1);
-	// this.randomUserGame('Henk1', 2);
-	// this.randomUserGame('Henk2', 3);
-	// this.randomUserGame('Henk3', 4);
-	// this.randomUserGame('Henk4', 5);
-	// this.randomUserGame('Henk5', 6);
-	// return 3;
-	// }
+	async fillDbUser() {
+	this.randomUser('Henk', 1);
+	this.randomUser('Henk1', 2);
+	this.randomUser('Henk2', 3);
+	this.randomUser('Henk3', 4);
+	this.randomUser('Henk4', 5);
+	this.randomUser('Henk5', 6);
+	return 3;
+	}
 
 	queuePrint() {
 		console.log('\t\t\t QUEUE op backend');
 		console.log(this.users_looking_for_match);
 		console.log('\t\t\t GAMESCORE queue');
-		console.log(this.queue_game_score);
+		console.log(this.queue_matches);
 		return 3;
 	}
 
-	// async randomUserGame(name: string, minus: number) {
-	// 	const userGame = await this.userRepo.create();
-	// 	userGame.avatar = name + 'avatar';
-	// 	userGame.name = name + ' name';
-	// 	userGame.userId = name;
-	// 	userGame.status = 'online';
+	async randomUser(name: string, minus: number) {
+		const user = await this.userRepo.create();
+		user.avatar = name + 'avatar';
+		user.username = name;
 
-	// 	const userStats = await this.statsRepository.create();
-	// 	userStats.losses = 322 - minus;
-	// 	userStats.ranking = 523 - minus;
-	// 	userStats.score = 344 - minus;
-	// 	userStats.wins = 133 - minus;
+		user.intraId = name + '_intra_id';
+		// user.status = 'online';
 
-	// 	await this.statsRepository.save(userStats);
-	// 	userGame.stats = userStats;
+		// const user_ranking = await this.rankingRepo.create();
+		// user_ranking.losses = 322 - minus;
+		// user_ranking.score = 344 - minus;
+		// user_ranking.wins = 133 - minus;
+		// user_ranking.rank = 999 - minus;
+		// await this.rankingRepo.save(user_ranking);
+		// user.ranking = user_ranking;
 
-	// 	return this.userRepo.save(userGame);
-	// }
+		return this.userRepo.save(user);
+	}
 }

@@ -1,7 +1,6 @@
 import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
-import { MatchBackendTemp } from './match.model';
 import { pubSub } from 'src/app.module';
 import { Match } from '../match/entities/match.entity';
 
@@ -22,44 +21,33 @@ export class QueueResolver {
 			);
 		},
 	})
-	gameScoreFound(@Args('user_id') user_id: string) {
-		return pubSub.asyncIterator('gameScoreFound');
-	}
-
-	@Query((returns) => [Match])
-	async currentQueueQuery(): Promise<Match[]> {
-		return this.queueService.currentQueue();
-	}
-
-	/*
-	TODO: REMOVE
-	*/
-
-	@Subscription((returns) => MatchBackendTemp, {
-		filter: (payload, variable) => {
-			return (
-				payload.matchFound.playerOneId === variable.user_id ||
-				payload.matchFound.playerTwoId === variable.user_id
-			);
-		},
-	})
 	matchFound(@Args('user_id') user_id: string) {
 		return pubSub.asyncIterator('matchFound');
 	}
+
+	@Query((returns) => [Match])
+	async getQueueQuery(): Promise<Match[]> {
+		return this.queueService.getQueue();
+	}
+
+
+
+
+
 
 	/*
 	TESTING
 	*/
 
 	@Query((returns) => Number)
-	create3matchesQuery() {
+	createMatchesQuery() {
 		return this.queueService.createMatches();
 	}
 
-	// @Query((returns) => Number)
-	// fillDbUserGameQuery() {
-	// 	return this.queueService.fillDbUserGame();
-	// }
+	@Query((returns) => Number)
+	fillDbUserQuery() {
+		return this.queueService.fillDbUser();
+	}
 
 	@Query((returns) => Number)
 	printQueue() {

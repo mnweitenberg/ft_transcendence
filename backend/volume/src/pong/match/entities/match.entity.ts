@@ -21,6 +21,14 @@ export class Match {
 	players: [User, User];
 
 	@Column()
-	@Field(() => [Int])
-	playerScores: [number, number];
+	@Field(() => Int)
+	playerOneScore: number;
+
+	@Column()
+	@Field(() => Int)
+	playerTwoScore: number;
+	
+	// @Column()
+	// @Field(() => [Int])
+	// playerScores: [number, number];
 }

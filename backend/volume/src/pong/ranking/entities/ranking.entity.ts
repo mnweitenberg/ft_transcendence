@@ -9,7 +9,7 @@ export class Ranking {
 	id: number;
 
 	@OneToOne(() => User, (user) => user.ranking)
-	@Field()
+	@Field(() => User)
 	user: User;
 
 	@Column()
