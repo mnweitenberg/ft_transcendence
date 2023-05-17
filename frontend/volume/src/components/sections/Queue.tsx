@@ -9,10 +9,10 @@ const MATCH_FOUND = gql`
 	subscription matchFound($user_id: String!) {
 		matchFound(user_id: $user_id) {
 			playerOne {
-				id
+				username
 			}
 			playerTwo {
-				id
+				username
 			}
 		}
 	}
@@ -33,19 +33,27 @@ const GET_QUEUE = gql`
 `;
 
 const JOIN_QUEUE = gql`
-	mutation joinQueue($userId: String!) {
-		joinQueue(user_id: $userId) {
+	mutation joinQueue($user_id: String!) {
+		joinQueue(user_id: $user_id) {
 			playerOne {
-				id
+				username
 			}
 			playerTwo {
-				id
+				username
 			}
 		}
 	}
 `;
 
 export default function Queue(props: i.ModalProps) {
+	/*
+	Als het goed is kan ik heir gewoon  
+	queueh = data van backend en dan zou het geod moeten gaan
+	
+
+
+	
+	*/
 	// TODO:
 	// queue niet meer importen maar bijhouden op backend en dan hier queryen. Dan
 	// subscription op queue die update als er nieuwe match is gevonden.
@@ -130,12 +138,12 @@ function JoinQueueElement() {
 	const handleClick = (event: any) => {
 		event.preventDefault();
 
-		const user_id = event.target.elements.userId.value;
+		const user_id = event.target.elements.user_id.value;
 		set_user_id(user_id); // TODO: remove together with the useState
 
 		joinQueue({
 			variables: {
-				userId: user_id,
+				user_id: user_id,
 			},
 		});
 	};
@@ -153,15 +161,15 @@ function JoinQueueElement() {
 		} else {
 			return (
 				<>
-					Match found: {queue_data.joinQueue.playerOne.userId} vs{" "}
-					{queue_data.joinQueue.playerTwo.userId}
+					Match found: {queue_data.joinQueue.playerOne.username} vs{" "}
+					{queue_data.joinQueue.playerTwo.username}
 				</>
 			);
 		}
 	} else {
 		return (
 			<form onSubmit={handleClick}>
-				<input type="text" name="userId" placeholder="Voor testing only" />
+				<input type="text" name="user_id" placeholder="Voor testing only" />
 				<button type="submit">Join queue</button>
 			</form>
 		);
@@ -179,7 +187,8 @@ function JoinedQueue({ user_id }: { user_id: string }) {
 
 	return (
 		<div>
-			Match found: {data.matchFound.playerOne.userId} vs {data.matchFound.playerTwo.userId}
+			Match found: {data.matchFound.playerOne.username} vs{" "}
+			{data.matchFound.playerTwo.username}
 		</div>
 	);
 }

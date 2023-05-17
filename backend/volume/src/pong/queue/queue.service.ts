@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Match } from '../match/entities/match.entity';
 import { User } from '../../user/entities/user.entity';
 import { Ranking } from '../../pong/ranking/entities/ranking.entity';
+import { QueuedMatch } from './queuedmatch.model';
+
 
 const DEBUG_PRINT = true;
 
@@ -19,45 +21,100 @@ export class QueueService {
 		private readonly rankingRepo: Repository<Ranking>,
 	) {}
 
-	static match_id: number;
 	users_looking_for_match: string[] = [];
-	queue_matches: Match[] = [];
+	queued_matches: QueuedMatch[] = [];
 
-	
-	async createGame(
+	async createQueuedMatch (
 		player_one_id: string,
 		player_two_id: string,
-	): Promise<Match> {
+	) : Promise <QueuedMatch> {
 		const player_one = await this.userRepo.findOne({
 			where: { id: player_one_id },
-			relations: { ranking: true },
+			// relations: { ranking: true }, 
 		});
 		const player_two = await this.userRepo.findOne({
 			where: { id: player_two_id },
-			relations: { ranking: true },
+			// relations: { ranking: true },
 		});
 
-		const new_game = this.matchRepo.create();
+		const new_queued_match = new QueuedMatch();
+		new_queued_match.playerOne = player_one;
+		new_queued_match.playerTwo = player_two;
+		this.queued_matches.push(new_queued_match);
 
-		new_game.playerOneScore = 0;
-		new_game.playerTwoScore = 0;
+		pubSub.publish('matchFound', { matchFound: new_queued_match });
 
-		new_game.players = [player_one, player_two];
-		
+		return (new_queued_match);
+	}
+	
+	async lookForMatch(player_id: string): Promise<QueuedMatch> | null {
+		if (!this.canPlayerLookForMatch(player_id)) return null;
 
-		this.queue_matches.push(new_game); // redundant?
-		this.matchRepo.save(new_game);
+		for (let i = 0; i < this.users_looking_for_match.length; i++) {
+			if (this.users_looking_for_match[i] != player_id) {
 
-		return new_game;
+				const new_queued_match = await this.createQueuedMatch(
+					this.users_looking_for_match[i],
+					player_id,
+				);
+				this.users_looking_for_match.splice(i, 1);
+
+				if (DEBUG_PRINT) {
+					console.log('Found game: ', new_queued_match);
+				}
+				
+				return (new_queued_match);
+			}
+		}
+		this.users_looking_for_match.push(player_id);
+		return null;
 	}
 
-	getQueue(): Match[] {
-		return this.queue_matches;
+	getQueuedMatch() {
+		const top_match = this.queued_matches.at(0);
+		this.queued_matches.splice(0, 1);
+		return (top_match);
+	}
+
+	
+	// FIXME: code voor bij pong game
+	// async createGame(
+	// 	player_one_id: string,
+	// 	player_two_id: string,
+	// ): Promise<Match> {
+	// 	const player_one = await this.userRepo.findOne({
+	// 		where: { id: player_one_id },
+	// 		relations: { ranking: true },
+	// 	});
+	// 	const player_two = await this.userRepo.findOne({
+	// 		where: { id: player_two_id },
+	// 		relations: { ranking: true },
+	// 	});
+
+	// 	const new_game = this.matchRepo.create();
+
+	// 	new_game.playerOneScore = 0;
+	// 	new_game.playerTwoScore = 0;
+
+	// 	new_game.players = [player_one, player_two];
+		
+	// 	// this.queue_matches.push(new_game); // redundant?
+	// 	// this.matchRepo.save(new_game);
+
+	// 	return new_game;
+	// }
+
+	getWholeQueue() {
+		return this.queued_matches;
 	}
 
 	canPlayerLookForMatch(playerId: string): boolean {
 		for (let i = 0; i < this.users_looking_for_match.length; i++)
-			if (playerId == this.users_looking_for_match[i]) return false;
+			if (playerId === this.users_looking_for_match[i]) return false;
+		for (let i = 0; i < this.queued_matches.length; i++)
+			if (playerId === this.queued_matches[i].playerOne.id || 
+				playerId === this.queued_matches[i].playerTwo.id) return false;
+
 
 		// TODO:
 		// Voeg check toe waarbij wordt gekeken of player niet al in een match zit
@@ -66,27 +123,10 @@ export class QueueService {
 		return true;
 	}
 
-	async lookForMatch(player_id: string): Promise<Match> | null {
-		if (!this.canPlayerLookForMatch(player_id)) return null;
 
-		for (let i = 0; i < this.users_looking_for_match.length; i++) {
-			if (this.users_looking_for_match[i] != player_id) {
-				const newGame = await this.createGame(
-					this.users_looking_for_match[i],
-					player_id,
-				);
-				this.users_looking_for_match.splice(i, 1);
 
-				if (DEBUG_PRINT) {
-					console.log('Found game: ', newGame);
-				}
-				pubSub.publish('matchFound', { MatchFound: newGame });
-				return newGame;
-			}
-		}
-		this.users_looking_for_match.push(player_id);
-		return null;
-	}
+
+	
 
 	/*
 	TESTING	
@@ -139,10 +179,10 @@ export class QueueService {
 	}
 
 	queuePrint() {
-		console.log('\t\t\t QUEUE op backend');
+		console.log('\t\t\t USER queue op backend');
 		console.log(this.users_looking_for_match);
-		console.log('\t\t\t GAMESCORE queue');
-		console.log(this.queue_matches);
+		console.log('\t\t\t MATCH queue op backend');
+		console.log(this.queued_matches);
 		return 3;
 	}
 

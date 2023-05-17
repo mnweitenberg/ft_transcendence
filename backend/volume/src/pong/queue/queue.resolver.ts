@@ -3,21 +3,22 @@ import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { pubSub } from 'src/app.module';
 import { Match } from '../match/entities/match.entity';
+import { QueuedMatch } from './queuedmatch.model';
 
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	@Mutation((returns) => Match, { nullable: true })
+	@Mutation((returns) => QueuedMatch, { nullable: true })
 	joinQueue(@Args('user_id') user_id: string) {
 		return this.queueService.lookForMatch(user_id);
 	}
 
-	@Subscription((returns) => Match, {
+	@Subscription((returns) => QueuedMatch, {
 		filter: (payload, variable) => {
 			return (
-				payload.gameScoreFound.playerOne.user_id === variable.user_id ||
-				payload.gameScoreFound.playerTwo.user_id === variable.user_id
+				payload.matchFound.playerOne.id === variable.user_id ||
+				payload.matchFound.playerTwo.id === variable.user_id
 			);
 		},
 	})
@@ -25,11 +26,16 @@ export class QueueResolver {
 		return pubSub.asyncIterator('matchFound');
 	}
 
-	@Query((returns) => [Match])
-	async getQueueQuery(): Promise<Match[]> {
-		return this.queueService.getQueue();
+	@Query((returns) => [QueuedMatch])
+	async getWholeQueue(): Promise<QueuedMatch[]> {
+		return this.queueService.getWholeQueue();
 	}
 
+	// Returns first match to be played
+	@Query((returns) => QueuedMatch)
+	getQueuedMatch() {
+		return this.queueService.getQueuedMatch();
+	}
 
 
 
@@ -40,12 +46,12 @@ export class QueueResolver {
 	*/
 
 	@Query((returns) => Number)
-	createMatchesQuery() {
+	createMatches() {
 		return this.queueService.createMatches();
 	}
 
 	@Query((returns) => Number)
-	fillDbUserQuery() {
+	fillDbUser() {
 		return this.queueService.fillDbUser();
 	}
 
