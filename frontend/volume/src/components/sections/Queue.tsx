@@ -6,13 +6,15 @@ import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
 const MATCH_FOUND = gql`
-	subscription matchFound($user_id: String!) {
-		matchFound(user_id: $user_id) {
+	subscription matchFound {
+		matchFound {
 			playerOne {
 				username
+				avatar
 			}
 			playerTwo {
 				username
+				avatar
 			}
 		}
 	}
@@ -62,6 +64,7 @@ export default function Queue(props: i.ModalProps) {
 		data: queue_data,
 		loading: queue_loading,
 		error: queue_error,
+		subscribeToMore,
 	} = useQuery(GET_WHOLE_QUEUE);
 
 	// TODO:
@@ -79,19 +82,19 @@ export default function Queue(props: i.ModalProps) {
 
 	// let user_id = "Henk1";
 
-	// useEffect(() => {
-	// 	return subscribeToMore({
-	// 		document: MATCH_FOUND,
-	// 		variables: { user_id: user_id },
-	// 		updateQuery: (prev, { subscriptionData }) => {
-	// 			if (!subscriptionData.data) return prev;
-	// 			const newMatch = subscriptionData.data.match;
-	// 			return Object.assign({}, prev, {
-	//
-	// 			});
-	// 		},
-	// 	});
-	// }, []);
+	useEffect(() => {
+		return subscribeToMore({
+			document: MATCH_FOUND,
+
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newMatch = subscriptionData.data.matchFound;
+				return Object.assign({}, prev, {
+					getWholeQueue: [...prev.getWholeQueue, newMatch],
+				});
+			},
+		});
+	}, []);
 
 	if (!queue_data) return <div>waarom moet dit</div>; // FIXME: zonder dit werkt frontend niet...
 	return (
@@ -175,18 +178,16 @@ function JoinQueueElement() {
 }
 
 function JoinedQueue({ user_id }: { user_id: string }) {
-	const { data, loading, error } = useSubscription(MATCH_FOUND, {
-		variables: { user_id: user_id },
-	});
+	const { data, loading, error } = useSubscription(MATCH_FOUND);
 
 	if (error) alert(error.message);
 
-	if (loading) return <div> Joined the Queue! </div>;
+	return <div> Joined the Queue! </div>;
 
-	return (
-		<div>
-			Match found: {data.matchFound.playerOne.username} vs{" "}
-			{data.matchFound.playerTwo.username}
-		</div>
-	);
+	// return (
+	// 	<div>
+	// 		Match found: {data.matchFound.playerOne.username} vs{" "}
+	// 		{data.matchFound.playerTwo.username}
+	// 	</div>
+	// );
 }

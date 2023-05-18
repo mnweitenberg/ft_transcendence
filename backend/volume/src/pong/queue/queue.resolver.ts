@@ -14,15 +14,8 @@ export class QueueResolver {
 		return this.queueService.lookForMatch(user_id);
 	}
 
-	@Subscription((returns) => QueuedMatch, {
-		filter: (payload, variable) => {
-			return (
-				payload.matchFound.playerOne.id === variable.user_id ||
-				payload.matchFound.playerTwo.id === variable.user_id
-			);
-		},
-	})
-	matchFound(@Args('user_id') user_id: string) {
+	@Subscription((returns) => QueuedMatch)
+	matchFound() {
 		return pubSub.asyncIterator('matchFound');
 	}
 
