@@ -18,15 +18,27 @@ const MATCH_FOUND = gql`
 	}
 `;
 
-const GET_QUEUE = gql`
-	query getQueueQuery {
-		getQueueQuery {
-			gameId
+const GET_QUEUED_MATCH = gql`
+	query getQueuedMatch {
+		getQueuedMatch {
 			playerOne {
 				username
+				avatar
+			}
+		}
+	}
+`;
+
+const GET_WHOLE_QUEUE = gql`
+	query getWholeQueue {
+		getWholeQueue {
+			playerOne {
+				username
+				avatar
 			}
 			playerTwo {
 				username
+				avatar
 			}
 		}
 	}
@@ -46,17 +58,14 @@ const JOIN_QUEUE = gql`
 `;
 
 export default function Queue(props: i.ModalProps) {
-	/*
-	Als het goed is kan ik heir gewoon  
-	queueh = data van backend en dan zou het geod moeten gaan
-	
+	const {
+		data: queue_data,
+		loading: queue_loading,
+		error: queue_error,
+	} = useQuery(GET_WHOLE_QUEUE);
 
-
-	
-	*/
 	// TODO:
-	// queue niet meer importen maar bijhouden op backend en dan hier queryen. Dan
-	// subscription op queue die update als er nieuwe match is gevonden.
+	// get whole queue moet subscriben op match found en updaten als match is gevonden
 	//
 	// versimpelen van joinQueue joinedQueue. zou geen verschil moeten zijn
 	// tussen joinen als eerste en joinen als tweede. gewoon beide (en iedereen)
@@ -78,41 +87,30 @@ export default function Queue(props: i.ModalProps) {
 	// 			if (!subscriptionData.data) return prev;
 	// 			const newMatch = subscriptionData.data.match;
 	// 			return Object.assign({}, prev, {
-	// 				// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
+	//
 	// 			});
 	// 		},
 	// 	});
 	// }, []);
 
-	// const rij: Array<i.GameScore> = [data];  		// rij wordt dan queue
-
+	if (!queue_data) return <div>waarom moet dit</div>; // FIXME: zonder dit werkt frontend niet...
 	return (
 		<>
-			{queue.map(function (game) {
+			{queue_data.getWholeQueue.map(function (game: any) {
 				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
 				return (
 					<div
 						className="flex_row_spacebetween"
-						key={game.playerOne.name + game.playerTwo.name}
+						key={game.playerOne.username + game.playerTwo.username}
 					>
-						<div
-							className="player player--one"
-							onClick={() =>
-								props.toggleModal(game.playerOne, <UserStats {...props} />)
-							}
-						>
-							<h3 className="name">{game.playerOne.name}</h3>
+						<div className="player player--one">
+							<h3 className="name">{game.playerOne.username}</h3>
 							<img className="avatar" src={game.playerOne.avatar} />
 						</div>
 
-						<div
-							className="player player--two"
-							onClick={() =>
-								props.toggleModal(game.playerTwo, <UserStats {...props} />)
-							}
-						>
+						<div className="player player--two">
 							<img className="avatar" src={game.playerTwo.avatar} />
-							<h3 className="name">{game.playerTwo.name}</h3>
+							<h3 className="name">{game.playerTwo.username}</h3>
 						</div>
 					</div>
 				);

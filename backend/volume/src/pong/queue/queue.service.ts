@@ -125,6 +125,8 @@ export class QueueService {
 
 
 
+	// TODO: als je userRepo zoekt op id dat niet betsaaat is error 
+
 
 	
 
@@ -133,23 +135,23 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		let name : string = "Henk";
+		let name : string = "Marius";
 		let id = await this.userRepo.findOne({
 			where: { username: name}
 		});
 		await this.lookForMatch(id.id);
 
-		name = "Henk1";
+		name = "Justin";
 		id = await this.userRepo.findOne({
 			where: { username: name}
 		});
 		await this.lookForMatch(id.id);
-		name = "Henk2";
+		name = "Milan";
 		id = await this.userRepo.findOne({
 			where: { username: name}
 		});
 		await this.lookForMatch(id.id);
-		name = "Henk3";
+		name = "Jonathan";
 		id = await this.userRepo.findOne({
 			where: { username: name}
 		});
@@ -168,13 +170,14 @@ export class QueueService {
 		return 4;
 	}
 
+
 	async fillDbUser() {
-	this.randomUser('Henk', 1);
-	this.randomUser('Henk1', 2);
-	this.randomUser('Henk2', 3);
-	this.randomUser('Henk3', 4);
-	this.randomUser('Henk4', 5);
-	this.randomUser('Henk5', 6);
+	this.randomUser('Marius', 1, '/img/marius.png');
+	this.randomUser('Justin', 2, '/img/justin.png');
+	this.randomUser('Milan', 3, '/img/milan.png');
+	this.randomUser('Jonathan', 4, '/img/jonathan.png');
+	this.randomUser('Henk4', 5, "");
+	this.randomUser('Henk5', 6, "");
 	return 3;
 	}
 
@@ -186,9 +189,9 @@ export class QueueService {
 		return 3;
 	}
 
-	async randomUser(name: string, minus: number) {
+	async randomUser(name: string, minus: number, avatar: string) {
 		const user = await this.userRepo.create();
-		user.avatar = name + 'avatar';
+		user.avatar = avatar;
 		user.username = name;
 
 		user.intraId = name + '_intra_id';
@@ -203,5 +206,12 @@ export class QueueService {
 		// user.ranking = user_ranking;
 
 		return this.userRepo.save(user);
+	}
+
+
+	removeQueue () {
+		this.queued_matches.splice(0, this.queued_matches.length);
+		this.users_looking_for_match.splice(0, this.users_looking_for_match.length);
+		return 3;
 	}
 }

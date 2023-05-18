@@ -59,4 +59,9 @@ export class QueueResolver {
 	printQueue() {
 		return this.queueService.queuePrint();
 	}
+
+	@Query ((returns) => Number)
+	removeQueue() {
+		return this.queueService.removeQueue();
+	}
 }
