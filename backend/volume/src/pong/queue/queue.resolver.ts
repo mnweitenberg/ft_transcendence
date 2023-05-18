@@ -32,7 +32,7 @@ export class QueueResolver {
 	}
 
 	// Returns first match to be played
-	@Query((returns) => QueuedMatch)
+	@Query((returns) => QueuedMatch, { nullable: true } )
 	getQueuedMatch() {
 		return this.queueService.getQueuedMatch();
 	}

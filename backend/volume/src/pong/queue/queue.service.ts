@@ -24,7 +24,7 @@ export class QueueService {
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 
-	async createQueuedMatch (
+	async addQueuedMatch (
 		player_one_id: string,
 		player_two_id: string,
 	) : Promise <QueuedMatch> {
@@ -53,7 +53,7 @@ export class QueueService {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
 
-				const new_queued_match = await this.createQueuedMatch(
+				const new_queued_match = await this.addQueuedMatch(
 					this.users_looking_for_match[i],
 					player_id,
 				);
@@ -70,7 +70,7 @@ export class QueueService {
 		return null;
 	}
 
-	getQueuedMatch() {
+	getQueuedMatch(): QueuedMatch | null {
 		const top_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
 		return (top_match);
