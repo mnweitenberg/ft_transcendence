@@ -180,6 +180,15 @@ export class QueueService {
 	this.randomUser('Henk5', 6, "");
 	return 3;
 	}
+	async fillDbUser1() {
+	this.randomUser('Marius1', 1, '/img/marius.png');
+	this.randomUser('Justin1', 2, '/img/justin.png');
+	this.randomUser('Milan1', 3, '/img/milan.png');
+	this.randomUser('Jonathan1', 4, '/img/jonathan.png');
+	this.randomUser('Henk1', 5, "");
+	this.randomUser('Henk2', 6, "");
+	return 3;
+	}
 
 	queuePrint() {
 		console.log('\t\t\t USER queue op backend');

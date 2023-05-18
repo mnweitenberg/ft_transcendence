@@ -45,6 +45,7 @@ export class QueueResolver {
 	TESTING
 	*/
 
+
 	@Query((returns) => Number)
 	createMatches() {
 		return this.queueService.createMatches();
@@ -53,6 +54,11 @@ export class QueueResolver {
 	@Query((returns) => Number)
 	fillDbUser() {
 		return this.queueService.fillDbUser();
+	}
+	
+	@Query((returns) => Number)
+	fillDbUser1() {
+		return this.queueService.fillDbUser1();
 	}
 
 	@Query((returns) => Number)
