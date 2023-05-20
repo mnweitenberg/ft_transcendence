@@ -15,5 +15,6 @@ import { User } from '../../user/entities/user.entity';
 		TypeOrmModule.forFeature([Ranking]),
 	],
 	providers: [QueueResolver, QueueService],
+	exports: [QueueService],
 })
 export class QueueModule {}

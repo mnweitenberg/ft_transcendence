@@ -2,11 +2,12 @@ import * as C from './constants';
 import * as i from './interfaces';
 import { Side } from './constants';
 import * as CPU from './CPU';
-import { initCanvas, initializeGameState } from './PongInit';
 
-export { initCanvas, initializeGameState, CPU };
+export { CPU };
 
 export function handleScore(canvas: i.Canvas, state: i.GameState, socket: any) {
+	if (!state.gameScore) return;
+
 	const ballIsBehindLeftPaddle = state.ball.x < canvas.ballDiameter / 2;
 	const ballIsBehindRightPaddle =
 		state.ball.x + canvas.ballDiameter / 2 > canvas.width;

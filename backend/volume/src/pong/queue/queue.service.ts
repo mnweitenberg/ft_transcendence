@@ -8,7 +8,7 @@ import { Ranking } from '../../pong/ranking/entities/ranking.entity';
 import { QueuedMatch } from './queuedmatch.model';
 
 
-const DEBUG_PRINT = true;
+const DEBUG_PRINT = false;
 
 @Injectable()
 export class QueueService {
@@ -73,6 +73,7 @@ export class QueueService {
 	getQueuedMatch(): QueuedMatch | null {
 		const top_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
+		// console.log(top_match);
 		return (top_match);
 	}
 
@@ -105,6 +106,7 @@ export class QueueService {
 	// }
 
 	getWholeQueue() {
+		// console.log (this.queued_matches);
 		return this.queued_matches;
 	}
 
@@ -172,22 +174,22 @@ export class QueueService {
 
 
 	async fillDbUser() {
-	this.randomUser('Marius', 1, '/img/marius.png');
-	this.randomUser('Justin', 2, '/img/justin.png');
-	this.randomUser('Milan', 3, '/img/milan.png');
-	this.randomUser('Jonathan', 4, '/img/jonathan.png');
-	this.randomUser('Henk4', 5, "");
-	this.randomUser('Henk5', 6, "");
-	return 3;
+		this.randomUser('Marius', 1, '/img/marius.png');
+		this.randomUser('Justin', 2, '/img/justin.png');
+		this.randomUser('Milan', 3, '/img/milan.png');
+		this.randomUser('Jonathan', 4, '/img/jonathan.png');
+		this.randomUser('Henk4', 5, "");
+		this.randomUser('Henk5', 6, "");
+		return 3;
 	}
 	async fillDbUser1() {
-	this.randomUser('Marius1', 1, '/img/marius.png');
-	this.randomUser('Justin1', 2, '/img/justin.png');
-	this.randomUser('Milan1', 3, '/img/milan.png');
-	this.randomUser('Jonathan1', 4, '/img/jonathan.png');
-	this.randomUser('Henk1', 5, "");
-	this.randomUser('Henk2', 6, "");
-	return 3;
+		this.randomUser('Marius1', 1, '/img/marius.png');
+		this.randomUser('Justin1', 2, '/img/justin.png');
+		this.randomUser('Milan1', 3, '/img/milan.png');
+		this.randomUser('Jonathan1', 4, '/img/jonathan.png');
+		this.randomUser('Henk1', 5, "");
+		this.randomUser('Henk2', 6, "");
+		return 3;
 	}
 
 	queuePrint() {

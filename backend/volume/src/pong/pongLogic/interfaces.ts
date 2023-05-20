@@ -1,3 +1,5 @@
+import { User } from '../../user/entities/user.entity';
+
 //////////
 // CHAT //
 //////////
@@ -18,26 +20,6 @@ export interface Channel {
 
 export interface PrivateChannel extends Channel {
 	password: string;
-}
-
-///////////////
-// USERSTATS //
-///////////////
-
-interface Stats {
-	ranking: number;
-	wins: number;
-	losses: number;
-	score: number;
-}
-
-export interface User {
-	id: string;
-	name: string;
-	avatar: string;
-	stats: Stats;
-	status: 'in game' | 'online' | 'offline' | '';
-	friends?: Array<User>;
 }
 
 ///////////////
