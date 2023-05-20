@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { Channel } from 'src/channel/entities/channel.entity';
-import { Message } from 'src/message/entities/message.entity';
 
 @Injectable()
 export class UserService {

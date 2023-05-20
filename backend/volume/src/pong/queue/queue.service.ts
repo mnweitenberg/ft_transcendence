@@ -137,39 +137,26 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		let name : string = "Marius";
-		let id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-
-		name = "Justin";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Milan";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Jonathan";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Henk4";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Henk5";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
+		this.createMatch("Marius");
+		this.createMatch("Justin");
+		this.createMatch("Milan");
+		this.createMatch("Jonathan");
+		this.createMatch("Henk");
+		this.createMatch("Henk2");
+		this.createMatch("Henk3");
+		this.createMatch("Henk4");
+		this.createMatch("Henk5");
 
 		return 4;
+	}
+
+	private async createMatch(username: string){
+		let name : string = username;
+		let user = await this.userRepo.findOne({
+			where: { username: name}
+		});
+		if (user) await this.lookForMatch(user.id);
+
 	}
 
 

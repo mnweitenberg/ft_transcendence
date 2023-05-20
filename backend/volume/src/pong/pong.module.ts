@@ -35,11 +35,14 @@ export class PongModule implements OnModuleInit {
         this.state = await this.pongService.initializeGameState(this.canvas);
         this.setupSocketServer();
 		// TODO handle empty Queue
+		// this.queueService.fillDbUser();
+		this.queueService.createMatches();
     }
 
     constructor(
         private readonly pongService: PongService,
-        private readonly gameScoreRepository: MatchRepository,
+        private readonly matchRepo: MatchRepository,
+		private readonly queueService: QueueService,
     ) { }
 
 	private setupSocketServer(): void {
@@ -73,12 +76,12 @@ export class PongModule implements OnModuleInit {
 	}
 
 	private GameInterval(socket): void {
-		this.pongService.getNewGameScore().then(gameScore => {
-			this.state.gameScore = gameScore;
+		this.matchRepo.initNewMatch().then(gameScore => {
+			this.state.match = gameScore;
 			if (this.gameInterval) clearInterval(this.gameInterval);
 	
 			this.gameInterval = setInterval(() => {
-				this.handleEndOfGame(socket, gameScore);
+				this.handleEndOfGame(socket);
 				CPU.Action(this.state);
 				handleCollisions(this.canvas, this.state);
 				handleScore(this.canvas, this.state, socket);
@@ -87,22 +90,24 @@ export class PongModule implements OnModuleInit {
 		});
 	}
 
-	private handleEndOfGame(socket, gameScore): void {
+	private handleEndOfGame(socket): void {
 		if (
-			gameScore.score.playerOne >= C.MAX_SCORE ||
-			gameScore.score.playerTwo >= C.MAX_SCORE
+			this.state.match.score.playerOne >= C.MAX_SCORE ||
+			this.state.match.score.playerTwo >= C.MAX_SCORE
 		) {
-			this.pongService.saveMatch(gameScore).then((score) => {
-				socket.emit('endOfGame', gameScore);
-				gameScore.score.playerOne = 0;
-				gameScore.score.playerTwo = 0;
-				socket.emit('gameScore', gameScore);
+			this.pongService.saveMatch(this.state.match).then((match) => {
+				this.state.match.score.playerOne = 0;
+				this.state.match.score.playerTwo = 0;
+				this.state.started = false;
+				// this.matchRepo.initNewMatch();
+				socket.emit('endOfGame', match);
+				socket.emit('gameScore', this.state.match);
 				console.log('Succesfully saved');
 
 				// this.gameScoreRepository
 				// .findAllMatches()
-				// .then((allGameScores) => {
-				// 	console.log('All game scores:', allGameScores);
+				// .then((allMatches) => {
+				// 	console.log('All game scores:', allMatches);
 				// });
 			})
 			.catch((error) => {
@@ -114,10 +119,6 @@ export class PongModule implements OnModuleInit {
 	private handleSocketDisconnection(socket): void {
 		socket.on('disconnect', () => {
 			console.log('Client disconnected:', socket.id);
-			if (!this.state.gameScore) return;
-			this.state.gameScore.score.playerOne = 0;
-			this.state.gameScore.score.playerTwo = 0;
-			this.state.started = false;
 		});
 	}
 }

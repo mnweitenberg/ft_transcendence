@@ -31,7 +31,7 @@ interface Score {
 	playerTwo: number;
 }
 
-export interface GameScore {
+export interface Match {
 	id: number;
 	playerOne: User;
 	playerTwo: User;
@@ -77,5 +77,5 @@ export interface GameState {
 	ball: Ball;
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
-	gameScore?: GameScore;
+	match?: Match;
 }

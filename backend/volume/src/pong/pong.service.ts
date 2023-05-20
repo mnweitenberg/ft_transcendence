@@ -3,21 +3,23 @@ import * as i from './pongLogic/interfaces';
 import * as C from './pongLogic/constants';
 import { Match } from './match/entities/match.entity';
 import { MatchRepository } from './match/Match.repository';
-import { GameScoreDto } from './match/dto/match.dto';
-import { QueueService } from './queue/queue.service';
 
 @Injectable()
 export class PongService {
-	constructor(private readonly matchRepository: MatchRepository, private queueService: QueueService) {}
+	constructor(private readonly matchRepo: MatchRepository) {}
 
-	public async saveMatch(score: i.GameScore): Promise<Match> {
+	public async saveMatch(score: i.Match): Promise<Match> {
 		if (!score) throw new Error('No score received');
-		const scoreEntity = new Match();
-		scoreEntity.players = [score.playerOne, score.playerTwo];
-		scoreEntity.playerOneScore = score.score.playerOne;
-		scoreEntity.playerTwoScore = score.score.playerTwo;
-	  
-		return this.matchRepository.saveMatch(scoreEntity);
+		const match = this.prepareMatchEntity(score);
+		return this.matchRepo.saveMatch(match);
+	}
+
+	private prepareMatchEntity(score: i.Match): Match {
+		const match = new Match();
+		match.players = [score.playerOne, score.playerTwo];
+		match.playerOneScore = score.score.playerOne;
+		match.playerTwoScore = score.score.playerTwo;
+		return match;
 	}
 
 	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
@@ -69,26 +71,6 @@ export class PongService {
 		return canvas;
 	}
 	
-	async getNewGameScore(): Promise<i.GameScore> {
-		this.queueService.createMatches();
-		const queuedMatch = this.queueService.getQueuedMatch();
-		// console.log(this.queueService.getWholeQueue());
-		console.log(queuedMatch);
-		if (!queuedMatch) return;
-		// if (!queuedMatch) throw new Error('No queued match found');
-		const gameScore: i.GameScore = {
-			id: 0,
-			playerOne: queuedMatch.playerOne,
-			playerTwo: queuedMatch.playerTwo,
-			score: {
-				playerOne: 0,
-				playerTwo: 0,
-			},
-		};
-		// console.log(gameScore);
-		return gameScore;
-	}
-
 	async initializeGameState(canvas: i.Canvas): Promise<i.GameState> {
 		const paddleLeft: i.Paddle = {
 			x: canvas.borderOffset,
@@ -128,7 +110,6 @@ export class PongService {
 			serveLeft,
 			serveRight,
 			ball,
-			gameScore: await this.getNewGameScore(),
 		};
 	
 		return state;

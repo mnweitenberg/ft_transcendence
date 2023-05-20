@@ -6,13 +6,13 @@ import * as CPU from './CPU';
 export { CPU };
 
 export function handleScore(canvas: i.Canvas, state: i.GameState, socket: any) {
-	if (!state.gameScore) return;
+	if (!state.match) return;
 
 	const ballIsBehindLeftPaddle = state.ball.x < canvas.ballDiameter / 2;
 	const ballIsBehindRightPaddle =
 		state.ball.x + canvas.ballDiameter / 2 > canvas.width;
 
-	const score = state.gameScore.score;
+	const score = state.match.score;
 	if (ballIsBehindLeftPaddle) {
 		score.playerTwo += 1;
 		state.serveLeft.state = true;
@@ -26,7 +26,7 @@ export function handleScore(canvas: i.Canvas, state: i.GameState, socket: any) {
 	if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
 		state.started = false;
 		console.log('score', score);
-		socket.emit('gameScore', state.gameScore);
+		socket.emit('gameScore', state.match);
 	}
 }
 
