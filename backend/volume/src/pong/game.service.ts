@@ -10,8 +10,13 @@ export class GameService {
 	constructor(private readonly matchRepo: MatchRepository) {}
 
 	async runGame(socket: any, state: i.GameState, canvas: i.Canvas) {
-		if (!state.match)
+		if (!state.match) {
 			state.match = await this.matchRepo.initNewMatch();
+			if (state.match)
+				socket.emit('players', state.match.players);
+			else
+				socket.emit('noPlayers');
+		}
 
 		setInterval(() => {
 			if (!state.match) return;
@@ -37,8 +42,8 @@ export class GameService {
 	private async handleEndOfGame(socket: any, state: i.GameState) {
 		if (
 			state.isStarted &&
-			state.match.score.playerOne >= C.MAX_SCORE ||
-			state.match.score.playerTwo >= C.MAX_SCORE
+			state.match.playerOneScore >= C.MAX_SCORE ||
+			state.match.playerTwoScore >= C.MAX_SCORE
 		) {
 			state.isStarted = false;
 			try {
@@ -47,6 +52,10 @@ export class GameService {
 				console.log(savedMatch);
 				state.match = await this.matchRepo.initNewMatch();
 				console.log('Successfully saved');
+				if (state.match)
+					socket.emit('players', state.match.players);
+				else
+					socket.emit('noPlayers');
 			} catch (error) {
 				console.log('Error saving GameScore', error);
 			}
@@ -58,21 +67,20 @@ export class GameService {
 		const ballIsBehindRightPaddle =
 			state.ball.x + canvas.ballDiameter / 2 > canvas.width;
 
-		const score = state.match.score;
 		if (ballIsBehindLeftPaddle) {
-			score.playerTwo += 1;
+			state.match.playerTwoScore += 1;
 			state.serveLeft.state = true;
+			socket.emit('setScorePlayerTwo', state.match.playerTwoScore);
 		}
 
 		if (ballIsBehindRightPaddle) {
-			score.playerOne += 1;
+			state.match.playerOneScore += 1;
 			state.serveRight.state = true;
+			socket.emit('setScorePlayerOne', state.match.playerOneScore);
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
 			state.ballIsInPlay = false;
-			console.log('score', score);
-			socket.emit('gameScore', state.match);
 		}
 	}
 

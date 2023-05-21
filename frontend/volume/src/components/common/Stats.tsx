@@ -9,17 +9,17 @@ function Stats({ user }: { user: i.User }) {
 				<tbody>
 					<tr>
 						<td>Ranking</td>
-						<td className="align_right">{user.stats.ranking}</td>
+						{/* <td className="align_right">{user.stats.ranking}</td> */}
 						<td></td>
 						<td>Wins</td>
-						<td className="align_right">{user.stats.wins}</td>
+						{/* <td className="align_right">{user.stats.wins}</td> */}
 					</tr>
 					<tr>
 						<td>Score</td>
-						<td className="align_right">{user.stats.score}</td>
+						{/* <td className="align_right">{user.stats.score}</td> */}
 						<td></td>
 						<td>Losses</td>
-						<td className="align_right">{user.stats.losses}</td>
+						{/* <td className="align_right">{user.stats.losses}</td> */}
 					</tr>
 				</tbody>
 			</table>

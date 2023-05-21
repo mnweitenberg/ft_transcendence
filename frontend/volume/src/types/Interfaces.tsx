@@ -41,8 +41,8 @@ interface Stats {
 export interface User {
 	name: string;
 	avatar: string;
-	stats: Stats;
-	status: "in game" | "online" | "offline" | "";
+	stats?: Stats;
+	status?: "in game" | "online" | "offline" | "";
 	// chat?: Array<Chat>;
 	friends?: Array<User>;
 }
@@ -120,8 +120,6 @@ export interface PongProps {
 	bothPlayersReady: boolean;
 	setBothPlayersReady: (bothPlayersReady: boolean) => void;
 	gameScore: GameScore;
-	setScorePlayerOne: (score: number) => void;
-	setScorePlayerTwo: (score: number) => void;
 	finished: boolean;
 	setFinished: (finished: boolean) => void;
 	goToMenu: boolean;

@@ -23,8 +23,8 @@ import { GameService } from './game.service';
 export class PongModule implements OnModuleInit {
     constructor(
         private readonly pongService: PongService,
-        private readonly gameService: GameService,
-		private readonly matchRepo: MatchRepository,
+        // private readonly gameService: GameService,
+		// private readonly matchRepo: MatchRepository,
 		private readonly queueService: QueueService,
     ) { }
 

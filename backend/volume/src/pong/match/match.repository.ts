@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from './entities/match.entity';
 import { QueueService } from '../queue/queue.service';
-import * as i from '../interfaces';
 import { UserService } from '../../user/user.service';
 
 @Injectable()
@@ -19,61 +18,34 @@ export class MatchRepository {
 		return this.matchRepo.find();
 	}
 
-	public async saveMatch(match: i.Match): Promise<Match> {
+	public async saveMatch(match: Match): Promise<Match> {
 		if (!match) throw new Error('No score received');
 
-		const playerOne = await this.userService.getUserById(match.playerOne.id);
-		const playerTwo = await this.userService.getUserById(match.playerTwo.id);
-
+		const playerOne = await this.userService.getUserById(match.players[0].id);
+		const playerTwo = await this.userService.getUserById(match.players[1].id);
 		if (!playerOne || !playerTwo)
 			throw new Error("One or more users don't exist in the database");
 
-		const matchEntity = await this.prepareMatchEntity(match);
-		await this.addMatchToPlayerHistory(matchEntity);
-		return this.matchRepo.save(matchEntity);
+		await this.addMatchToPlayerHistory(match, match.players[0].id);
+		await this.addMatchToPlayerHistory(match, match.players[1].id);
+		return this.matchRepo.save(match);
 	}
 
-	private async prepareMatchEntity(match: i.Match): Promise<Match> {
-
-		const matchEntity = new Match();
-		matchEntity.players = [match.playerOne, match.playerTwo];
-		matchEntity.playerOneScore = match.score.playerOne;
-		matchEntity.playerTwoScore = match.score.playerTwo;
-		return matchEntity;
+	private async addMatchToPlayerHistory(match: Match, id: string): Promise<void> {
+		const user = await this.userService.getUserById(id);
+		if (user.match_history) user.match_history.push(match);
+		else user.match_history = [match];
+		await this.userService.save(user);
 	}
 
-	private async addMatchToPlayerHistory(match: Match): Promise<void> {
-		const playerOne = await this.userService.getUserById(match.players[0].id);
-		const playerTwo = await this.userService.getUserById(match.players[1].id);
-	
-		if (playerOne.match_history)
-			playerOne.match_history.push(match);
-		else
-			playerOne.match_history = [match];
-	
-		if (playerTwo.match_history)
-			playerTwo.match_history.push(match);
-		else
-			playerTwo.match_history = [match];
-	
-		await this.userService.save(playerOne);
-		await this.userService.save(playerTwo);
-	}
-	
-
-	public async initNewMatch(): Promise<i.Match> {
+	public async initNewMatch(): Promise<Match> {
 		const queuedMatch = this.queueService.getQueuedMatch();
 		console.log(queuedMatch);
 		if (!queuedMatch) return;
-		const match: i.Match = {
-			id: 0,
-			playerOne: queuedMatch.playerOne,
-			playerTwo: queuedMatch.playerTwo,
-			score: {
-				playerOne: 0,
-				playerTwo: 0,
-			},
-		};
+		const match = new Match();
+		match.players = [queuedMatch.playerOne, queuedMatch.playerTwo];
+		match.playerOneScore = 0;
+		match.playerTwoScore = 0;
 		return match;
 	}
 }

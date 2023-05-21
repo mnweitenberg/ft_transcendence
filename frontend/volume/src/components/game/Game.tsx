@@ -7,14 +7,7 @@ import SocketSingleton from "../../utils/socketSingleton";
 function updateScore(props: i.PongProps) {
 	const socketSingleton = SocketSingleton.getInstance();
 
-	// update score
-	socketSingleton.socket.on("gameScore", (gameScore: i.GameScore) => {
-		props.setScorePlayerOne(gameScore.score.playerOne);
-		props.setScorePlayerTwo(gameScore.score.playerTwo);
-	});
 	socketSingleton.socket.on("endOfGame", (gameScore: i.GameScore) => {
-		props.setScorePlayerOne(gameScore.score.playerOne);
-		props.setScorePlayerTwo(gameScore.score.playerTwo);
 		props.setFinished(true);
 	});
 }
@@ -50,22 +43,13 @@ function determineWinner(): string | null {
 
 export function createPongProps(): i.PongProps {
 	const [bothPlayersReady, setBothPlayersReady] = useState(false);
-	const [scorePlayerOne, setScorePlayerOne] = useState(0);
-	const [scorePlayerTwo, setScorePlayerTwo] = useState(0);
 	const [finished, setFinished] = useState(false);
 	const [goToMenu, setGoToMenu] = useState(false);
 
 	const nextGame = queue[0] || null;
 
-	if (nextGame) {
-		nextGame.score.playerOne = scorePlayerOne;
-		nextGame.score.playerTwo = scorePlayerTwo;
-	}
-
 	const pongProps: i.PongProps = {
 		gameScore: nextGame,
-		setScorePlayerOne,
-		setScorePlayerTwo,
 		bothPlayersReady,
 		setBothPlayersReady,
 		finished,
@@ -79,32 +63,32 @@ export function createPongProps(): i.PongProps {
 
 export function handleFinishGame(pongProps: i.PongProps) {
 	pongProps.setBothPlayersReady(false);
-	if (pongProps.gameScore) {
-		matchHistory.push(pongProps.gameScore);
-		queue.shift();
-	}
-	updateRanking(pongProps.gameScore);
+	// if (pongProps.gameScore) {
+	// 	matchHistory.push(pongProps.gameScore);
+	// 	queue.shift();
+	// }
+	// updateRanking(pongProps.gameScore);
 	pongProps.setGoToMenu(false);
 	pongProps.setFinished(false);
 }
 
-function updateRanking(match: i.GameScore) {
-	if (match.score.playerOne > match.score.playerTwo) {
-		match.playerOne.stats.wins += 1;
-		match.playerOne.stats.score += 3;
-		match.playerTwo.stats.losses += 1;
-		match.playerTwo.stats.score -= 1;
-	} else {
-		match.playerTwo.stats.wins += 1;
-		match.playerTwo.stats.score += 3;
-		match.playerOne.stats.losses += 1;
-		match.playerOne.stats.score -= 1;
-	}
-	// sort users based on their stats
-	ranking.sort((a, b) => b.user.stats.score - a.user.stats.score);
-	// update ranks
-	ranking.forEach((item, index) => {
-		item.rank = index + 1;
-		item.user.stats.ranking = index + 1;
-	});
-}
+// function updateRanking(match: i.GameScore) {
+// 	if (match.score.playerOne > match.score.playerTwo) {
+// 		match.playerOne.stats.wins += 1;
+// 		match.playerOne.stats.score += 3;
+// 		match.playerTwo.stats.losses += 1;
+// 		match.playerTwo.stats.score -= 1;
+// 	} else {
+// 		match.playerTwo.stats.wins += 1;
+// 		match.playerTwo.stats.score += 3;
+// 		match.playerOne.stats.losses += 1;
+// 		match.playerOne.stats.score -= 1;
+// 	}
+// 	// sort users based on their stats
+// 	ranking.sort((a, b) => b.user.stats.score - a.user.stats.score);
+// 	// update ranks
+// 	ranking.forEach((item, index) => {
+// 		item.rank = index + 1;
+// 		item.user.stats.ranking = index + 1;
+// 	});
+// }

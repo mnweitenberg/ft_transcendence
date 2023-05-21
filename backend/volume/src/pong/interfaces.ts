@@ -1,42 +1,4 @@
-import { User } from '../user/entities/user.entity';
-
-//////////
-// CHAT //
-//////////
-
-export interface Chat {
-	id: number;
-	message: string;
-	sender: User;
-	reciever: User;
-}
-
-export interface Channel {
-	name: string;
-	avatar: string;
-	creator: User;
-	members: Array<User>;
-}
-
-export interface PrivateChannel extends Channel {
-	password: string;
-}
-
-///////////////
-//   SCORE   //
-///////////////
-
-interface Score {
-	playerOne: number;
-	playerTwo: number;
-}
-
-export interface Match {
-	id: number;
-	playerOne: User;
-	playerTwo: User;
-	score: Score;
-}
+import { Match } from '../pong/match/entities/match.entity';
 
 ///////////////
 // GAMESTATE //
