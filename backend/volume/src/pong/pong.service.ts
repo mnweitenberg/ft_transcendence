@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as i from './interfaces';
 import * as C from './constants';
-import { GameService } from './game.service';
-import { MatchRepository } from './match/match.repository';
-import { QueueService } from './queue/queue.service';
+import { GameLogicService } from './gameLogic.service';
 
 @Injectable()
 export class PongService {
-	constructor(
-		private readonly gameService: GameService,
-		private readonly matchRepo: MatchRepository,
-		private readonly queueService: QueueService,	
-	) {}
+	constructor(private readonly gameService: GameLogicService) {}
 
 	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
 		if (state.paddleRight.height < canvas.height) {

@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { MatchRepository } from './match/match.repository';
 
 @Injectable()
-export class GameService {
+export class GameLogicService {
 	constructor(private readonly matchRepo: MatchRepository) {}
 
 	async runGame(socket: any, state: i.GameState, canvas: i.Canvas) {
