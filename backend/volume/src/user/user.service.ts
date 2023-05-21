@@ -46,4 +46,8 @@ export class UserService {
 		});
 		return user_with_channels.channels;
 	}
+
+	async save(user: User): Promise<User> {
+		return await this.userRepository.save(user);
+	}
 }

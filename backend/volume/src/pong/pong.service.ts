@@ -1,26 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import * as i from './pongLogic/interfaces';
-import * as C from './pongLogic/constants';
-import { Match } from './match/entities/match.entity';
-import { MatchRepository } from './match/Match.repository';
+import * as i from './interfaces';
+import * as C from './constants';
+import { GameService } from './game.service';
+import { MatchRepository } from './match/match.repository';
+import { QueueService } from './queue/queue.service';
 
 @Injectable()
 export class PongService {
-	constructor(private readonly matchRepo: MatchRepository) {}
-
-	public async saveMatch(score: i.Match): Promise<Match> {
-		if (!score) throw new Error('No score received');
-		const match = this.prepareMatchEntity(score);
-		return this.matchRepo.saveMatch(match);
-	}
-
-	private prepareMatchEntity(score: i.Match): Match {
-		const match = new Match();
-		match.players = [score.playerOne, score.playerTwo];
-		match.playerOneScore = score.score.playerOne;
-		match.playerTwoScore = score.score.playerTwo;
-		return match;
-	}
+	constructor(
+		private readonly gameService: GameService,
+		private readonly matchRepo: MatchRepository,
+		private readonly queueService: QueueService,	
+	) {}
 
 	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
 		if (state.paddleRight.height < canvas.height) {
@@ -38,19 +29,14 @@ export class PongService {
 		state.paddleRight.y = mouseY;
 	}
 
-	handleMouseClick(mouseClick: boolean, state: i.GameState): void {
-		if (mouseClick && !state.started) {
-			this.startGame(state);
+	handleMouseClick(socket: any, mouseClick: boolean, state: i.GameState, canvas: i.Canvas): void {
+		if (mouseClick && !state.isStarted) {
+			state.isStarted = true;
+			this.gameService.runGame(socket, state, canvas);
 		}
-	}
-
-	private startGame(state: i.GameState): void {
-		state.started = true;
-		console.log('Ball is in play');
-
-		if (state.serveLeft.state) state.ball.xSpeed = C.BALL_SPEED;
-		if (state.serveRight.state) state.ball.xSpeed = -C.BALL_SPEED;
-		state.serveRight.state = false;
+		else if (mouseClick && !state.ballIsInPlay) {
+			this.gameService.serveBall(socket, state);
+		}
 	}
 
 	initCanvas(): i.Canvas {
@@ -102,14 +88,18 @@ export class PongService {
 			xSpeed: -C.BALL_SPEED,
 			ySpeed: C.BALL_SPEED,
 		};
-	
+		// this.queueService.fillDbUser();
+		// await this.queueService.createMatches();
+
 		const state: i.GameState = {
-			started: false,
+			isStarted: false,
+			ballIsInPlay: false,
 			paddleLeft,
 			paddleRight,
 			serveLeft,
 			serveRight,
 			ball,
+			// match: await this.matchRepo.initNewMatch(),
 		};
 	
 		return state;

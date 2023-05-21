@@ -48,11 +48,6 @@ export class QueueResolver {
 	fillDbUser() {
 		return this.queueService.fillDbUser();
 	}
-	
-	@Query((returns) => Number)
-	fillDbUser1() {
-		return this.queueService.fillDbUser1();
-	}
 
 	@Query((returns) => Number)
 	printQueue() {

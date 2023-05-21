@@ -1,49 +1,44 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PongService } from './pong.service';
 import { Server } from 'socket.io';
-import { handleScore, CPU, handleCollisions } from './pongLogic/PongLogic';
-import * as i from './pongLogic/interfaces';
-import * as C from './pongLogic/constants';
+import * as i from './interfaces';
 import { Match } from './match/entities/match.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MatchRepository } from './match/Match.repository';
+import { MatchRepository } from './match/match.repository';
 import { QueueService } from './queue/queue.service';
 import { QueueModule } from './queue/queue.module';
 import { UserModule } from 'src/user/user.module';
-// import { RankingModule } from './ranking/ranking.module';
-// import { UserRepository } from '../user/user.repository';
-// import { RankingRepository } from './ranking/ranking.repository';
 import { User } from 'src/user/entities/user.entity';
 import { Ranking } from './ranking/entities/ranking.entity';
+import { GameService } from './game.service';
 
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([Match, User, Ranking]), 
 		QueueModule,
 		UserModule,
-		// RankingModule,
 	],
-	providers: [PongService, MatchRepository, QueueService],
+	providers: [PongService, MatchRepository, QueueService, GameService],
 })
 export class PongModule implements OnModuleInit {
+    constructor(
+        private readonly pongService: PongService,
+        private readonly gameService: GameService,
+		private readonly matchRepo: MatchRepository,
+		private readonly queueService: QueueService,
+    ) { }
+
 	private state: i.GameState;
 	private canvas: i.Canvas;
-	private gameInterval: NodeJS.Timeout | null = null;
 
 	async onModuleInit() {
-        this.canvas = this.pongService.initCanvas();
-        this.state = await this.pongService.initializeGameState(this.canvas);
-        this.setupSocketServer();
 		// TODO handle empty Queue
 		// this.queueService.fillDbUser();
 		this.queueService.createMatches();
+        this.canvas = this.pongService.initCanvas();
+        this.state = await this.pongService.initializeGameState(this.canvas);
+        this.setupSocketServer();
     }
-
-    constructor(
-        private readonly pongService: PongService,
-        private readonly matchRepo: MatchRepository,
-		private readonly queueService: QueueService,
-    ) { }
 
 	private setupSocketServer(): void {
 		const io = new Server(4243, { cors: { origin: '*' } });
@@ -52,7 +47,6 @@ export class PongModule implements OnModuleInit {
 			console.log('Client connected:', socket.id);
 
 			this.handleSocketEvents(socket);
-			this.GameInterval(socket);
 			this.handleSocketDisconnection(socket);
 		});
 	}
@@ -63,7 +57,7 @@ export class PongModule implements OnModuleInit {
 		});
 
 		socket.on('mouseClick', (data) => {
-			this.pongService.handleMouseClick(data.mouseClick, this.state);
+			this.pongService.handleMouseClick(socket, data.mouseClick, this.state, this.canvas);
 		});
 
 		socket.on('enlargePaddle', () => {
@@ -75,49 +69,10 @@ export class PongModule implements OnModuleInit {
 		});
 	}
 
-	private GameInterval(socket): void {
-		this.matchRepo.initNewMatch().then(gameScore => {
-			this.state.match = gameScore;
-			if (this.gameInterval) clearInterval(this.gameInterval);
-	
-			this.gameInterval = setInterval(() => {
-				this.handleEndOfGame(socket);
-				CPU.Action(this.state);
-				handleCollisions(this.canvas, this.state);
-				handleScore(this.canvas, this.state, socket);
-				socket.emit('gameState', this.state);
-			}, 1000 / 24);
-		});
-	}
-
-	private handleEndOfGame(socket): void {
-		if (
-			this.state.match.score.playerOne >= C.MAX_SCORE ||
-			this.state.match.score.playerTwo >= C.MAX_SCORE
-		) {
-			this.pongService.saveMatch(this.state.match).then((match) => {
-				this.state.match.score.playerOne = 0;
-				this.state.match.score.playerTwo = 0;
-				this.state.started = false;
-				// this.matchRepo.initNewMatch();
-				socket.emit('endOfGame', match);
-				socket.emit('gameScore', this.state.match);
-				console.log('Succesfully saved');
-
-				// this.gameScoreRepository
-				// .findAllMatches()
-				// .then((allMatches) => {
-				// 	console.log('All game scores:', allMatches);
-				// });
-			})
-			.catch((error) => {
-				console.log('Error saving GameScore', error);
-			});
-		}
-	}
-
 	private handleSocketDisconnection(socket): void {
 		socket.on('disconnect', () => {
+			this.state.isStarted = false;
+			this.state.ballIsInPlay = false;
 			console.log('Client disconnected:', socket.id);
 		});
 	}

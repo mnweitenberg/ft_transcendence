@@ -1,4 +1,4 @@
-import { User } from '../../user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 
 //////////
 // CHAT //
@@ -71,9 +71,10 @@ export interface Canvas {
 }
 
 export interface GameState {
+	isStarted: boolean;
+	ballIsInPlay: boolean;
 	serveLeft: ServeState;
 	serveRight: ServeState;
-	started: boolean;
 	ball: Ball;
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
