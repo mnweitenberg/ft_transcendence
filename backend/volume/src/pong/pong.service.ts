@@ -26,8 +26,7 @@ export class PongService {
 	handleMouseClick(socket: any, mouseClick: boolean, state: i.GameState, canvas: i.Canvas): void {
 		if (mouseClick && !state.isStarted) {
 			state.isStarted = true;
-			socket.emit('setScorePlayerOne', 0);
-			socket.emit('setScorePlayerTwo', 0);
+			socket.emit('playerScored', [0, 0]);
 			this.gameService.runGame(socket, state, canvas);
 		}
 		else if (mouseClick && !state.ballIsInPlay) {

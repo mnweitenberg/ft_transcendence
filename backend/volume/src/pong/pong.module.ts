@@ -10,6 +10,7 @@ import { QueueModule } from './queue/queue.module';
 import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entities/user.entity';
 import { Ranking } from './ranking/entities/ranking.entity';
+import { GameLogicService } from './gameLogic.service';
 
 @Module({
 	imports: [
@@ -17,7 +18,7 @@ import { Ranking } from './ranking/entities/ranking.entity';
 		QueueModule,
 		UserModule,
 	],
-	providers: [PongService, MatchRepository, QueueService],
+	providers: [PongService, MatchRepository, QueueService, GameLogicService],
 })
 export class PongModule implements OnModuleInit {
     constructor(

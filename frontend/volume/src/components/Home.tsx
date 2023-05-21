@@ -28,7 +28,7 @@ function Home(): JSX.Element {
 		<div className="grid-container">
 			<div id="left_top"></div>
 
-			<Header />
+			<Header {...pongProps} />
 
 			<div id="right_top">
 				<a

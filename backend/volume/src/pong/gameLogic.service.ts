@@ -31,7 +31,6 @@ export class GameLogicService {
 	serveBall(socket: any, state: i.GameState): void {
 		state.ballIsInPlay = true;
 		console.log('Ball is in play');
-		socket.emit('gameScore', state.match);
 
 		if (state.serveLeft.state) state.ball.xSpeed = C.BALL_SPEED;
 		if (state.serveRight.state) state.ball.xSpeed = -C.BALL_SPEED;
@@ -70,16 +69,15 @@ export class GameLogicService {
 		if (ballIsBehindLeftPaddle) {
 			state.match.playerTwoScore += 1;
 			state.serveLeft.state = true;
-			socket.emit('setScorePlayerTwo', state.match.playerTwoScore);
 		}
 
 		if (ballIsBehindRightPaddle) {
 			state.match.playerOneScore += 1;
 			state.serveRight.state = true;
-			socket.emit('setScorePlayerOne', state.match.playerOneScore);
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
+			socket.emit('playerScored', [state.match.playerOneScore, state.match.playerTwoScore]);
 			state.ballIsInPlay = false;
 		}
 	}

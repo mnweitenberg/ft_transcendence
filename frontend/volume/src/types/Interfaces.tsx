@@ -39,7 +39,8 @@ interface Stats {
 }
 
 export interface User {
-	name: string;
+	intraId?: string;
+	username: string;
 	avatar: string;
 	stats?: Stats;
 	status?: "in game" | "online" | "offline" | "";
@@ -51,17 +52,17 @@ export interface User {
 // GAMESTATE //
 ///////////////
 
-interface Score {
-	playerOne: number;
-	playerTwo: number;
-}
+// interface Score {
+// 	playerOne: number;
+// 	playerTwo: number;
+// }
 
-export interface GameScore {
-	id: number;
-	playerOne: User;
-	playerTwo: User;
-	score: Score;
-}
+// export interface GameScore {
+// 	id: number;
+// 	playerOne: User;
+// 	playerTwo: User;
+// 	score: Score;
+// }
 
 export interface Ball {
 	x: number;
@@ -99,7 +100,7 @@ export interface GameState {
 	ball: Ball;
 	paddleLeft: Paddle;
 	paddleRight: Paddle;
-	gameScore?: GameScore;
+	// gameScore?: GameScore;
 }
 
 ///////////
@@ -117,11 +118,14 @@ export interface ModalProps {
 }
 
 export interface PongProps {
+	players: User[];
+	setPlayers: (players: User[]) => void;
 	bothPlayersReady: boolean;
 	setBothPlayersReady: (bothPlayersReady: boolean) => void;
-	gameScore: GameScore;
+	playersAvailable: boolean;
+	setPlayersAvailable: (playersAvailable: boolean) => void;
+	score: number[];
+	setScore: (score: number[]) => void;
 	finished: boolean;
 	setFinished: (finished: boolean) => void;
-	goToMenu: boolean;
-	setGoToMenu: (goToMenu: boolean) => void;
 }

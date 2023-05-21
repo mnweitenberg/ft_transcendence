@@ -1,30 +1,39 @@
 import { useState } from "react";
 import Pong from "./Pong";
-import { matchHistory, queue, ranking } from "../../utils/data";
 import * as i from "../../types/Interfaces";
 import SocketSingleton from "../../utils/socketSingleton";
 
 function updateScore(props: i.PongProps) {
 	const socketSingleton = SocketSingleton.getInstance();
 
-	socketSingleton.socket.on("endOfGame", (gameScore: i.GameScore) => {
+	socketSingleton.socket.on("players", (users: i.User[]) => {
+		props.setPlayersAvailable(true);
+		props.setPlayers(users);
+	});
+	socketSingleton.socket.on("playerScored", (score: number[]) => {
+		props.setScore(score);
+	});
+
+	socketSingleton.socket.on("noPlayers", () => {
+		props.setPlayersAvailable(false);
+	});
+
+	socketSingleton.socket.on("endOfGame", () => {
 		props.setFinished(true);
 	});
 }
 
 function Game(props: i.PongProps) {
-	if (!props.gameScore) return <h1 className="game_menu">No one wants to play</h1>;
+	if (!props.players) return <h1 className="game_menu">No one wants to play</h1>;
 
 	updateScore(props);
 
 	if (props.bothPlayersReady) return <Pong />;
 
-	const winner = determineWinner();
 	return (
 		<div className="game_menu" onClick={() => props.setBothPlayersReady(true)}>
-			<h2>{winner ? `${winner} Won` : ""}</h2>
 			<h1>
-				{props.gameScore.playerOne.name} vs {props.gameScore.playerTwo.name}
+				{props.players[0].username} vs {props.players[1].username}
 			</h1>
 			<h2>start game</h2>
 		</div>
@@ -33,29 +42,39 @@ function Game(props: i.PongProps) {
 
 export default Game;
 
-function determineWinner(): string | null {
-	const lastMatch = matchHistory.at(-1);
-	if (!lastMatch) return null;
-
-	if (lastMatch.score.playerOne > lastMatch.score.playerTwo) return lastMatch.playerOne.name;
-	return lastMatch.playerTwo.name;
-}
-
 export function createPongProps(): i.PongProps {
 	const [bothPlayersReady, setBothPlayersReady] = useState(false);
 	const [finished, setFinished] = useState(false);
-	const [goToMenu, setGoToMenu] = useState(false);
 
-	const nextGame = queue[0] || null;
+	const [playerOne, setPlayerOne] = useState<i.User>({ username: "", avatar: "" });
+	const [playerTwo, setPlayerTwo] = useState<i.User>({ username: "", avatar: "" });
+	const [scorePlayerOne, setScorePlayerOne] = useState(0);
+	const [scorePlayerTwo, setScorePlayerTwo] = useState(0);
+	const [playersAvailable, setPlayersAvailable] = useState(false);
+
+	const players = [playerOne, playerTwo];
+	function setPlayers(players: i.User[]) {
+		setPlayerOne(players[0]);
+		setPlayerTwo(players[1]);
+	}
+
+	const score = [scorePlayerOne, scorePlayerTwo];
+	function setScore(score: number[]) {
+		setScorePlayerOne(score[0]);
+		setScorePlayerTwo(score[1]);
+	}
 
 	const pongProps: i.PongProps = {
-		gameScore: nextGame,
+		players,
+		setPlayers,
+		playersAvailable,
+		setPlayersAvailable,
 		bothPlayersReady,
 		setBothPlayersReady,
 		finished,
+		score,
+		setScore,
 		setFinished,
-		goToMenu,
-		setGoToMenu,
 	};
 
 	return pongProps;
@@ -68,7 +87,6 @@ export function handleFinishGame(pongProps: i.PongProps) {
 	// 	queue.shift();
 	// }
 	// updateRanking(pongProps.gameScore);
-	pongProps.setGoToMenu(false);
 	pongProps.setFinished(false);
 }
 
