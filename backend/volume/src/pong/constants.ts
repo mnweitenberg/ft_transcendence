@@ -1,5 +1,5 @@
 // GAME
-export const CPU_TIMEMOUT = 1000;
+export const CPU_TIMEMOUT = 3000;
 export const DEFAULT_CPU_SPEED = 0.01;
 
 export const BALL_SPEED = 0.05;

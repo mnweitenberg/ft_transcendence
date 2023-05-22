@@ -14,17 +14,17 @@ import { GameLogicService } from './gameLogic.service';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Match, User, Ranking]), 
+		TypeOrmModule.forFeature([Match, User, Ranking]),
 		QueueModule,
 		UserModule,
 	],
 	providers: [PongService, MatchRepository, QueueService, GameLogicService],
 })
 export class PongModule implements OnModuleInit {
-    constructor(
-        private readonly pongService: PongService,
+	constructor(
+		private readonly pongService: PongService,
 		private readonly queueService: QueueService,
-    ) { }
+	) {}
 
 	private state: i.GameState;
 	private canvas: i.Canvas;
@@ -33,10 +33,10 @@ export class PongModule implements OnModuleInit {
 		// TODO handle empty Queue
 		// this.queueService.fillDbUser();
 		this.queueService.createMatches();
-        this.canvas = this.pongService.initCanvas();
-        this.state = await this.pongService.initializeGameState(this.canvas);
-        this.setupSocketServer();
-    }
+		this.canvas = this.pongService.initCanvas();
+		this.state = await this.pongService.initializeGameState(this.canvas);
+		this.setupSocketServer();
+	}
 
 	private setupSocketServer(): void {
 		const io = new Server(4243, { cors: { origin: '*' } });
@@ -55,7 +55,12 @@ export class PongModule implements OnModuleInit {
 		});
 
 		socket.on('mouseClick', (data) => {
-			this.pongService.handleMouseClick(socket, data.mouseClick, this.state, this.canvas);
+			this.pongService.handleMouseClick(
+				socket,
+				data.mouseClick,
+				this.state,
+				this.canvas,
+			);
 		});
 
 		socket.on('enlargePaddle', () => {

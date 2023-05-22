@@ -29,7 +29,7 @@ export interface Paddle {
 }
 
 export interface ServeState {
-	state: boolean;
+	isServing: boolean;
 	x: number;
 	y: number;
 }

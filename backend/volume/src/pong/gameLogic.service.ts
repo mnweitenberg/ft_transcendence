@@ -12,10 +12,8 @@ export class GameLogicService {
 	async runGame(socket: any, state: i.GameState, canvas: i.Canvas) {
 		if (!state.match) {
 			state.match = await this.matchRepo.initNewMatch();
-			if (state.match)
-				socket.emit('players', state.match.players);
-			else
-				socket.emit('noPlayers');
+			if (state.match) socket.emit('players', state.match.players);
+			else socket.emit('noPlayers');
 		}
 
 		setInterval(() => {
@@ -28,20 +26,19 @@ export class GameLogicService {
 		}, 1000 / 24);
 	}
 
-	serveBall(socket: any, state: i.GameState): void {
+	serveBall(state: i.GameState): void {
+		if (!state.isStarted || state.ballIsInPlay) return;
+		// if (state.serveLeft.state) state.ball.xSpeed = C.BALL_SPEED;
+		// if (state.serveRight.state) state.ball.xSpeed = -C.BALL_SPEED;
+		state.serveRight.isServing = false;
+		state.serveLeft.isServing = false;
 		state.ballIsInPlay = true;
 		console.log('Ball is in play');
-
-		if (state.serveLeft.state) state.ball.xSpeed = C.BALL_SPEED;
-		if (state.serveRight.state) state.ball.xSpeed = -C.BALL_SPEED;
-		state.serveRight.state = false;
-		state.serveLeft.state = false;
 	}
 
 	private async handleEndOfGame(socket: any, state: i.GameState) {
 		if (
-			state.isStarted &&
-			state.match.playerOneScore >= C.MAX_SCORE ||
+			(state.isStarted && state.match.playerOneScore >= C.MAX_SCORE) ||
 			state.match.playerTwoScore >= C.MAX_SCORE
 		) {
 			state.isStarted = false;
@@ -51,10 +48,8 @@ export class GameLogicService {
 				console.log(savedMatch);
 				state.match = await this.matchRepo.initNewMatch();
 				console.log('Successfully saved');
-				if (state.match)
-					socket.emit('players', state.match.players);
-				else
-					socket.emit('noPlayers');
+				if (state.match) socket.emit('players', state.match.players);
+				else socket.emit('noPlayers');
 			} catch (error) {
 				console.log('Error saving GameScore', error);
 			}
@@ -68,16 +63,19 @@ export class GameLogicService {
 
 		if (ballIsBehindLeftPaddle) {
 			state.match.playerTwoScore += 1;
-			state.serveLeft.state = true;
+			state.serveLeft.isServing = true;
 		}
 
 		if (ballIsBehindRightPaddle) {
 			state.match.playerOneScore += 1;
-			state.serveRight.state = true;
+			state.serveRight.isServing = true;
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
-			socket.emit('playerScored', [state.match.playerOneScore, state.match.playerTwoScore]);
+			socket.emit('playerScored', [
+				state.match.playerOneScore,
+				state.match.playerTwoScore,
+			]);
 			state.ballIsInPlay = false;
 		}
 	}
@@ -94,7 +92,11 @@ export class GameLogicService {
 			this.handleBounceTopBottom(canvas, state);
 		}
 
-		if (!state.ballIsInPlay) this.moveBallDuringServe(canvas, state);
+		if (state.isStarted && !state.ballIsInPlay) {
+			this.moveBallDuringServe(canvas, state);
+			if (state.serveLeft.isServing || state.serveRight.isServing)
+				setTimeout(() => this.serveBall(state), C.CPU_TIMEMOUT);
+		}
 	}
 
 	private moveBall(state: i.GameState) {
@@ -172,11 +174,12 @@ export class GameLogicService {
 	private moveBallDuringServe(canvas: i.Canvas, state: i.GameState) {
 		const { serveLeft, serveRight, paddleLeft, paddleRight, ball } = state;
 		ball.xSpeed = 0;
-		if (serveLeft.state) {
-			ball.x = paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2;
+		if (serveLeft.isServing) {
+			ball.x =
+				paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2;
 			ball.y = paddleLeft.y + 0.5 * paddleLeft.height;
 		}
-		if (serveRight.state) {
+		if (serveRight.isServing) {
 			ball.x = paddleRight.x - canvas.ballDiameter / 2;
 			ball.y = paddleRight.y + 0.5 * paddleRight.height;
 		}

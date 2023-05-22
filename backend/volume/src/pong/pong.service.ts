@@ -23,14 +23,18 @@ export class PongService {
 		state.paddleRight.y = mouseY;
 	}
 
-	handleMouseClick(socket: any, mouseClick: boolean, state: i.GameState, canvas: i.Canvas): void {
+	handleMouseClick(
+		socket: any,
+		mouseClick: boolean,
+		state: i.GameState,
+		canvas: i.Canvas,
+	): void {
 		if (mouseClick && !state.isStarted) {
 			state.isStarted = true;
 			socket.emit('playerScored', [0, 0]);
 			this.gameService.runGame(socket, state, canvas);
-		}
-		else if (mouseClick && !state.ballIsInPlay) {
-			this.gameService.serveBall(socket, state);
+		} else if (mouseClick && !state.ballIsInPlay) {
+			this.gameService.serveBall(state);
 		}
 	}
 
@@ -51,32 +55,32 @@ export class PongService {
 		};
 		return canvas;
 	}
-	
+
 	async initializeGameState(canvas: i.Canvas): Promise<i.GameState> {
 		const paddleLeft: i.Paddle = {
 			x: canvas.borderOffset,
 			y: canvas.height / 2,
 			height: canvas.paddleHeight,
 		};
-	
+
 		const paddleRight: i.Paddle = {
 			x: canvas.width - canvas.borderOffset - canvas.paddleWidth,
 			y: canvas.height / 2,
 			height: canvas.paddleHeight,
 		};
-	
+
 		const serveLeft: i.ServeState = {
-			state: false,
+			isServing: false,
 			x: paddleLeft.x + canvas.paddleWidth + canvas.ballDiameter / 2,
 			y: paddleLeft.y + 0.5 * canvas.paddleHeight,
 		};
-	
+
 		const serveRight: i.ServeState = {
-			state: true,
+			isServing: true,
 			x: paddleRight.x - canvas.ballDiameter / 2,
 			y: paddleRight.y + 0.5 * canvas.paddleHeight,
 		};
-	
+
 		const ball: i.Ball = {
 			x: serveRight.x,
 			y: paddleRight.y + canvas.paddleHeight / 2,
@@ -96,7 +100,7 @@ export class PongService {
 			ball,
 			// match: await this.matchRepo.initNewMatch(),
 		};
-	
+
 		return state;
-	}	
+	}
 }

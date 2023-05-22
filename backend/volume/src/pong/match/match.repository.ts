@@ -21,8 +21,12 @@ export class MatchRepository {
 	public async saveMatch(match: Match): Promise<Match> {
 		if (!match) throw new Error('No score received');
 
-		const playerOne = await this.userService.getUserById(match.players[0].id);
-		const playerTwo = await this.userService.getUserById(match.players[1].id);
+		const playerOne = await this.userService.getUserById(
+			match.players[0].id,
+		);
+		const playerTwo = await this.userService.getUserById(
+			match.players[1].id,
+		);
 		if (!playerOne || !playerTwo)
 			throw new Error("One or more users don't exist in the database");
 
@@ -31,7 +35,10 @@ export class MatchRepository {
 		return this.matchRepo.save(match);
 	}
 
-	private async addMatchToPlayerHistory(match: Match, id: string): Promise<void> {
+	private async addMatchToPlayerHistory(
+		match: Match,
+		id: string,
+	): Promise<void> {
 		const user = await this.userService.getUserById(id);
 		if (user.match_history) user.match_history.push(match);
 		else user.match_history = [match];

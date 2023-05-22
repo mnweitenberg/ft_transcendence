@@ -14,7 +14,7 @@ import { UserModule } from 'src/user/user.module';
 		TypeOrmModule.forFeature([Match]),
 		TypeOrmModule.forFeature([User]),
 		TypeOrmModule.forFeature([Ranking]),
-		UserModule,	
+		UserModule,
 	],
 	providers: [QueueResolver, QueueService],
 	exports: [QueueService],

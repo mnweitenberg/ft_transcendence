@@ -25,19 +25,14 @@ export class QueueResolver {
 	}
 
 	// Returns first match to be played
-	@Query((returns) => QueuedMatch, { nullable: true } )
+	@Query((returns) => QueuedMatch, { nullable: true })
 	getQueuedMatch() {
 		return this.queueService.getQueuedMatch();
 	}
 
-
-
-
-
 	/*
 	TESTING
 	*/
-
 
 	@Query((returns) => Number)
 	createMatches() {
@@ -54,7 +49,7 @@ export class QueueResolver {
 		return this.queueService.queuePrint();
 	}
 
-	@Query ((returns) => Number)
+	@Query((returns) => Number)
 	removeQueue() {
 		return this.queueService.removeQueue();
 	}
