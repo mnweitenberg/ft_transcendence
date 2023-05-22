@@ -2,39 +2,87 @@ import { Injectable } from '@nestjs/common';
 import * as i from './interfaces';
 import * as C from './constants';
 import { GameLogicService } from './gameLogic.service';
+// import { SocketModule } from './socket.module';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class PongService {
-	constructor(private readonly gameService: GameLogicService) {}
+	constructor(
+		private readonly gameLogicService: GameLogicService, // private readonly socketModule: SocketModule,
+	) {}
 
-	enlargePaddle(canvas: i.Canvas, state: i.GameState): void {
-		if (state.paddleRight.height < canvas.height) {
-			state.paddleRight.height *= 1.2;
+	private canvas = this.initCanvas();
+	private state = this.initializeGameState(this.canvas);
+	private socket;
+
+	async startMatch(match): Promise<void> {
+		// const state = this.initializeGameState(this.canvas);
+		this.state.match = match;
+		// console.log(this.state.match);
+		this.gameLogicService.runGame(null, this.state, this.canvas);
+		// this.setupSocketServer(state);
+	}
+
+	// private setupSocketServer(state: i.GameState): void {
+	// 	const io = new Server(4244, { cors: { origin: '*' } });
+	// 	io.on('connection', (socket) => {
+	// 		console.log('Client connected:', socket.id);
+	// 		if (!this.socket) this.socket = socket;
+	// 		this.handleSocketEvents();
+	// 		this.gameLogicService.runGame(this.socket, state, this.canvas);
+	// 		this.handleSocketDisconnection(socket);
+	// 	});
+	// }
+
+	handleSocketDisconnection(socket): void {
+		socket.on('disconnect', () => {
+			console.log('Client disconnected:', socket.id);
+		});
+	}
+
+	private handleSocketEvents(): void {
+		if (!this.socket) return;
+
+		this.socket.on('sendMouseY', (data) => {
+			this.handleMouseYUpdate(data.mouseY);
+		});
+
+		this.socket.on('mouseClick', (data) => {
+			this.handleMouseClick(this.socket, data.mouseClick);
+		});
+
+		this.socket.on('enlargePaddle', () => {
+			this.enlargePaddle();
+		});
+
+		this.socket.on('reducePaddle', () => {
+			this.reducePaddle();
+		});
+	}
+
+	enlargePaddle(): void {
+		if (this.state.paddleRight.height < this.canvas.height) {
+			this.state.paddleRight.height *= 1.2;
 		}
 	}
 
-	reducePaddle(canvas: i.Canvas, state: i.GameState): void {
-		if (state.paddleRight.height > canvas.paddleHeight) {
-			state.paddleRight.height *= 0.8;
+	reducePaddle(): void {
+		if (this.state.paddleRight.height > this.canvas.paddleHeight) {
+			this.state.paddleRight.height *= 0.8;
 		}
 	}
 
-	handleMouseYUpdate(mouseY: number, state: i.GameState): void {
-		state.paddleRight.y = mouseY;
+	handleMouseYUpdate(mouseY: number): void {
+		this.state.paddleRight.y = mouseY;
 	}
 
-	handleMouseClick(
-		socket: any,
-		mouseClick: boolean,
-		state: i.GameState,
-		canvas: i.Canvas,
-	): void {
-		if (mouseClick && !state.isStarted) {
-			state.isStarted = true;
+	handleMouseClick(socket: any, mouseClick: boolean): void {
+		if (mouseClick && !this.state.isStarted) {
+			this.state.isStarted = true;
 			socket.emit('playerScored', [0, 0]);
-			this.gameService.runGame(socket, state, canvas);
-		} else if (mouseClick && !state.ballIsInPlay) {
-			this.gameService.serveBall(state);
+			// this.gameLogicService.runGame(socket, this.state, this.canvas);
+		} else if (mouseClick && !this.state.ballIsInPlay) {
+			this.gameLogicService.serveBall(this.state);
 		}
 	}
 
@@ -56,7 +104,7 @@ export class PongService {
 		return canvas;
 	}
 
-	async initializeGameState(canvas: i.Canvas): Promise<i.GameState> {
+	initializeGameState(canvas: i.Canvas): i.GameState {
 		const paddleLeft: i.Paddle = {
 			x: canvas.borderOffset,
 			y: canvas.height / 2,
@@ -87,8 +135,6 @@ export class PongService {
 			xSpeed: -C.BALL_SPEED,
 			ySpeed: C.BALL_SPEED,
 		};
-		// this.queueService.fillDbUser();
-		// await this.queueService.createMatches();
 
 		const state: i.GameState = {
 			isStarted: false,
@@ -98,7 +144,7 @@ export class PongService {
 			serveLeft,
 			serveRight,
 			ball,
-			// match: await this.matchRepo.initNewMatch(),
+			// match: match,
 		};
 
 		return state;

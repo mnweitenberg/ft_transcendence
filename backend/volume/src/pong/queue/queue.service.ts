@@ -3,33 +3,54 @@ import { pubSub } from 'src/app.module';
 import { QueuedMatch } from './queuedmatch.model';
 import { UserService } from 'src/user/user.service';
 import { CreateUserInput } from 'src/user/dto/create-user.input';
+import { MatchRepository } from '../match/match.repository';
+import { PongService } from '../pong.service';
+import { User } from 'src/user/entities/user.entity';
 
 const DEBUG_PRINT = false;
 
 @Injectable()
 export class QueueService {
-	constructor(private readonly userService: UserService) {}
-
+	constructor(
+		private readonly userService: UserService,
+		private readonly matchRepo: MatchRepository,
+		private readonly pongService: PongService,
+	) {}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
+	weWantToRunNewMatch = true;
 
+	private currentMatch;
 	async addQueuedMatch(
 		player_one_id: string,
 		player_two_id: string,
 	): Promise<QueuedMatch> {
-		// TODO: als je userRepo zoekt op id dat niet betsaaat is error
-		const player_one = await this.userService.getUserById(player_one_id);
-		const player_two = await this.userService.getUserById(player_two_id);
+		const players: User[] = await this.checkPlayers(
+			player_one_id,
+			player_two_id,
+		);
 
 		const new_queued_match = new QueuedMatch();
-		new_queued_match.playerOne = player_one;
-		new_queued_match.playerTwo = player_two;
+		new_queued_match.playerOne = players[0];
+		new_queued_match.playerTwo = players[1];
 		this.queued_matches.push(new_queued_match);
 
 		pubSub.publish('matchFound', { matchFound: new_queued_match });
-		// TODO: call game van milan
+		this.startNewMatch();
+		// if (this.weWantToRunNewMatch) {
+		// 	this.startNewMatch();
+		// 	this.weWantToRunNewMatch = false;
+		// 	console.log('STARTING NEW MATCH');
+		// }
 
 		return new_queued_match;
+	}
+	private async checkPlayers(id1, id2): Promise<User[]> {
+		const playerOne = await this.userService.getUserById(id1);
+		const playerTwo = await this.userService.getUserById(id2);
+		if (!playerOne || !playerTwo)
+			throw new Error("One or more users don't exist in the database");
+		return [playerOne, playerTwo];
 	}
 
 	async joinQueue(player_id: string): Promise<QueuedMatch> | null {
@@ -60,6 +81,36 @@ export class QueueService {
 		// console.log(top_match);
 		return top_match;
 	}
+
+	async startNewMatch() {
+		const top_match = this.queued_matches.at(0);
+		this.queued_matches.splice(0, 1);
+		const newMatch = await this.matchRepo.initNewMatch(top_match);
+		if (!newMatch) {
+			console.log('ERROR: newMatch is null');
+			return;
+		}
+		// if ((await this.isMatchStillRunning()) === false)
+		this.currentMatch = this.pongService.startMatch(newMatch);
+
+		// console.log('Started new match: ', newMatch);
+	}
+
+	// async isMatchStillRunning(): Promise<boolean> {
+	// 	if (!this.currentMatch) {
+	// 		return false;
+	// 	}
+
+	// 	if (this.currentMatch.isFinished) {
+	// 		console.log('Match is no longer running');
+	// 		// After waiting for the promise, set it to null, since it is no longer running.
+	// 		this.currentMatch = null;
+	// 		return false;
+	// 	} else {
+	// 		console.log('Match is still running');
+	// 		return true;
+	// 	}
+	// }
 
 	getWholeQueue() {
 		// console.log (this.queued_matches);

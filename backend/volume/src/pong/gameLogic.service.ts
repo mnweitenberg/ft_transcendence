@@ -9,20 +9,31 @@ import { MatchRepository } from './match/match.repository';
 export class GameLogicService {
 	constructor(private readonly matchRepo: MatchRepository) {}
 
-	async runGame(socket: any, state: i.GameState, canvas: i.Canvas) {
-		if (!state.match) {
-			state.match = await this.matchRepo.initNewMatch();
-			if (state.match) socket.emit('players', state.match.players);
-			else socket.emit('noPlayers');
-		}
-
+	async runGame(
+		socket: any,
+		state: i.GameState,
+		canvas: i.Canvas,
+	): Promise<void> {
+		state.isStarted = true;
+		state.match.isFinished = true;
+		// if (!state.match) {
+		// state.match = await this.matchRepo.initNewMatch();
+		// }
+		// if (state.match) socket.emit('players', state.match.players);
+		// else socket.emit('noPlayers');
+		console.log('Game is running');
+		console.log(
+			state.match.players[0].username,
+			state.match.players[1].username,
+		);
 		setInterval(() => {
 			if (!state.match) return;
 			this.handleEndOfGame(socket, state);
 			CPU.Action(state);
 			this.handleCollisions(canvas, state);
 			this.handleScore(canvas, state, socket);
-			socket.emit('gameState', state);
+			state.match.playerOneScore++;
+			// socket.emit('gameState', state);
 		}, 1000 / 24);
 	}
 
@@ -42,14 +53,15 @@ export class GameLogicService {
 			state.match.playerTwoScore >= C.MAX_SCORE
 		) {
 			state.isStarted = false;
+			console.log(state.match);
 			try {
 				const savedMatch = await this.matchRepo.saveMatch(state.match);
-				socket.emit('endOfGame', savedMatch);
-				console.log(savedMatch);
-				state.match = await this.matchRepo.initNewMatch();
+				// socket.emit('endOfGame', savedMatch);
+				// console.log(savedMatch);
 				console.log('Successfully saved');
-				if (state.match) socket.emit('players', state.match.players);
-				else socket.emit('noPlayers');
+				// state.match = await this.matchRepo.initNewMatch();
+				// if (state.match) socket.emit('players', state.match.players);
+				// else socket.emit('noPlayers');
 			} catch (error) {
 				console.log('Error saving GameScore', error);
 			}
@@ -72,10 +84,11 @@ export class GameLogicService {
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
-			socket.emit('playerScored', [
-				state.match.playerOneScore,
-				state.match.playerTwoScore,
-			]);
+			console.log(state.match.playerOneScore, state.match.playerTwoScore);
+			// socket.emit('playerScored', [
+			// 	state.match.playerOneScore,
+			// 	state.match.playerTwoScore,
+			// ]);
 			state.ballIsInPlay = false;
 		}
 	}
@@ -110,6 +123,7 @@ export class GameLogicService {
 		side: number,
 	): void {
 		if (!this.checkIfBallHitsPaddle(canvas, state, side)) return;
+		console.log('Ball hit paddle');
 		this.redirectUpOrDownBasedOnPositionOfPaddleHit(state, side);
 	}
 

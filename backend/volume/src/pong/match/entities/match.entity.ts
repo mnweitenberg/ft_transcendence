@@ -27,4 +27,8 @@ export class Match {
 	@Column()
 	@Field(() => Int)
 	playerTwoScore: number;
+
+	@Column()
+	@Field(() => Boolean)
+	isFinished: boolean;
 }
