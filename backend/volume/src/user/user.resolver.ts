@@ -9,6 +9,10 @@ import {
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/auth.service';
 
 @Resolver((of) => User)
 export class UserResolver {
@@ -24,6 +28,12 @@ export class UserResolver {
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
 		return this.userService.getUser(usernameParam);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Query((returns) => User)
+	async currentUserQuery(@AuthUser() user: UserInfo) {
+		return this.userService.getUserByIntraId(user.intraId);
 	}
 
 	@Mutation((returns) => User)

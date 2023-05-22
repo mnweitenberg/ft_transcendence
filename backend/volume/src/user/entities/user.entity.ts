@@ -29,7 +29,9 @@ export class User {
 	@Field()
 	username: string;
 
-	@Column()
+	@Column({
+		nullable: true,
+	})
 	@Field()
 	avatar: string;
 
