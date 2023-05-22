@@ -12,9 +12,7 @@ const DEBUG_PRINT = false;
 @Injectable()
 export class QueueService {
 	constructor(
-		private readonly userService: UserService,
-		private readonly matchRepo: MatchRepository,
-		private readonly pongService: PongService,
+		private readonly userService: UserService, // private readonly matchRepo: MatchRepository,
 	) {}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
@@ -36,7 +34,8 @@ export class QueueService {
 		this.queued_matches.push(new_queued_match);
 
 		pubSub.publish('matchFound', { matchFound: new_queued_match });
-		this.startNewMatch();
+		// this.startNewMatch();
+
 		// if (this.weWantToRunNewMatch) {
 		// 	this.startNewMatch();
 		// 	this.weWantToRunNewMatch = false;
@@ -82,19 +81,19 @@ export class QueueService {
 		return top_match;
 	}
 
-	async startNewMatch() {
-		const top_match = this.queued_matches.at(0);
-		this.queued_matches.splice(0, 1);
-		const newMatch = await this.matchRepo.initNewMatch(top_match);
-		if (!newMatch) {
-			console.log('ERROR: newMatch is null');
-			return;
-		}
-		// if ((await this.isMatchStillRunning()) === false)
-		this.currentMatch = this.pongService.startMatch(newMatch);
+	// async startNewMatch() {
+	// 	const top_match = this.queued_matches.at(0);
+	// 	this.queued_matches.splice(0, 1);
+	// 	const newMatch = await this.matchRepo.initNewMatch(top_match);
+	// 	if (!newMatch) {
+	// 		console.log('ERROR: newMatch is null');
+	// 		return;
+	// 	}
+	// 	// if ((await this.isMatchStillRunning()) === false)
+	// 	this.currentMatch = this.pongService.startMatch(newMatch);
 
-		// console.log('Started new match: ', newMatch);
-	}
+	// 	// console.log('Started new match: ', newMatch);
+	// }
 
 	// async isMatchStillRunning(): Promise<boolean> {
 	// 	if (!this.currentMatch) {

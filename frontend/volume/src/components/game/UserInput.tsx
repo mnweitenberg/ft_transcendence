@@ -2,6 +2,8 @@ import * as i from "../../types/Interfaces";
 import p5Types from "p5";
 import SocketSingleton from "../../utils/socketSingleton";
 
+const id = "8b62869a-788d-42a5-8550-0ea2e3c9334f";
+
 export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 	const socketSingleton = SocketSingleton.getInstance();
 	sendMouseY(canvas, p5, socketSingleton);
@@ -12,11 +14,11 @@ export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 function sendMouseY(canvas: i.Canvas, p5: p5Types, socketSingleton: SocketSingleton) {
 	let relativeMouseY = p5.mouseY / canvas.height;
 	relativeMouseY = clamp(relativeMouseY, 0, 1);
-	socketSingleton.socket.emit("sendMouseY", { mouseY: relativeMouseY });
+	socketSingleton.socket.emit("PaddlePosition", { id: id, mouseY: relativeMouseY });
 }
 
 function sendMouseClick(p5: p5Types, socketSingleton: SocketSingleton) {
-	socketSingleton.socket.emit("mouseClick", { mouseClick: p5.mouseIsPressed });
+	if (p5.mouseIsPressed) socketSingleton.socket.emit("mouseClick", { id: id });
 }
 
 let isUpArrowPressed = false;
@@ -25,11 +27,11 @@ let isDownArrowPressed = false;
 function handlePaddleSizeChange(p5: p5Types, socketSingleton: SocketSingleton) {
 	if (p5.key === "=" && !isUpArrowPressed) {
 		isUpArrowPressed = true;
-		socketSingleton.socket.emit("enlargePaddle");
+		socketSingleton.socket.emit("enlargePaddle", { id: id });
 	}
 	if (p5.key === "-" && !isDownArrowPressed) {
 		isDownArrowPressed = true;
-		socketSingleton.socket.emit("reducePaddle");
+		socketSingleton.socket.emit("reducePaddle", { id: id });
 	}
 
 	p5.keyReleased = () => {

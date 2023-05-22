@@ -28,19 +28,17 @@ export interface Paddle {
 	height?: number;
 }
 
-export interface ServeState {
+export interface Player {
+	id: string;
+	paddle: Paddle;
 	isServing: boolean;
-	x: number;
-	y: number;
 }
 
 export interface GameState {
 	isStarted: boolean;
 	ballIsInPlay: boolean;
-	serveLeft: ServeState;
-	serveRight: ServeState;
+	p1: Player;
+	p2: Player;
 	ball: Ball;
-	paddleLeft: Paddle;
-	paddleRight: Paddle;
 	match?: Match;
 }

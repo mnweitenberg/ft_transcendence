@@ -7,19 +7,22 @@ import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entities/user.entity';
 import { Ranking } from './ranking/entities/ranking.entity';
 import { GameLogicService } from './gameLogic.service';
-// import { SocketModule } from './socket.module';
+import { PongGateway } from './pong.gateway';
+import { QueueService } from './queue/queue.service';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([Match, User, Ranking]),
+		QueueModule,
 		UserModule,
-		// SocketModule,
 	],
 	providers: [
 		PongService,
 		MatchRepository,
 		GameLogicService,
-		// SocketModule,
+		QueueService,
+		PongGateway,
 	],
 })
 export class PongModule {}
