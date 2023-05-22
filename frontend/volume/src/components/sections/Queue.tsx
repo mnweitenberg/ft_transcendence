@@ -67,25 +67,9 @@ export default function Queue(props: i.ModalProps) {
 		subscribeToMore,
 	} = useQuery(GET_WHOLE_QUEUE);
 
-	// TODO:
-	// get whole queue moet subscriben op match found en updaten als match is gevonden
-	//
-	// versimpelen van joinQueue joinedQueue. zou geen verschil moeten zijn
-	// tussen joinen als eerste en joinen als tweede. gewoon beide (en iedereen)
-	// subscriben op de queue
-
-	// OPZET
-	// const {loading, error, data, subscribeToMore} = useQuery(CURRENT_QUEUE);
-	// zie ook NewGroupMessage.tsx
-
-	// const { loading, data, error, subscribeToMore } = useQuery(GET_QUEUE);
-
-	// let user_id = "Henk1";
-
 	useEffect(() => {
 		return subscribeToMore({
 			document: MATCH_FOUND,
-
 			updateQuery: (prev, { subscriptionData }) => {
 				if (!subscriptionData.data) return prev;
 				const newMatch = subscriptionData.data.matchFound;
@@ -123,6 +107,8 @@ export default function Queue(props: i.ModalProps) {
 	);
 }
 
+// TODO: joinQueue moet userid automatisch opvragen (uit cookie?). 'Join Queue' knop moet wel /niet zichtbaar zijn op
+// basis van of iemand al gequeued is.
 function JoinQueueElement() {
 	const [
 		joinQueue,
