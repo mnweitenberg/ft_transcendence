@@ -3,16 +3,16 @@ import * as i from './interfaces';
 
 export function Action(state: i.GameState): void {
 	if (state.serveLeft.state) setTimeout(() => Serve(state), C.CPU_TIMEMOUT);
-	if (state.started) Move(state);
+	if (state.ballIsInPlay) Move(state);
 }
 
 function Serve(state: i.GameState): void {
-	state.started = true;
+	state.ballIsInPlay = true;
 	state.serveLeft.state = false;
 }
 
 function Move(state: i.GameState): void {
-	if (!state.started) return;
+	if (!state.ballIsInPlay) return;
 	if (state.serveRight.state) return;
 	if (state.serveLeft.state) return;
 

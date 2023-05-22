@@ -1,24 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { pubSub } from 'src/app.module';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Match } from '../match/entities/match.entity';
-import { User } from '../../user/entities/user.entity';
-import { Ranking } from '../../pong/ranking/entities/ranking.entity';
 import { QueuedMatch } from './queuedmatch.model';
+import { UserService } from 'src/user/user.service';
+import { CreateUserInput } from 'src/user/dto/create-user.input';
 
-
-const DEBUG_PRINT = true;
+const DEBUG_PRINT = false;
 
 @Injectable()
 export class QueueService {
 	constructor(
-		@InjectRepository(Match)
-		private readonly matchRepo: Repository<Match>,
-		@InjectRepository(User)
-		private readonly userRepo: Repository<User>,
-		@InjectRepository(Ranking)
-		private readonly rankingRepo: Repository<Ranking>,
+		private readonly userService: UserService,
 	) {}
 
 	users_looking_for_match: string[] = [];
@@ -28,14 +19,8 @@ export class QueueService {
 		player_one_id: string,
 		player_two_id: string,
 	) : Promise <QueuedMatch> {
-		const player_one = await this.userRepo.findOne({
-			where: { id: player_one_id },
-			// relations: { ranking: true }, 
-		});
-		const player_two = await this.userRepo.findOne({
-			where: { id: player_two_id },
-			// relations: { ranking: true },
-		});
+		const player_one = await this.userService.getUserById(player_one_id);
+		const player_two = await this.userService.getUserById(player_two_id);
 
 		const new_queued_match = new QueuedMatch();
 		new_queued_match.playerOne = player_one;
@@ -73,38 +58,12 @@ export class QueueService {
 	getQueuedMatch(): QueuedMatch | null {
 		const top_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
+		// console.log(top_match);
 		return (top_match);
 	}
 
-	
-	// FIXME: code voor bij pong game
-	// async createGame(
-	// 	player_one_id: string,
-	// 	player_two_id: string,
-	// ): Promise<Match> {
-	// 	const player_one = await this.userRepo.findOne({
-	// 		where: { id: player_one_id },
-	// 		relations: { ranking: true },
-	// 	});
-	// 	const player_two = await this.userRepo.findOne({
-	// 		where: { id: player_two_id },
-	// 		relations: { ranking: true },
-	// 	});
-
-	// 	const new_game = this.matchRepo.create();
-
-	// 	new_game.playerOneScore = 0;
-	// 	new_game.playerTwoScore = 0;
-
-	// 	new_game.players = [player_one, player_two];
-		
-	// 	// this.queue_matches.push(new_game); // redundant?
-	// 	// this.matchRepo.save(new_game);
-
-	// 	return new_game;
-	// }
-
 	getWholeQueue() {
+		// console.log (this.queued_matches);
 		return this.queued_matches;
 	}
 
@@ -135,59 +94,49 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		let name : string = "Marius";
-		let id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-
-		name = "Justin";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Milan";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Jonathan";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Henk4";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
-		name = "Henk5";
-		id = await this.userRepo.findOne({
-			where: { username: name}
-		});
-		await this.lookForMatch(id.id);
+		this.createMatch("Marius");
+		this.createMatch("Justin");
+		this.createMatch("Milan");
+		this.createMatch("Jonathan");
+		// this.createMatch("Henk1");
+		// this.createMatch("Henk2");
+		// this.createMatch("Henk3");
+		// this.createMatch("Henk4");
+		// this.createMatch("Marius");
+		// this.createMatch("Justin");
+		// this.createMatch("Milan");
+		// this.createMatch("Jonathan");
+		// this.createMatch("Marius");
+		// this.createMatch("Justin");
+		// this.createMatch("Milan");
+		// this.createMatch("Jonathan");
+		// this.createMatch("Marius");
+		// this.createMatch("Justin");
+		// this.createMatch("Milan");
+		// this.createMatch("Jonathan");
 
 		return 4;
 	}
 
+	private async createMatch(username: string){
+		let name : string = username;
+		let user = await this.userService.getUser(name);
+		if (user) await this.lookForMatch(user.id);
+
+	}
 
 	async fillDbUser() {
-	this.randomUser('Marius', 1, '/img/marius.png');
-	this.randomUser('Justin', 2, '/img/justin.png');
-	this.randomUser('Milan', 3, '/img/milan.png');
-	this.randomUser('Jonathan', 4, '/img/jonathan.png');
-	this.randomUser('Henk4', 5, "");
-	this.randomUser('Henk5', 6, "");
-	return 3;
-	}
-	async fillDbUser1() {
-	this.randomUser('Marius1', 1, '/img/marius.png');
-	this.randomUser('Justin1', 2, '/img/justin.png');
-	this.randomUser('Milan1', 3, '/img/milan.png');
-	this.randomUser('Jonathan1', 4, '/img/jonathan.png');
-	this.randomUser('Henk1', 5, "");
-	this.randomUser('Henk2', 6, "");
-	return 3;
+		await this.randomUser('Marius');
+		await this.randomUser('Justin');
+		await this.randomUser('Milan');
+		await this.randomUser('Jonathan');
+		await this.randomUser('Henk1');
+		await this.randomUser('Henk2');
+		await this.randomUser('Henk3');
+		await this.randomUser('Henk4');
+		await this.randomUser('Henk5');
+		await this.randomUser('Henk6');
+		return 3;
 	}
 
 	queuePrint() {
@@ -198,25 +147,14 @@ export class QueueService {
 		return 3;
 	}
 
-	async randomUser(name: string, minus: number, avatar: string) {
-		const user = await this.userRepo.create();
-		user.avatar = avatar;
-		user.username = name;
-
-		user.intraId = name + '_intra_id';
-		// user.status = 'online';
-
-		// const user_ranking = await this.rankingRepo.create();
-		// user_ranking.losses = 322 - minus;
-		// user_ranking.score = 344 - minus;
-		// user_ranking.wins = 133 - minus;
-		// user_ranking.rank = 999 - minus;
-		// await this.rankingRepo.save(user_ranking);
-		// user.ranking = user_ranking;
-
-		return this.userRepo.save(user);
+	async randomUser(name: string) {
+		const newUser: CreateUserInput = {
+			username: name,
+			avatar: 'img/' + name.toLowerCase() + '.png',
+			intraId: name + '_intra_id',
+		};
+		return await this.userService.create(newUser);
 	}
-
 
 	removeQueue () {
 		this.queued_matches.splice(0, this.queued_matches.length);

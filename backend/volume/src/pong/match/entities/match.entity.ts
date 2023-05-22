@@ -18,7 +18,7 @@ export class Match {
 	@ManyToMany(() => User, (user) => user.match_history)
 	@JoinTable()
 	@Field(() => [User])
-	players: [User, User];
+	players: User[];
 
 	@Column()
 	@Field(() => Int)
@@ -27,8 +27,4 @@ export class Match {
 	@Column()
 	@Field(() => Int)
 	playerTwoScore: number;
-	
-	// @Column()
-	// @Field(() => [Int])
-	// playerScores: [number, number];
 }
