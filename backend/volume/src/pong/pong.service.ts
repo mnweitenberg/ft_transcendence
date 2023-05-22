@@ -1,20 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as i from './interfaces';
 import * as C from './constants';
-import { GameLogicService } from './gameLogic.service';
 
 @Injectable()
 export class PongService {
-	constructor(private readonly gameLogicService: GameLogicService) {}
-
-	private state = this.initializeGameState();
-
-	async startMatch(match): Promise<i.GameState> {
-		this.state.match = match;
-		this.gameLogicService.runGame(this.state);
-		return this.state;
-	}
-
 	initializeGameState(): i.GameState {
 		const paddleLeft: i.Paddle = {
 			x: C.BORDER_OFFSET,
@@ -29,13 +18,11 @@ export class PongService {
 		};
 
 		const p1: i.Player = {
-			id: '1',
 			paddle: paddleLeft,
 			isServing: false,
 		};
 
 		const p2: i.Player = {
-			id: '2',
 			paddle: paddleRight,
 			isServing: true,
 		};
@@ -48,7 +35,6 @@ export class PongService {
 		};
 
 		const state: i.GameState = {
-			isStarted: false,
 			ballIsInPlay: false,
 			p1,
 			p2,

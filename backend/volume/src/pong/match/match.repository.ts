@@ -59,6 +59,7 @@ export class MatchRepository {
 		match.players = [queuedMatch.playerOne, queuedMatch.playerTwo];
 		match.playerOneScore = 0;
 		match.playerTwoScore = 0;
+		match.isFinished = false;
 		return match;
 	}
 

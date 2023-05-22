@@ -21,22 +21,18 @@ export class GameLogicService {
 
 	async runGame(state: i.GameState): Promise<void> {
 		if (!state.match) return;
-		state.isStarted = true;
 		console.log(
 			state.match.players[P.One].username,
 			state.match.players[P.Two].username,
 		);
-		// setInterval(() => {
 		if (!state.match) return;
 		this.handleEndOfGame(state);
 		this.handleCollisions(state);
 		this.handleScore(state);
-		// socket.emit('gameState', state);
-		// }, 1000 / 24);
 	}
 
 	serveBall(state: i.GameState): void {
-		if (!state.isStarted || state.ballIsInPlay) return;
+		if (state.ballIsInPlay) return;
 		state.p1.isServing = false;
 		state.p2.isServing = false;
 		state.ballIsInPlay = true;
@@ -45,10 +41,9 @@ export class GameLogicService {
 
 	private async handleEndOfGame(state: i.GameState) {
 		if (
-			(state.isStarted && state.match.playerOneScore >= C.MAX_SCORE) ||
+			state.match.playerOneScore >= C.MAX_SCORE ||
 			state.match.playerTwoScore >= C.MAX_SCORE
 		) {
-			state.isStarted = false;
 			console.log(state.match);
 			try {
 				const savedMatch = await this.matchRepo.saveMatch(state.match);
@@ -56,6 +51,8 @@ export class GameLogicService {
 				console.log('Successfully saved');
 			} catch (error) {
 				console.log('Error saving GameScore', error);
+			} finally {
+				state.match.isFinished = true;
 			}
 		}
 	}
@@ -93,7 +90,7 @@ export class GameLogicService {
 			this.handleBounceTopBottom(state);
 		}
 
-		if (state.isStarted && !state.ballIsInPlay) {
+		if (!state.ballIsInPlay) {
 			this.moveBallDuringServe(state);
 			if (state.p1.isServing || state.p2.isServing)
 				setTimeout(() => this.serveBall(state), C.TIMEMOUT);

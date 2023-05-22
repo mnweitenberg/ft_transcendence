@@ -14,15 +14,15 @@ export function drawItems(canvas: i.Canvas, p5: p5Types, state: i.GameState) {
 
 	const paddleLeft: i.Paddle = {
 		x: canvas.borderOffset,
-		y: state.paddleLeft.y * canvas.height,
-		height: state.paddleLeft.height * canvas.height,
+		y: state.p1.paddle.y * canvas.height,
+		height: state.p1.paddle.height * canvas.height,
 	};
 	drawPaddle(canvas, p5, paddleLeft);
 
 	const paddleRight: i.Paddle = {
 		x: canvas.width - canvas.borderOffset - canvas.paddleWidth,
-		y: state.paddleRight.y * canvas.height,
-		height: state.paddleRight.height * canvas.height,
+		y: state.p2.paddle.y * canvas.height,
+		height: state.p2.paddle.height * canvas.height,
 	};
 	drawPaddle(canvas, p5, paddleRight);
 

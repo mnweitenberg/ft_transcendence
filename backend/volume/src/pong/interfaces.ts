@@ -29,13 +29,11 @@ export interface Paddle {
 }
 
 export interface Player {
-	id: string;
 	paddle: Paddle;
 	isServing: boolean;
 }
 
 export interface GameState {
-	isStarted: boolean;
 	ballIsInPlay: boolean;
 	p1: Player;
 	p2: Player;
