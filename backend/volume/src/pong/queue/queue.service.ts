@@ -19,6 +19,8 @@ export class QueueService {
 		player_one_id: string,
 		player_two_id: string,
 	) : Promise <QueuedMatch> {
+
+		// TODO: als je userRepo zoekt op id dat niet betsaaat is error 
 		const player_one = await this.userService.getUserById(player_one_id);
 		const player_two = await this.userService.getUserById(player_two_id);
 
@@ -28,11 +30,12 @@ export class QueueService {
 		this.queued_matches.push(new_queued_match);
 
 		pubSub.publish('matchFound', { matchFound: new_queued_match });
+		// TODO: call game van milan
 
 		return (new_queued_match);
 	}
 	
-	async lookForMatch(player_id: string): Promise<QueuedMatch> | null {
+	async joinQueue(player_id: string): Promise<QueuedMatch> | null {
 		if (!this.canPlayerLookForMatch(player_id)) return null;
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
@@ -84,7 +87,6 @@ export class QueueService {
 
 
 
-	// TODO: als je userRepo zoekt op id dat niet betsaaat is error 
 
 
 	
@@ -121,7 +123,7 @@ export class QueueService {
 	private async createMatch(username: string){
 		let name : string = username;
 		let user = await this.userService.getUser(name);
-		if (user) await this.lookForMatch(user.id);
+		if (user) await this.joinQueue(user.id);
 
 	}
 

@@ -11,7 +11,7 @@ export class QueueResolver {
 
 	@Mutation((returns) => QueuedMatch, { nullable: true })
 	joinQueue(@Args('user_id') user_id: string) {
-		return this.queueService.lookForMatch(user_id);
+		return this.queueService.joinQueue(user_id);
 	}
 
 	@Subscription((returns) => QueuedMatch)
