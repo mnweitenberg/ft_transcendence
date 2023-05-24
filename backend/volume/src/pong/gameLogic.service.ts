@@ -9,7 +9,7 @@ export class GameLogicService {
 	constructor(private readonly matchRepo: MatchRepository) {
 		this.width = C.WIDTH;
 		this.height = C.HEIGHT;
-		this.paddleWidth = C.PADDLE_HEIGHT;
+		this.paddleWidth = C.PADDLE_WIDTH;
 		this.ballDiameter = C.BALL_DIAMETER;
 		this.borderOffset = C.BORDER_OFFSET;
 	}
@@ -54,9 +54,8 @@ export class GameLogicService {
 			state.match.p2Score >= C.MAX_SCORE
 		) {
 			state.match.isFinished = true;
-			console.log(state.match);
 			const savedMatch = await this.matchRepo.saveMatch(state.match);
-			console.log('Successfully saved', savedMatch);
+			console.log('Successfully saved', savedMatch.players[0].username, 'vs', savedMatch.players[1].username);
 		}
 	}
 

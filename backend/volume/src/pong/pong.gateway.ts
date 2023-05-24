@@ -66,15 +66,20 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
 	}
 
-	private async startNewGame() {
+	private async startNewGame() {		
+		console.log('Starting new game');
 		await this.queueService.createMatches();
 		this.state = this.initializeGameState();
 		this.state.match = await this.matchRepo.initNewMatch();
-		if (!this.state.match) return;
+		if (!this.state.match) {
+			console.log('No match found');
+			return;
+		}
 		this.server.emit('players', [
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
+		console.log('state.ball.ySpeed', this.state.ball.ySpeed);
 		setInterval(() => this.updateGameState(), 1000 / 24);
 	}
 
@@ -133,7 +138,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			p2,
 			ball,
 		};
-
+		console.log('C.BALL_SPEED', C.BALL_SPEED);
 		return state;
 	}
 }

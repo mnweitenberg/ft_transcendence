@@ -52,7 +52,6 @@ export class MatchRepository {
 
 	public async initNewMatch(): Promise<Match> {
 		const queuedMatch = this.queueService.getQueuedMatch();
-		console.log(queuedMatch);
 		if (!queuedMatch) return;
 		const match = new Match();
 		match.players = [queuedMatch.p1, queuedMatch.p2];
