@@ -22,11 +22,11 @@ export class Match {
 
 	@Column()
 	@Field(() => Int)
-	playerOneScore: number;
+	p1Score: number;
 
 	@Column()
 	@Field(() => Int)
-	playerTwoScore: number;
+	p2Score: number;
 
 	@Column()
 	@Field(() => Boolean)

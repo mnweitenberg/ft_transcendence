@@ -12,23 +12,23 @@ function MatchHistory({ user }: { user: i.User }) {
 					{getMatchesByUser(matchHistory, user).map((match) => (
 						<tr key={match.id}>
 							<td className="td_ava">
-								<img className="match_avatar" src={match.playerOne.avatar} />
+								<img className="match_avatar" src={match.p1.avatar} />
 							</td>
 
-							<td className="td_name">{match.playerOne.name}</td>
+							<td className="td_name">{match.p1.name}</td>
 
 							<td className="td_score align_right">
-								<h4>{match.score.playerOne}</h4>
+								<h4>{match.score.p1}</h4>
 							</td>
 
 							<td className="td_score align_right">
-								<h4>{match.score.playerTwo}</h4>
+								<h4>{match.score.p2}</h4>
 							</td>
 
-							<td className="td_name align_right">{match.playerTwo.name}</td>
+							<td className="td_name align_right">{match.p2.name}</td>
 
 							<td className="td_ava">
-								<img className="match_avatar" src={match.playerTwo.avatar} />
+								<img className="match_avatar" src={match.p2.avatar} />
 							</td>
 						</tr>
 					))}

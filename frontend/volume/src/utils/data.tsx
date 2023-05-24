@@ -43,33 +43,33 @@ export const user: i.User = milan;
 export const queue: Array<i.GameScore> = [
 	{
 		id: 3,
-		playerOne: user,
-		playerTwo: marius,
-		score: { playerOne: 0, playerTwo: 0 },
+		p1: user,
+		p2: marius,
+		score: { p1: 0, p2: 0 },
 	},
 	{
 		id: 4,
-		playerOne: jonathan,
-		playerTwo: justin,
-		score: { playerOne: 0, playerTwo: 0 },
+		p1: jonathan,
+		p2: justin,
+		score: { p1: 0, p2: 0 },
 	},
 	{
 		id: 5,
-		playerOne: justin,
-		playerTwo: user,
-		score: { playerOne: 0, playerTwo: 0 },
+		p1: justin,
+		p2: user,
+		score: { p1: 0, p2: 0 },
 	},
 	{
 		id: 6,
-		playerOne: user,
-		playerTwo: jonathan,
-		score: { playerOne: 0, playerTwo: 0 },
+		p1: user,
+		p2: jonathan,
+		score: { p1: 0, p2: 0 },
 	},
 	// {
 	// 	id:13,
-	// 	playerOne: jonathan,
-	// 	playerTwo: null,
-	// 	score: {playerOne: 0, playerTwo: 0},
+	// 	p1: jonathan,
+	// 	p2: null,
+	// 	score: {p1: 0, p2: 0},
 	// },
 ];
 
@@ -101,15 +101,15 @@ export const ranking = [
 export const matchHistory: Array<i.GameScore> = [
 	{
 		id: 1,
-		playerOne: justin,
-		playerTwo: jonathan,
-		score: { playerOne: 10, playerTwo: 6 },
+		p1: justin,
+		p2: jonathan,
+		score: { p1: 10, p2: 6 },
 	},
 	{
 		id: 2,
-		playerOne: user,
-		playerTwo: marius,
-		score: { playerOne: 4, playerTwo: 10 },
+		p1: user,
+		p2: marius,
+		score: { p1: 4, p2: 10 },
 	},
 ];
 

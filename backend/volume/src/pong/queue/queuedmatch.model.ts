@@ -4,8 +4,8 @@ import { User } from 'src/user/entities/user.entity';
 @ObjectType()
 export class QueuedMatch {
 	@Field()
-	playerOne: User;
+	p1: User;
 
 	@Field()
-	playerTwo: User;
+	p2: User;
 }

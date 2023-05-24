@@ -4,7 +4,6 @@ import { QueuedMatch } from './queuedmatch.model';
 import { UserService } from 'src/user/user.service';
 import { CreateUserInput } from 'src/user/dto/create-user.input';
 import { MatchRepository } from '../match/match.repository';
-import { PongService } from '../pong.service';
 import { User } from 'src/user/entities/user.entity';
 
 const DEBUG_PRINT = false;
@@ -29,8 +28,8 @@ export class QueueService {
 		);
 
 		const new_queued_match = new QueuedMatch();
-		new_queued_match.playerOne = players[0];
-		new_queued_match.playerTwo = players[1];
+		new_queued_match.p1 = players[0];
+		new_queued_match.p2 = players[1];
 		this.queued_matches.push(new_queued_match);
 
 		pubSub.publish('matchFound', { matchFound: new_queued_match });
@@ -45,11 +44,11 @@ export class QueueService {
 		return new_queued_match;
 	}
 	private async checkPlayers(id1, id2): Promise<User[]> {
-		const playerOne = await this.userService.getUserById(id1);
-		const playerTwo = await this.userService.getUserById(id2);
-		if (!playerOne || !playerTwo)
+		const p1 = await this.userService.getUserById(id1);
+		const p2 = await this.userService.getUserById(id2);
+		if (!p1 || !p2)
 			throw new Error("One or more users don't exist in the database");
-		return [playerOne, playerTwo];
+		return [p1, p2];
 	}
 
 	async joinQueue(player_id: string): Promise<QueuedMatch> | null {
@@ -121,8 +120,8 @@ export class QueueService {
 			if (playerId === this.users_looking_for_match[i]) return false;
 		for (let i = 0; i < this.queued_matches.length; i++)
 			if (
-				playerId === this.queued_matches[i].playerOne.id ||
-				playerId === this.queued_matches[i].playerTwo.id
+				playerId === this.queued_matches[i].p1.id ||
+				playerId === this.queued_matches[i].p2.id
 			)
 				return false;
 
@@ -173,12 +172,12 @@ export class QueueService {
 		await this.randomUser('Justin');
 		await this.randomUser('Milan');
 		await this.randomUser('Jonathan');
-		await this.randomUser('Henk1');
-		await this.randomUser('Henk2');
-		await this.randomUser('Henk3');
-		await this.randomUser('Henk4');
-		await this.randomUser('Henk5');
-		await this.randomUser('Henk6');
+		// await this.randomUser('Henk1');
+		// await this.randomUser('Henk2');
+		// await this.randomUser('Henk3');
+		// await this.randomUser('Henk4');
+		// await this.randomUser('Henk5');
+		// await this.randomUser('Henk6');
 		return 3;
 	}
 

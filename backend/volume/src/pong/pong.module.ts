@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PongService } from './pong.service';
 import { Match } from './match/entities/match.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchRepository } from './match/match.repository';
@@ -18,7 +17,6 @@ import { QueueModule } from './queue/queue.module';
 		UserModule,
 	],
 	providers: [
-		PongService,
 		MatchRepository,
 		GameLogicService,
 		QueueService,

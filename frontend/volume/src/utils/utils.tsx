@@ -5,22 +5,22 @@ export function getChatsByUser(chats: Array<i.Chat>, user: i.User): Array<i.Chat
 }
 
 export function getMatchesByUser(matches: Array<i.GameScore>, player: i.User): Array<i.GameScore> {
-	return matches.filter((match) => match.playerOne === player || match.playerTwo === player);
+	return matches.filter((match) => match.p1 === player || match.p2 === player);
 }
 
 export function getWinsByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
 	return getMatchesByUser(matches, user).filter(
 		(match) =>
-			(match.playerOne === user && match.score.playerOne > match.score.playerTwo) ||
-			(match.playerTwo === user && match.score.playerTwo > match.score.playerOne)
+			(match.p1 === user && match.score.p1 > match.score.p2) ||
+			(match.p2 === user && match.score.p2 > match.score.p1)
 	);
 }
 
 export function getLossesByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
 	return getMatchesByUser(matches, user).filter(
 		(match) =>
-			(match.playerOne === user && match.score.playerOne < match.score.playerTwo) ||
-			(match.playerTwo === user && match.score.playerTwo < match.score.playerOne)
+			(match.p1 === user && match.score.p1 < match.score.p2) ||
+			(match.p2 === user && match.score.p2 < match.score.p1)
 	);
 }
 

@@ -41,33 +41,32 @@ export class MatchRepository {
 	// 	if (!queuedMatch) return;
 	// 	const match = new Match();
 	// 	match.players = await this.checkPlayers([
-	// 		queuedMatch.playerOne,
-	// 		queuedMatch.playerTwo,
+	// 		queuedMatch.p1,
+	// 		queuedMatch.p2,
 	// 	]);
-	// 	match.playerOneScore = 0;
-	// 	match.playerTwoScore = 0;
+	// 	match.p1Score = 0;
+	// 	match.p2Score = 0;
 	// 	match.isFinished = false;
 	// 	return match;
 	// }
 
 	public async initNewMatch(): Promise<Match> {
-		this.queueService.createMatches();
 		const queuedMatch = this.queueService.getQueuedMatch();
 		console.log(queuedMatch);
 		if (!queuedMatch) return;
 		const match = new Match();
-		match.players = [queuedMatch.playerOne, queuedMatch.playerTwo];
-		match.playerOneScore = 0;
-		match.playerTwoScore = 0;
+		match.players = [queuedMatch.p1, queuedMatch.p2];
+		match.p1Score = 0;
+		match.p2Score = 0;
 		match.isFinished = false;
 		return match;
 	}
 
 	private async checkPlayers(players: User[]): Promise<User[]> {
-		const playerOne = await this.userService.getUserById(players[0].id);
-		const playerTwo = await this.userService.getUserById(players[1].id);
-		if (!playerOne || !playerTwo)
+		const p1 = await this.userService.getUserById(players[0].id);
+		const p2 = await this.userService.getUserById(players[1].id);
+		if (!p1 || !p2)
 			throw new Error("One or more users don't exist in the database");
-		return [playerOne, playerTwo];
+		return [p1, p2];
 	}
 }

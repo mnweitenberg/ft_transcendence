@@ -2,7 +2,12 @@ import * as i from "../../types/Interfaces";
 import p5Types from "p5";
 import SocketSingleton from "../../utils/socketSingleton";
 
-const id = "8b62869a-788d-42a5-8550-0ea2e3c9334f";
+const id = "1ed22af1-292b-4aca-8d5d-1024a410693c";
+
+export function startNewGame() {
+	const socketSingleton = SocketSingleton.getInstance();
+	socketSingleton.socket.emit("startNewGame", { id: id });
+}
 
 export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 	const socketSingleton = SocketSingleton.getInstance();

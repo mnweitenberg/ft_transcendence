@@ -8,11 +8,11 @@ import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 const MATCH_FOUND = gql`
 	subscription matchFound {
 		matchFound {
-			playerOne {
+			p1 {
 				username
 				avatar
 			}
-			playerTwo {
+			p2 {
 				username
 				avatar
 			}
@@ -23,7 +23,7 @@ const MATCH_FOUND = gql`
 const GET_QUEUED_MATCH = gql`
 	query getQueuedMatch {
 		getQueuedMatch {
-			playerOne {
+			p1 {
 				username
 				avatar
 			}
@@ -34,11 +34,11 @@ const GET_QUEUED_MATCH = gql`
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
 		getWholeQueue {
-			playerOne {
+			p1 {
 				username
 				avatar
 			}
-			playerTwo {
+			p2 {
 				username
 				avatar
 			}
@@ -49,10 +49,10 @@ const GET_WHOLE_QUEUE = gql`
 const JOIN_QUEUE = gql`
 	mutation joinQueue($user_id: String!) {
 		joinQueue(user_id: $user_id) {
-			playerOne {
+			p1 {
 				username
 			}
-			playerTwo {
+			p2 {
 				username
 			}
 		}
@@ -84,20 +84,20 @@ export default function Queue(props: i.ModalProps) {
 	return (
 		<>
 			{queue_data.getWholeQueue.map(function (game: any) {
-				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
+				if (!game.p1 || !game.p2) return <JoinQueueElement />;
 				return (
 					<div
 						className="flex_row_spacebetween"
-						key={game.playerOne.username + game.playerTwo.username}
+						key={game.p1.username + game.p2.username}
 					>
 						<div className="player player--one">
-							<h3 className="name">{game.playerOne.username}</h3>
-							<img className="avatar" src={game.playerOne.avatar} />
+							<h3 className="name">{game.p1.username}</h3>
+							<img className="avatar" src={game.p1.avatar} />
 						</div>
 
 						<div className="player player--two">
-							<img className="avatar" src={game.playerTwo.avatar} />
-							<h3 className="name">{game.playerTwo.username}</h3>
+							<img className="avatar" src={game.p2.avatar} />
+							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>
 				);
@@ -148,8 +148,8 @@ function JoinQueueElement() {
 		} else {
 			return (
 				<>
-					Match found: {queue_data.joinQueue.playerOne.username} vs{" "}
-					{queue_data.joinQueue.playerTwo.username}
+					Match found: {queue_data.joinQueue.p1.username} vs{" "}
+					{queue_data.joinQueue.p2.username}
 				</>
 			);
 		}
@@ -172,8 +172,8 @@ function JoinedQueue({ user_id }: { user_id: string }) {
 
 	// return (
 	// 	<div>
-	// 		Match found: {data.matchFound.playerOne.username} vs{" "}
-	// 		{data.matchFound.playerTwo.username}
+	// 		Match found: {data.matchFound.p1.username} vs{" "}
+	// 		{data.matchFound.p2.username}
 	// 	</div>
 	// );
 }

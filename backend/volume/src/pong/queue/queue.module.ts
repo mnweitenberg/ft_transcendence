@@ -8,7 +8,6 @@ import { Ranking } from '../../pong/ranking/entities/ranking.entity';
 import { User } from '../../user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { MatchRepository } from '../match/match.repository';
-import { PongService } from '../pong.service';
 import { GameLogicService } from '../gameLogic.service';
 
 @Module({
@@ -23,7 +22,6 @@ import { GameLogicService } from '../gameLogic.service';
 		QueueResolver,
 		QueueService,
 		GameLogicService,
-		PongService,
 		MatchRepository,
 	],
 	exports: [QueueService],
