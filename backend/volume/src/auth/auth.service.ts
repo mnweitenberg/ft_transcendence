@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as dotenv from 'dotenv';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-dotenv.config();
 const axios = require('axios').default;
 
 export interface IntraToken {
@@ -67,11 +65,12 @@ export class AuthService {
 		let user: User = await this.userService.getUserByIntraId(
 			response.data.id,
 		);
-		console.log(response.data);
 		if (!user) {
+			const avatar = this.avatarService.downloadAvatar(response.data.image.link.versions.medium);
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,
+				avatar: 
 			});
 		}
 		console.log(user);
