@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as dotenv from 'dotenv';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-dotenv.config();
 const axios = require('axios').default;
 
 export interface IntraToken {
