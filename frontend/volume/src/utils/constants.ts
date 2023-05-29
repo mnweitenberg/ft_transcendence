@@ -12,3 +12,5 @@ export enum ModalType {
 	userstats,
 	alert,
 }
+
+export const env = import.meta.env;

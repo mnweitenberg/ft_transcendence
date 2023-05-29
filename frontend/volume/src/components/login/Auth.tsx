@@ -1,4 +1,5 @@
 import "src/styles/style.css";
+import { env } from "src/utils/constants";
 
 function generateState(): string {
 	const arr = new Uint8Array(10);
@@ -16,7 +17,7 @@ function Auth() {
 		"?client_id=" +
 		import.meta.env.VITE_CLIENT_UID +
 		"&redirect_uri=" +
-		encodeURIComponent("http://localhost:4242/callback") +
+		encodeURIComponent(`https://${env.VITE_DOMAIN}:4242/callback`) +
 		"&state=" +
 		generateState() +
 		"&response_type=code";

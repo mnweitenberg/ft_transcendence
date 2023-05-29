@@ -23,6 +23,6 @@ export class AuthController {
 			'Set-Cookie',
 			'session_cookie=' + jwtCookie + '; HttpOnly; Secure; SameSite=Lax',
 		);
-		response.status(200).redirect('http://localhost:5574/home');
+		response.status(200).redirect(`https://${process.env.DOMAIN}:5574/home`);
 	}
 }
