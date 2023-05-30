@@ -4,6 +4,8 @@ import { Queue } from './queue.model';
 import { pubSub } from 'src/app.module';
 import { Match } from '../match/entities/match.entity';
 
+
+
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
@@ -38,7 +40,7 @@ export class QueueResolver {
 	/*
 	TESTING
 	*/
-
+	
 	@Query((returns) => Number)
 	createMatchesQuery() {
 		return this.queueService.createMatches();

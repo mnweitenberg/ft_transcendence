@@ -5,28 +5,19 @@ import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const MATCH_FOUND = gql`
-	subscription matchFound($user_id: String!) {
-		matchFound(user_id: $user_id) {
-			playerOne {
-				id
-			}
-			playerTwo {
-				id
-			}
+const CURRENT_USER = gql`
+	query currentUserQuery {
+		currentUserQuery {
+			id
 		}
 	}
 `;
 
-const GET_QUEUE = gql`
-	query getQueueQuery {
-		getQueueQuery {
-			gameId
-			playerOne {
-				username
-			}
-			playerTwo {
-				username
+const MATCH_FOUND = gql`
+	subscription matchFound($user_id: String!) {
+		matchFound(user_id: $user_id) {
+			players {
+				id
 			}
 		}
 	}
@@ -35,10 +26,7 @@ const GET_QUEUE = gql`
 const JOIN_QUEUE = gql`
 	mutation joinQueue($userId: String!) {
 		joinQueue(user_id: $userId) {
-			playerOne {
-				id
-			}
-			playerTwo {
+			players {
 				id
 			}
 		}
@@ -125,13 +113,25 @@ function JoinQueueElement() {
 		},
 	] = useMutation(JOIN_QUEUE);
 
-	const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
+	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
+
+	let user_id = "";
+
+	if (user_loading) console.log("loading placeholder"); // FIXME:
+	if (user_error) console.log(user_error);
+	else if (user_data) {
+		user_id = user_data.currentUserQuery.username;
+	}
+
+	// const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
 
-		const user_id = event.target.elements.userId.value;
-		set_user_id(user_id); // TODO: remove together with the useState
+		// const user_id = event.target.elements.userId.value;
+		// set_user_id(user_id); // TODO: remove together with the useState
+
+		console.log(user_id);
 
 		joinQueue({
 			variables: {
@@ -153,8 +153,8 @@ function JoinQueueElement() {
 		} else {
 			return (
 				<>
-					Match found: {queue_data.joinQueue.playerOne.userId} vs{" "}
-					{queue_data.joinQueue.playerTwo.userId}
+					Match found: {queue_data.joinQueue.players[0].id} vs{" "}
+					{queue_data.joinQueue.players[1].id}
 				</>
 			);
 		}
@@ -179,7 +179,7 @@ function JoinedQueue({ user_id }: { user_id: string }) {
 
 	return (
 		<div>
-			Match found: {data.matchFound.playerOne.userId} vs {data.matchFound.playerTwo.userId}
+			Match found: {data.matchFound.players[1].id} vs {data.matchFound.players[0].id}
 		</div>
 	);
 }
