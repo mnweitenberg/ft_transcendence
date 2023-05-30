@@ -41,7 +41,7 @@ interface Stats {
 export interface User {
 	intraId?: string;
 	username: string;
-	avatar: string;
+	avatar?: string;
 	stats?: Stats;
 	status?: "in game" | "online" | "offline" | "";
 	// chat?: Array<Chat>;

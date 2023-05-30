@@ -29,9 +29,11 @@ export class User {
 	@Field()
 	username: string;
 
-	@Column()
+	@Column({
+		nullable: true,
+	})
 	@Field()
-	avatar: string;
+	avatar: string = ""; // FIXME: temp fix
 
 	@ManyToMany(() => Channel, (channel) => channel.members)
 	@Field(() => [Channel], { nullable: true })

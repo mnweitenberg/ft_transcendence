@@ -21,14 +21,15 @@
 }
 
 .play-button {
-    margin-top: -500px;
+    margin-bottom: 200px;
     margin-left: auto;
     margin-right: auto;
-    color: white;
+    display: block;
+    color: rgb(255, 255, 255);
     font: Ariel;
     font-size: 100px;
     text-align: center;
-    background-color: #eeaeca;
+    background-image: linear-gradient(120deg, #cfe0f2 0%, #e9f2fc 25%, #cfe0f2 50%, #e9f2fc 100%);
     border-radius: 10px;
     padding: 10px;
     padding-left: 30px;

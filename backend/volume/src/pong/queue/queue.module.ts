@@ -10,6 +10,7 @@ import { UserModule } from 'src/user/user.module';
 import { MatchRepository } from '../match/match.repository';
 import { PongService } from '../pong.service';
 import { GameLogicService } from '../gameLogic.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
 	imports: [

@@ -7,7 +7,6 @@ import { MatchRepository } from '../match/match.repository';
 import { PongService } from '../pong.service';
 import { User } from 'src/user/entities/user.entity';
 
-const DEBUG_PRINT = false;
 
 @Injectable()
 export class QueueService {
@@ -63,11 +62,6 @@ export class QueueService {
 					player_id,
 				);
 				this.users_looking_for_match.splice(i, 1);
-
-				if (DEBUG_PRINT) {
-					console.log('Found game: ', new_queued_match);
-				}
-
 				return new_queued_match;
 			}
 		}
@@ -75,6 +69,8 @@ export class QueueService {
 		return null;
 	}
 
+		// TODO: queued_matches public/global maken zodat milan deze functie kan callen en het geen query hoeft te zijn 
+		// 	want van backend naar backend
 	getQueuedMatch(): QueuedMatch | null {
 		const top_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
@@ -113,7 +109,6 @@ export class QueueService {
 	// }
 
 	getWholeQueue() {
-		// console.log (this.queued_matches);
 		return this.queued_matches;
 	}
 

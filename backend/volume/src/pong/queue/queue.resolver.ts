@@ -5,12 +5,14 @@ import { pubSub } from 'src/app.module';
 import { Match } from '../match/entities/match.entity';
 import { QueuedMatch } from './queuedmatch.model';
 
+
+
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
 	@Mutation((returns) => QueuedMatch, { nullable: true })
-	joinQueue(@Args('user_id') user_id: string) {
+	async joinQueue(@Args('user_id') user_id: string) {
 		return this.queueService.joinQueue(user_id);
 	}
 
@@ -33,7 +35,7 @@ export class QueueResolver {
 	/*
 	TESTING
 	*/
-
+	
 	@Query((returns) => Number)
 	createMatches() {
 		return this.queueService.createMatches();
