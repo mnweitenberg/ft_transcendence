@@ -21,7 +21,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private readonly matchRepo: MatchRepository,
 		private readonly gameLogicService: GameLogicService,
 		) {}
-		
+
 	private state: i.GameState = this.initializeGameState();
 
 	async handleConnection(client: Socket): Promise<void> {

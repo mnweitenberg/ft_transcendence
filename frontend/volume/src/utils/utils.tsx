@@ -28,7 +28,7 @@ export function getLossesByUser(matches: Array<i.GameScore>, user: i.User): Arra
 export function createChallengeAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
-			<h3>Challenge {props.selectedUser.name}? </h3>
+			<h3>Challenge {props.selectedUser.username}? </h3>
 			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);
@@ -37,7 +37,7 @@ export function createChallengeAlert(props: i.ModalProps) {
 export function createFriendRequesAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
-			<h3>Send friend request to {props.selectedUser.name}? </h3>
+			<h3>Send friend request to {props.selectedUser.username}? </h3>
 			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);
@@ -46,7 +46,7 @@ export function createFriendRequesAlert(props: i.ModalProps) {
 export function createBlockAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
-			<h3>Are you sure you want to block {props.selectedUser.name}? </h3>
+			<h3>Are you sure you want to block {props.selectedUser.username}? </h3>
 			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);

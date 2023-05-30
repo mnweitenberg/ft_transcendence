@@ -25,7 +25,7 @@ export default function Profile(props: i.ModalProps) {
 									onClick={() =>
 										props.toggleModal(friend, <UserStats {...props} />)
 									}
-									key={friend.name}
+									key={friend.username}
 									src={friend.avatar}
 								/>
 							);

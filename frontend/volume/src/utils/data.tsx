@@ -4,28 +4,28 @@ import * as i from "../types/Interfaces";
 // USERS //
 ///////////
 export const marius: i.User = {
-	name: "Marius",
+	username: "Marius",
 	avatar: "/img/marius.png",
 	stats: { ranking: 1, wins: 1, losses: 0, score: 3 },
 	status: "in game",
 };
 
 export const justin: i.User = {
-	name: "Justin",
+	username: "Justin",
 	avatar: "/img/justin.png",
 	stats: { ranking: 2, wins: 1, losses: 0, score: 3 },
 	status: "in game",
 };
 
 export const jonathan: i.User = {
-	name: "Jonathan",
+	username: "Jonathan",
 	avatar: "/img/jonathan.png",
 	stats: { ranking: 3, wins: 0, losses: 1, score: -1 },
 	status: "online",
 };
 
 export const milan: i.User = {
-	name: "Milan",
+	username: "Milan",
 	avatar: "/img/milan.png",
 	stats: { ranking: 4, wins: 0, losses: 1, score: -1 },
 	friends: [justin, jonathan, marius],
@@ -36,42 +36,6 @@ export const allUsers: Array<i.User> = [marius, justin, jonathan, milan];
 
 export const user: i.User = milan;
 // export const user: i.User | null = null;
-
-///////////
-// QUEUE //
-///////////
-export const queue: Array<i.GameScore> = [
-	{
-		id: 3,
-		p1: user,
-		p2: marius,
-		score: { p1: 0, p2: 0 },
-	},
-	{
-		id: 4,
-		p1: jonathan,
-		p2: justin,
-		score: { p1: 0, p2: 0 },
-	},
-	{
-		id: 5,
-		p1: justin,
-		p2: user,
-		score: { p1: 0, p2: 0 },
-	},
-	{
-		id: 6,
-		p1: user,
-		p2: jonathan,
-		score: { p1: 0, p2: 0 },
-	},
-	// {
-	// 	id:13,
-	// 	p1: jonathan,
-	// 	p2: null,
-	// 	score: {p1: 0, p2: 0},
-	// },
-];
 
 /////////////
 // RANKING //
@@ -98,7 +62,7 @@ export const ranking = [
 /////////////
 // MATCHES //
 /////////////
-export const matchHistory: Array<i.GameScore> = [
+export const matchHistory: Array<any> = [
 	{
 		id: 1,
 		p1: justin,

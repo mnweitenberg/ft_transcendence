@@ -1,6 +1,4 @@
 import "src/styles/style.css";
-import UserStats from "src/components/common/UserStats";
-import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
