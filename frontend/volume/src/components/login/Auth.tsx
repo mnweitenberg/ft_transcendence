@@ -1,11 +1,11 @@
 import "src/styles/style.css";
 
-function dec2hex(dec: any) {
-	return dec.toString(16).padStart(2, "0");
-}
-
 function generateState(): string {
 	const arr = new Uint8Array(10);
+	const dec2hex = (dec: any) => {
+		return dec.toString(16).padStart(2, "0");
+	};
+
 	window.crypto.getRandomValues(arr);
 	return Array.from(arr, dec2hex).join("");
 }

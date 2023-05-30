@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Request } from 'express';
 import { Login } from './login.model';
-import * as dotenv from 'dotenv';
-dotenv.config();
 const axios = require('axios').default;
 
 @Injectable()
