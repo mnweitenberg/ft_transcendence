@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import Loading from "../authorization/Loading";
-import "src/styles/welcome.css";
+import "src/styles/login-pages/welcome.css";
 
 const GREETING = gql`
 	query currentUserQuery {

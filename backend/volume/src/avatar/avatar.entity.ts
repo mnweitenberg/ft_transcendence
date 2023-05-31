@@ -11,9 +11,9 @@ export class Avatar {
   id: number;
 
   @Column()
-  filename: string;
+  file: string;
 
-  @Column({ type: "bytea" })
-  data: Uint8Array;
+  @Column()
+  filename: string;
 }
 

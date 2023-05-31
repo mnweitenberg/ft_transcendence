@@ -4,7 +4,7 @@ import ProtectedRoute from "./components/authorization/ProtectedRoute";
 import Welcome from "./components/login/Welcome";
 import Auth from "src/components/login/Auth";
 import Home from "src/components/Home";
-
+import NewUser from "./components/login/NewUser";
 import { AuthProvider } from "./utils/authLogic";
 
 function App() {
@@ -19,6 +19,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<Home />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/new-user"
+						element={
+							<ProtectedRoute>
+								<NewUser />
 							</ProtectedRoute>
 						}
 					/>

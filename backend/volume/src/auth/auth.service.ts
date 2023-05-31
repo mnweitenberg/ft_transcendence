@@ -66,11 +66,9 @@ export class AuthService {
 			response.data.id,
 		);
 		if (!user) {
-			const avatar = this.avatarService.downloadAvatar(response.data.image.link.versions.medium);
 			user = await this.userService.create({
 				intraId: response.data.id,
-				username: response.data.login,
-				avatar: 
+				username: response.data.login
 			});
 		}
 		console.log(user);

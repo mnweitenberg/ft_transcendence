@@ -1,0 +1,24 @@
+
+.userForm {
+  width: 100%;
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  background-size: 200% 200%;
+  background-image: linear-gradient(-45deg, #eeaeca 0%, #94bbe9 100%);
+  -webkit-animation: AnimateBG 10s ease infinite;
+  animation: AnimateBG 10s ease infinite;
+}
+
+.form {
+  width: 75%;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.input[type=text] {
+  width: 50%;
+}

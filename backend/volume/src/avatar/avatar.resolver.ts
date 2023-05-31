@@ -1,22 +1,15 @@
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Avatar } from "./avatar.entity";
+import { UploadAvatarInput } from "./dto/upload-avatar.input";
 import { AvatarService } from "./avatar.service";
-import { GraphQLUpload } from 'graphql-upload/GraphQLUpload.mjs';
 
 @Resolver((of) => Avatar)
 export class AvatarResolver {
   constructor(private avatarService: AvatarService) {}
 
   @Mutation((returns) => Avatar)
-  async createAvatar(@Args({ name: 'file', type: () => GraphQLUpload }) file: FileUpload)
+  async uploadAvatar(@Args('uploadAvatarInput') uploadAvatarInput: UploadAvatarInput)
   {
-    let readStream = file.createReadStream()
-    let data = ''
-    readStream.once('error', err => {
-      return console.log(err)
-    })
-    readStream.on('data', chunk => (data += chunk))
-    readStream.on('end', () => {
-  this.userService.createUser(email, age, Buffer.from(data, 'binary'))
-})
+    return this.avatarService.create(uploadAvatarInput);
   }
 }

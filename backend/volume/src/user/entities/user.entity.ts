@@ -30,12 +30,6 @@ export class User {
 	@Field()
 	username: string;
 
-	@Column({
-		nullable: true,
-	})
-	@Field()
-	avatar: Buffer;
-
 	@ManyToMany(() => Channel, (channel) => channel.members)
 	@Field(() => [Channel], { nullable: true })
 	channels: Channel[];

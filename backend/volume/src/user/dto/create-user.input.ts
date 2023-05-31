@@ -10,7 +10,4 @@ export class CreateUserInput {
 
 	@Field()
 	username: string;
-
-	@Field()
-	avatar: Buffer;
 }

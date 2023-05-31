@@ -148,7 +148,7 @@ export class QueueService {
 
 	async randomUser(name: string, minus: number) {
 		const user = await this.userRepo.create();
-		user.avatar = name + 'avatar';
+		//user.avatar = name + 'avatar';
 		user.username = name;
 
 		user.intraId = name + '_intra_id';
