@@ -9,6 +9,7 @@ import { GameLogicService } from './gameLogic.service';
 import { PongGateway } from './pong.gateway';
 import { QueueService } from './queue/queue.service';
 import { QueueModule } from './queue/queue.module';
+import { UserResolver } from 'src/user/user.resolver';
 
 @Module({
 	imports: [
@@ -16,6 +17,12 @@ import { QueueModule } from './queue/queue.module';
 		QueueModule,
 		UserModule,
 	],
-	providers: [MatchRepository, GameLogicService, QueueService, PongGateway],
+	providers: [
+		MatchRepository,
+		GameLogicService,
+		QueueService,
+		PongGateway,
+		UserResolver,
+	],
 })
 export class PongModule {}

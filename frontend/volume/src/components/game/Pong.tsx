@@ -13,7 +13,7 @@ function useGameSocket(initialGameState: i.GameState) {
 	useEffect(() => {
 		const socketSingleton = SocketSingleton.getInstance();
 		socketSingleton.socket.on("gameState", (gameState: i.GameState) => {
-			console.log(gameState.p2.paddle.x, gameState.p2.paddle.y, gameState.p2.paddle.height);
+			// console.log(gameState.p2.paddle.x, gameState.p2.paddle.y, gameState.p2.paddle.height);
 			// console.log(gameState.ball.x, gameState.ball.y);
 			setState(gameState);
 		});

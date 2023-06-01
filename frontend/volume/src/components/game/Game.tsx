@@ -34,6 +34,7 @@ function Game(props: i.PongProps) {
 		startNewGame();
 	}
 
+	if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
 	return (
 		<div className="game_menu" onClick={() => startGame()}>
 			<h1>

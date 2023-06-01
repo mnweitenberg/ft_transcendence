@@ -11,6 +11,11 @@ import { MatchRepository } from './match/match.repository';
 import * as C from './constants';
 import { GameLogicService } from './gameLogic.service';
 import { QueueService } from './queue/queue.service';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @WebSocketGateway(4243, { cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -24,8 +29,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private state: i.GameState = this.initializeGameState();
 
-	async handleConnection(client: Socket): Promise<void> {
+	@UseGuards(JwtAuthGuard)
+	async handleConnection(
+		client: Socket,
+		@AuthUser() user: UserInfo,
+	): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
+		console.log('user', user);
 	}
 
 	handleDisconnect(client: Socket): void {
@@ -72,6 +82,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.state = this.initializeGameState();
 		this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
+			this.server.emit('noPlayers');
 			console.log('No match found');
 			return;
 		}
@@ -79,7 +90,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		console.log('state.ball.ySpeed', this.state.ball.ySpeed);
+		// console.log('state.ball.ySpeed', this.state.ball.ySpeed);
 		setInterval(() => this.updateGameState(), 1000 / 24);
 	}
 
@@ -101,6 +112,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		new Error('Client is not a player in this game');
 		return;
 	}
+
+	// private determinePlayer(id: string): i.Player {
+	// 	if (!this.state || !this.state.match) return;
+	// 	if (id === this.state.match.players[0].id) return this.state.p1;
+	// 	if (id === this.state.match.players[1].id) return this.state.p2;
+	// 	new Error('Client is not a player in this game');
+	// 	return;
+	// }
 
 	private initializeGameState(): i.GameState {
 		const paddleLeft: i.Paddle = {
