@@ -55,7 +55,12 @@ export class GameLogicService {
 		) {
 			state.match.isFinished = true;
 			const savedMatch = await this.matchRepo.saveMatch(state.match);
-			console.log('Successfully saved', savedMatch.players[0].username, 'vs', savedMatch.players[1].username);
+			console.log(
+				'Successfully saved',
+				savedMatch.players[0].username,
+				'vs',
+				savedMatch.players[1].username,
+			);
 		}
 	}
 
@@ -158,7 +163,8 @@ export class GameLogicService {
 	}
 
 	serveBall(state: i.GameState, player: i.Player): void {
-		if (state.match.isFinished || state.ballIsInPlay || !player.isServing) return;
+		if (state.match.isFinished || state.ballIsInPlay || !player.isServing)
+			return;
 		player.isServing = false;
 		state.ballIsInPlay = true;
 		console.log('Ball is in play');

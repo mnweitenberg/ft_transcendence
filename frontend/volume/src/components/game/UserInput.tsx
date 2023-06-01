@@ -2,7 +2,7 @@ import * as i from "../../types/Interfaces";
 import p5Types from "p5";
 import SocketSingleton from "../../utils/socketSingleton";
 
-const id = "1ed22af1-292b-4aca-8d5d-1024a410693c";
+const id = "d18621e6-46a6-4df1-b30f-4b24c8fa6b34";
 
 export function startNewGame() {
 	const socketSingleton = SocketSingleton.getInstance();

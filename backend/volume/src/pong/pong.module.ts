@@ -16,11 +16,6 @@ import { QueueModule } from './queue/queue.module';
 		QueueModule,
 		UserModule,
 	],
-	providers: [
-		MatchRepository,
-		GameLogicService,
-		QueueService,
-		PongGateway,
-	],
+	providers: [MatchRepository, GameLogicService, QueueService, PongGateway],
 })
 export class PongModule {}

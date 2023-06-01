@@ -18,12 +18,7 @@ import { GameLogicService } from '../gameLogic.service';
 		TypeOrmModule.forFeature([Ranking]),
 		UserModule,
 	],
-	providers: [
-		QueueResolver,
-		QueueService,
-		GameLogicService,
-		MatchRepository,
-	],
+	providers: [QueueResolver, QueueService, GameLogicService, MatchRepository],
 	exports: [QueueService],
 })
 export class QueueModule {}

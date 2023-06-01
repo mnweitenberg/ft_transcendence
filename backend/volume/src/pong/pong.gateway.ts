@@ -15,12 +15,12 @@ import { QueueService } from './queue/queue.service';
 @WebSocketGateway(4243, { cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server: Server;
-	
+
 	constructor(
-		private	readonly queueService: QueueService,
+		private readonly queueService: QueueService,
 		private readonly matchRepo: MatchRepository,
 		private readonly gameLogicService: GameLogicService,
-		) {}
+	) {}
 
 	private state: i.GameState = this.initializeGameState();
 
@@ -66,7 +66,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
 	}
 
-	private async startNewGame() {		
+	private async startNewGame() {
 		console.log('Starting new game');
 		await this.queueService.createMatches();
 		this.state = this.initializeGameState();
