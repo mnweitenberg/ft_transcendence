@@ -1,7 +1,7 @@
 import { Field, ArgsType } from '@nestjs/graphql';
 
 @ArgsType()
-export class CreateChannelInput {
+export class CreateGroupChannelInput {
 	@Field(() => String, {
 		description: 'name of the channel',
 	})

@@ -6,11 +6,11 @@ import {
 } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/entities/user.entity';
-import { Channel } from 'src/channel/entities/channel.entity';
+import { GroupChat } from '../../chat/entities/group_chat.entity';
 
 @Entity()
 @ObjectType()
-export class Message {
+export class GroupMessage {
 	@PrimaryGeneratedColumn('uuid')
 	@Field()
 	id: string;
@@ -19,9 +19,9 @@ export class Message {
 	@Field()
 	content: string;
 
-	@ManyToOne(() => Channel, (channel) => channel.messages)
-	@Field(() => Channel)
-	channel: Channel;
+	@ManyToOne(() => GroupChat, (channel) => channel.messages)
+	@Field(() => GroupChat)
+	channel: GroupChat;
 
 	@ManyToOne(() => User)
 	@Field(() => User)

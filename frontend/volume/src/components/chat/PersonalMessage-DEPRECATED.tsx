@@ -4,7 +4,7 @@ import * as i from "../../types/Interfaces";
 import { chats, user } from "../../utils/data";
 import { getChatsByUser } from "../../utils/utils";
 import { createChallengeAlert, createBlockAlert } from "../../utils/utils";
-import UserStats from "../../components/common/UserStats";
+import UserStats from "../common/UserStats";
 
 // https://css-tricks.com/books/greatest-css-tricks/pin-scrolling-to-bottom/
 
