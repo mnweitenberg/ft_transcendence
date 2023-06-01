@@ -7,13 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.service';
 import { UserModule } from './user/user.module';
 import { LoginModule } from './login/login.module';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthModule } from './auth/auth.module';
 import { PongModule } from './pong/pong.module';
+import { AvatarModule } from './avatar/avatar.module';
 
 export const pubSub = new PubSub();
 
@@ -34,6 +33,7 @@ export const pubSub = new PubSub();
 		ConfigModule.forRoot({ isGlobal: true }),
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
 		AuthModule,
+    AvatarModule,
 		UserModule,
 		QueueModule,
 		LoginModule,
