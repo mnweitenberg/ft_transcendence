@@ -12,6 +12,7 @@ function updateScore(props: i.PongProps) {
 		props.setPlayersAvailable(true);
 		props.setPlayers(users);
 	});
+
 	socketSingleton.socket.on("playerScored", (score: number[]) => {
 		props.setScore(score);
 		if (score[0] === C.MAX_SCORE || score[1] === C.MAX_SCORE) props.setFinished(true);
@@ -34,7 +35,7 @@ function Game(props: i.PongProps) {
 		startNewGame();
 	}
 
-	if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
+	// if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
 	return (
 		<div className="game_menu" onClick={() => startGame()}>
 			<h1>
