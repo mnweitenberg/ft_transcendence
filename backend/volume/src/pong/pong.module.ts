@@ -10,6 +10,7 @@ import { PongGateway } from './pong.gateway';
 import { QueueService } from './queue/queue.service';
 import { QueueModule } from './queue/queue.module';
 import { UserResolver } from 'src/user/user.resolver';
+import { AuthService } from 'src/auth/auth.service';
 
 @Module({
 	imports: [
@@ -23,6 +24,7 @@ import { UserResolver } from 'src/user/user.resolver';
 		QueueService,
 		PongGateway,
 		UserResolver,
+		AuthService,
 	],
 })
 export class PongModule {}

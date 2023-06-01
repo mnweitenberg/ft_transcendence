@@ -24,7 +24,7 @@ import { gql, useQuery } from "@apollo/client";
 // 	return id;
 // }
 
-const id = "d18621e6-46a6-4df1-b30f-4b24c8fa6b34";
+const id = "941ac863-2dd8-462f-9a47-288c7cd0a850";
 
 export function startNewGame() {
 	// const id = useUserId();

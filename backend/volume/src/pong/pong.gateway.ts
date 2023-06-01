@@ -12,14 +12,20 @@ import * as C from './constants';
 import { GameLogicService } from './gameLogic.service';
 import { QueueService } from './queue/queue.service';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@WebSocketGateway(4243, { cors: { origin: '*' } })
+// by default will listen to same port http is listening on
+@WebSocketGateway({
+	cors: {
+	  credentials: true,
+	  origin: '*',
+	},
+  })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	@WebSocketServer() server: Server;
+	@WebSocketServer()
+	server!: Server;
 
 	constructor(
 		private readonly queueService: QueueService,
@@ -105,14 +111,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// this.server.to(gameId).emit('gameState', game);
 	}
 
-	private determinePlayer(id: string): i.Player {
-		if (!this.state || !this.state.match) return;
-		if (id === this.state.match.players[0].id) return this.state.p1;
-		if (id === this.state.match.players[1].id) return this.state.p2;
-		new Error('Client is not a player in this game');
-		return;
-	}
-
 	// private determinePlayer(id: string): i.Player {
 	// 	if (!this.state || !this.state.match) return;
 	// 	if (id === this.state.match.players[0].id) return this.state.p1;
@@ -120,6 +118,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// 	new Error('Client is not a player in this game');
 	// 	return;
 	// }
+
+	private determinePlayer(id: string): i.Player {
+		if (!this.state || !this.state.match) return;
+		if (id === this.state.match.players[0].id) return this.state.p1;
+		if (id === this.state.match.players[1].id) return this.state.p2;
+		new Error('Client is not a player in this game');
+		return;
+	}
 
 	private initializeGameState(): i.GameState {
 		const paddleLeft: i.Paddle = {
