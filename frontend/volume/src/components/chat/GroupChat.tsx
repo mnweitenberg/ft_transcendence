@@ -7,27 +7,32 @@ import GroupStats from "./GroupStats";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
 const GET_CHANNEL = gql`
-	query getChannel($channel_id: String!) {
-		getChannel(id: $channel_id) {
+	query group_chat($channel_id: String!) {
+		group_chat(id: $channel_id) {
 			name
 			logo
 			messages {
 				id
 				content
 				author {
+					id
 					username
 				}
 			}
+		}
+		currentUserQuery {
+			id
 		}
 	}
 `;
 
 const SUBSCRIBE_MESSAGES = gql`
 	subscription messageSent($channel_id: String!) {
-		messageSent(channel_id: $channel_id) {
+		group_message_sent(channel_id: $channel_id) {
 			id
 			content
 			author {
+				id
 				username
 			}
 		}
@@ -35,15 +40,15 @@ const SUBSCRIBE_MESSAGES = gql`
 `;
 
 const SEND_MESSAGE = gql`
-	mutation sendMessage($channel_id: String!, $content: String!, $author_id: String!) {
+	mutation sendMessage($channel_id: String!, $content: String!) {
 		# TODO: do something better than author_id
-		createMessage(channel_id: $channel_id, content: $content, author_id: $author_id) {
+		createGroupMessage(channel_id: $channel_id, content: $content) {
 			id
 		}
 	}
 `;
 
-export default function NewGroupMessage({
+export default function GroupChat({
 	props,
 	channel_id,
 	renderOverview,
@@ -63,11 +68,11 @@ export default function NewGroupMessage({
 			variables: { channel_id: channel_id },
 			updateQuery: (prev, { subscriptionData }) => {
 				if (!subscriptionData.data) return prev;
-				const newMessage = subscriptionData.data.messageSent;
+				const newMessage = subscriptionData.data.group_message_sent;
 				return Object.assign({}, prev, {
-					getChannel: {
-						...prev.getChannel,
-						messages: [...prev.getChannel.messages, newMessage],
+					group_chat: {
+						...prev.group_chat,
+						messages: [...prev.group_chat.messages, newMessage],
 					},
 				});
 			},
@@ -83,7 +88,6 @@ export default function NewGroupMessage({
 			variables: {
 				content: message,
 				channel_id,
-				author_id: "d0515269-d76c-44ff-b518-25b9fcf67571",
 			},
 		});
 		setMessage("");
@@ -98,6 +102,8 @@ export default function NewGroupMessage({
 	if (error) return <p>Error</p>;
 	if (loading) return <p>Loading...</p>;
 
+	const current_user = data.currentUserQuery;
+
 	return (
 		<div className="personalMessage">
 			<div className="chat_pm_header">
@@ -109,8 +115,8 @@ export default function NewGroupMessage({
 					/>
 				</div>
 				<div className="pm_user">
-					<img className="pm_avatar" src={data.getChannel.logo} />
-					<h3>{data.getChannel.name}</h3>
+					<img className="pm_avatar" src={data.group_chat.logo} />
+					<h3>{data.group_chat.name}</h3>
 				</div>
 				<div className="groupchat_info">
 					<a
@@ -133,9 +139,9 @@ export default function NewGroupMessage({
 			</div>
 
 			<div className="messages_container">
-				{data.getChannel.messages.map(function (message: any) {
+				{data.group_chat.messages.map(function (message: any) {
 					// TODO: use better type
-					if (message.author === user)
+					if (message.author.id === current_user.id)
 						// TODO: use real author
 						return (
 							<div key={message.id} className="user">

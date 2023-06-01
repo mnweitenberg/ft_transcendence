@@ -1,7 +1,7 @@
 import { Field, ArgsType } from '@nestjs/graphql';
 
 @ArgsType()
-export class CreateMessageInput {
+export class CreatePersonalMessageInput {
 	@Field(() => String, {
 		description: 'id of the channel this message is sent to',
 	})
