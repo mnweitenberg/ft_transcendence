@@ -78,6 +78,7 @@ export class AuthService {
 
 	async getJwtCookie(userInfo: UserInfo): Promise<string> {
 		const token = await this.jwtService.signAsync(userInfo);
+		// console.log(token);
 		return JSON.stringify({
 			access_token: token,
 		});

@@ -12,7 +12,7 @@ import { QueueModule } from './queue/queue.module';
 import { UserResolver } from 'src/user/user.resolver';
 import { AuthService } from 'src/auth/auth.service';
 import { PongService } from './pong.service';
-import { JwtAuthGuard, WsJwtGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Module({
 	imports: [
@@ -28,8 +28,7 @@ import { JwtAuthGuard, WsJwtGuard } from 'src/auth/guards/jwt-auth.guard';
 		UserResolver,
 		AuthService,
 		PongService,
-		WsJwtGuard,
-		JwtAuthGuard,
+		JwtWsGuard,
 	],
 })
 export class PongModule {}

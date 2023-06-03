@@ -14,13 +14,12 @@ import { QueueService } from './queue/queue.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
-import { JwtAuthGuard, WsJwtGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PongService } from './pong.service';
 // import { WsResponse } from '@nestjs/websockets';
 
 
 // by default will listen to same port http is listening on
-@UseGuards(JwtAuthGuard)
 @WebSocketGateway({
 	cors: {
 	  credentials: true,
@@ -39,26 +38,29 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	) {}
 
 	private state: i.GameState = this.pongService.initializeGameState();
+	// private user: UserInfo;
 
+	// @UseGuards(JwtWsGuard)
 	async handleConnection(
 		client: Socket,
-		@AuthUser() user: UserInfo,
+		// @AuthUser() user: UserInfo,
 	): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
-		console.log('user', user);
+		// console.log('user', user);
 	}
 
 	handleDisconnect(client: Socket): void {
 		console.log(`Client disconnected: ${client.id}`);
 	}
 
+	// @UseGuards(JwtWsGuard)
 	@SubscribeMessage('startNewGame')
-	handleNewGame(client: Socket, data: any): void {
+	handleNewGame(): void {
 		console.log('New game started');
+		// console.log('user', user);
 		this.startNewGame();
 	}
 
-	// @UseGuards(JwtAuthGuard)
 	@SubscribeMessage('PaddlePosition')
 	handlePaddlePosition(client: Socket, data: any): void {
 		// console.log('user', user);
@@ -66,27 +68,34 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (!player) return;
 		player.paddle.y = data.mouseY;
 	}
+	// @UseGuards(JwtWsGuard)
+	// @SubscribeMessage('PaddlePosition')
+	// handlePaddlePosition(@AuthUser() user: UserInfo, data: any): void {
+	// 	const player = this.determinePlayer(user.userUid);
+	// 	if (!player) return;
+	// 	player.paddle.y = data.mouseY;
+	// }
+	// @SubscribeMessage('mouseClick')
+	// handleMouseClick(client: Socket, data: any): void {
+	// 	const player = this.determinePlayer(data.id);
+	// 	if (!player) return;
+	// 	this.gameLogicService.serveBall(this.state, player);
+	// }
 
-	@SubscribeMessage('mouseClick')
-	handleMouseClick(client: Socket, data: any): void {
-		const player = this.determinePlayer(data.id);
-		if (!player) return;
-		this.gameLogicService.serveBall(this.state, player);
-	}
+	// @SubscribeMessage('enlargePaddle')
+	// handleEnlargePaddle(client: Socket, data: any): void {
+	// 	const player = this.determinePlayer(data.id);
+	// 	if (!player) return;
+	// 	if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
+	// }
 
-	@SubscribeMessage('enlargePaddle')
-	handleEnlargePaddle(client: Socket, data: any): void {
-		const player = this.determinePlayer(data.id);
-		if (!player) return;
-		if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
-	}
-
-	@SubscribeMessage('reducePaddle')
-	handleReducePaddle(client: Socket, data: any): void {
-		const player = this.determinePlayer(data.id);
-		if (!player) return;
-		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
-	}
+	// @UseGuards(JwtWsGuard)
+	// @SubscribeMessage('reducePaddle')
+	// handleReducePaddle(@AuthUser() user: UserInfo): void {
+	// 	const player = this.determinePlayer(user.userUid);
+	// 	if (!player) return;
+	// 	if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
+	// }
 
 	private async startNewGame() {
 		console.log('Starting new game');
@@ -117,10 +126,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// this.server.to(gameId).emit('gameState', game);
 	}
 
-	// private determinePlayer(id: string): i.Player {
+	// @UseGuards(JwtWsGuard)
+	// private determinePlayer(@AuthUser() user: UserInfo): i.Player {
 	// 	if (!this.state || !this.state.match) return;
-	// 	if (id === this.state.match.players[0].id) return this.state.p1;
-	// 	if (id === this.state.match.players[1].id) return this.state.p2;
+	// 	if (user.userUid === this.state.match.players[0].id) return this.state.p1;
+	// 	if (user.userUid === this.state.match.players[1].id) return this.state.p2;
 	// 	new Error('Client is not a player in this game');
 	// 	return;
 	// }

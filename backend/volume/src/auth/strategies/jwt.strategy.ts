@@ -18,12 +18,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		const cookieName = 'session_cookie';
 
 		if (req.cookies && req.cookies[cookieName]) {
+			console.log(req.cookies[cookieName]);
 			return JSON.parse(req.cookies[cookieName]).access_token;
 		}
 		return null;
 	}
 
 	async validate(payload: any) {
+		console.log(payload);
 		return payload;
 	}
 }
