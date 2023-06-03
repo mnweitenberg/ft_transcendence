@@ -14,13 +14,17 @@ import { QueueService } from './queue/queue.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard, WsJwtGuard } from 'src/auth/guards/jwt-auth.guard';
+import { PongService } from './pong.service';
+// import { WsResponse } from '@nestjs/websockets';
+
 
 // by default will listen to same port http is listening on
+@UseGuards(JwtAuthGuard)
 @WebSocketGateway({
 	cors: {
 	  credentials: true,
-	  origin: '*',
+	  origin: 'http://localhost:5574',
 	},
   })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -31,11 +35,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private readonly queueService: QueueService,
 		private readonly matchRepo: MatchRepository,
 		private readonly gameLogicService: GameLogicService,
+		private readonly pongService: PongService,
 	) {}
 
-	private state: i.GameState = this.initializeGameState();
+	private state: i.GameState = this.pongService.initializeGameState();
 
-	@UseGuards(JwtAuthGuard)
 	async handleConnection(
 		client: Socket,
 		@AuthUser() user: UserInfo,
@@ -54,8 +58,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.startNewGame();
 	}
 
+	// @UseGuards(JwtAuthGuard)
 	@SubscribeMessage('PaddlePosition')
 	handlePaddlePosition(client: Socket, data: any): void {
+		// console.log('user', user);
 		const player = this.determinePlayer(data.id);
 		if (!player) return;
 		player.paddle.y = data.mouseY;
@@ -85,7 +91,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private async startNewGame() {
 		console.log('Starting new game');
 		await this.queueService.createMatches();
-		this.state = this.initializeGameState();
+		this.state = this.pongService.initializeGameState();
 		this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
 			this.server.emit('noPlayers');
@@ -127,138 +133,4 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return;
 	}
 
-	private initializeGameState(): i.GameState {
-		const paddleLeft: i.Paddle = {
-			x: C.BORDER_OFFSET,
-			y: C.HEIGHT / 2 + C.PADDLE_HEIGHT / 2,
-			height: C.PADDLE_HEIGHT,
-		};
-
-		const paddleRight: i.Paddle = {
-			x: C.WIDTH - C.BORDER_OFFSET - C.PADDLE_WIDTH,
-			y: C.HEIGHT / 2,
-			height: C.PADDLE_HEIGHT,
-		};
-
-		const p1: i.Player = {
-			paddle: paddleLeft,
-			isServing: false,
-		};
-
-		const p2: i.Player = {
-			paddle: paddleRight,
-			isServing: true,
-		};
-
-		const ball: i.Ball = {
-			x: paddleRight.x,
-			y: paddleRight.y + C.PADDLE_HEIGHT / 2,
-			xSpeed: -C.BALL_SPEED,
-			ySpeed: C.BALL_SPEED,
-		};
-
-		const state: i.GameState = {
-			ballIsInPlay: false,
-			p1,
-			p2,
-			ball,
-		};
-		console.log('C.BALL_SPEED', C.BALL_SPEED);
-		return state;
-	}
 }
-
-// import {
-// 	WebSocketServer,
-// 	WebSocketGateway,
-// 	SubscribeMessage,
-// 	OnGatewayConnection,
-// 	OnGatewayDisconnect,
-// } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-// import { PongService } from './pong.service';
-// import * as i from './interfaces';
-// import { MatchRepository } from './match/match.repository';
-// import * as C from './constants';
-
-// @WebSocketGateway(4243, { cors: { origin: '*' } })
-// export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-// 	@WebSocketServer() server: Server;
-// 	private games = new Map<string, i.GameState>();
-// 	private clientToGame = new Map<string, string>();
-
-// 	constructor(
-// 		private readonly pongService: PongService,
-// 		private readonly matchRepo: MatchRepository,
-// 	) {}
-
-// 	async handleConnection(client: Socket): Promise<void> {
-// 		try {
-// 			console.log(`Client connected: ${client.id}`);
-// 			const match = await this.state.matchRepo.initNewMatch();
-// 			if (!match) return;
-// 			const state = await this.pongService.startMatch(match);
-// 			this.games.set(client.id, state);
-// 			setInterval(() => this.updateGameState(client.id), 1000 / 24);
-// 		} catch (error) {
-// 			console.log(error);
-// 		}
-// 	}
-
-// 	handleDisconnect(client: Socket): void {
-// 		console.log(`Client disconnected: ${client.id}`);
-// 		const gameId = this.clientToGame.get(client.id);
-// 		if (gameId) {
-// 			this.games.delete(gameId);
-// 			this.clientToGame.delete(client.id);
-// 		}
-// 	}
-
-// 	@SubscribeMessage('PaddlePosition')
-// 	handlePaddlePosition(client: Socket, data: any): void {
-// 		const game = this.games.get(this.clientToGame.get(data.id));
-// 		if (!game) return;
-// 		console.log(data.mouseY);
-// 		const player = this.determinePlayer(data.id, game);
-// 		player.paddle.y = data.mouseY;
-// 	}
-
-// 	@SubscribeMessage('mouseClick')
-// 	handleMouseClick(client: Socket, data: any): void {
-// 		// const game = this.games.get(client.id);
-// 		// this.gameLogicService.serveBall(game);
-// 		console.log('mouseClick', data.id);
-// 	}
-
-// 	@SubscribeMessage('enlargePaddle')
-// 	handleEnlargePaddle(client: Socket, data: any): void {
-// 		const game = this.games.get(client.id);
-// 		if (!game) return;
-// 		const player = this.determinePlayer(data.id, game);
-// 		if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
-// 	}
-
-// 	@SubscribeMessage('reducePaddle')
-// 	handleReducePaddle(client: Socket, data: any): void {
-// 		const game = this.games.get(client.id);
-// 		if (!game) return;
-// 		const player = this.determinePlayer(data.id, game);
-// 		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
-// 	}
-
-// 	private async updateGameState(clientId: string) {
-// 		const gameId = this.clientToGame.get(clientId);
-// 		const game = this.games.get(gameId);
-// 		if (game) {
-// 			const state = await this.pongService.startMatch(game);
-// 			this.server.to(gameId).emit('gameState', game);
-// 			console.log(state);
-// 		}
-// 	}
-
-// 	private determinePlayer(id: string, state: i.GameState): i.Player {
-// 		if (id === state.match.players[0].id) return state.p1;
-// 		if (id === state.match.players[1].id) return state.p2;
-// 		new Error('Client is not a player in this game');
-// 	}
-// }

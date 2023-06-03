@@ -5,7 +5,14 @@ class SocketSingleton {
 	public socket: any;
 
 	private constructor() {
-		this.socket = io("http://localhost:4242");
+		this.socket = io("http://localhost:4242", {
+			withCredentials: true,
+			// extraHeaders: {authorization: "Bearer <token>",},
+		});
+
+		this.socket.on("connect", () => {
+			console.log("Successfully connected to the server!");
+		});
 		this.socket.on("connect_error", (error: any) => {
 			console.error(error);
 		});
@@ -17,6 +24,8 @@ class SocketSingleton {
 		return SocketSingleton.instance;
 	}
 }
+
+export default SocketSingleton;
 
 // export default SocketSingleton;
 
@@ -42,4 +51,4 @@ class SocketSingleton {
 // 	}
 // }
 
-export default SocketSingleton;
+// export default SocketSingleton;

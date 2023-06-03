@@ -1,7 +1,7 @@
 import * as i from "../../types/Interfaces";
 import p5Types from "p5";
 import SocketSingleton from "../../utils/socketSingleton";
-import { gql, useQuery } from "@apollo/client";
+// import { gql, useQuery } from "@apollo/client";
 
 // const USERID = gql`
 // 	query currentUserQuery {
