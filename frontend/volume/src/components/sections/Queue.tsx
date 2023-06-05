@@ -5,13 +5,6 @@ import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-
-nieuwe dag, 
-
-check of als er queued matches zijn deze worden geladen als je pagina opent op nieuwe browser
-same maar dan met login van iemand anders
-
-
 const CURRENT_USER = gql`
 	query currentUserQuery {
 		currentUserQuery {

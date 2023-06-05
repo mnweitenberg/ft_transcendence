@@ -6,9 +6,10 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Channel } from 'src/channel/entities/channel.entity';
+import { GroupChat } from 'src/chat/group/chat/entities/group_chat.entity';
 import { Ranking } from 'src/pong/ranking/entities/ranking.entity';
 import { Match } from 'src/pong/match/entities/match.entity';
+import { PersonalChat } from 'src/chat/personal/chat/entities/personal_chat.entity';
 
 @Entity()
 @ObjectType()
@@ -35,9 +36,13 @@ export class User {
 	@Field()
 	avatar: string = ""; // FIXME: temp fix
 
-	@ManyToMany(() => Channel, (channel) => channel.members)
-	@Field(() => [Channel], { nullable: true })
-	channels: Channel[];
+	@ManyToMany(() => GroupChat, (channel) => channel.members)
+	@Field(() => [GroupChat])
+	group_chats: GroupChat[];
+
+	@ManyToMany(() => PersonalChat, (channel) => channel.members)
+	@Field(() => [PersonalChat])
+	personal_chats: PersonalChat[];
 
 	@OneToOne(() => Ranking, (ranking) => ranking.user)
 	@Field(() => Ranking)
