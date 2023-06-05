@@ -5,6 +5,7 @@ import Welcome from "./components/login/Welcome";
 import Auth from "src/components/login/Auth";
 import Home from "src/components/Home";
 import NewUser from "./components/login/NewUser";
+import Lobby from "./components/lobby/Lobby";
 import { AuthProvider } from "./utils/authLogic";
 
 function App() {
@@ -27,6 +28,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<NewUser />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/lobby"
+						element={
+							<ProtectedRoute>
+								<Lobby />
 							</ProtectedRoute>
 						}
 					/>
