@@ -1,11 +1,12 @@
 import { useState } from "react";
 import "../../styles/style.css";
 import Overview from "./Overview";
-import PersonalMessage from "./PersonalMessage";
+import PersonalChat from "./PersonalChat";
+// import PersonalMessage from "./PersonalMessage-DEPRECATED";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
-import GroupMessage from "./GroupMessage";
-import NewGroupMessage from "./NewGroupMessage";
+// import GroupMessage from "./GroupMessage-DEPRECATED";
+import GroupChat from "./GroupChat";
 
 export default function Chat(props: i.ModalProps) {
 	const [chatState, setChatState] = useState(ChatState.overview);
@@ -29,17 +30,14 @@ export default function Chat(props: i.ModalProps) {
 		);
 
 	if (chatState === ChatState.personalMessage)
-		return <PersonalMessage props={props} renderOverview={renderOverview} />;
+		// return <PersonalMessage props={props} renderOverview={renderOverview} />;
+		return (
+			<PersonalChat props={props} channel_id={channel_id} renderOverview={renderOverview} />
+		);
 
 	if (chatState === ChatState.groupMessage)
 		// return <GroupMessage props={props} renderOverview={renderOverview} />;
-		return (
-			<NewGroupMessage
-				props={props}
-				channel_id={channel_id}
-				renderOverview={renderOverview}
-			/>
-		);
+		return <GroupChat props={props} channel_id={channel_id} renderOverview={renderOverview} />;
 
 	return <>No state defined</>;
 }

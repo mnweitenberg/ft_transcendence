@@ -3,21 +3,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
-import { Message } from './entities/message.entity';
-import { CreateMessageInput } from './dto/create-message.input';
-import { ChannelService } from 'src/channel/channel.service';
-import { Channel } from 'src/channel/entities/channel.entity';
+import { PersonalMessage } from './entities/personal_message.entity';
+import { CreatePersonalMessageInput } from './dto/create_personal_message.input';
+import { PersonalChatService } from '../chat/personal_chat.service';
+import { PersonalChat } from '../chat/entities/personal_chat.entity';
 
 @Injectable()
-export class MessageService {
+export class PersonalMessageService {
 	constructor(
-		@InjectRepository(Message)
-		private readonly messageRepository: Repository<Message>,
+		@InjectRepository(PersonalMessage)
+		private readonly messageRepository: Repository<PersonalMessage>,
 		private readonly userService: UserService,
-		private readonly channelService: ChannelService,
+		private readonly channelService: PersonalChatService,
 	) {}
 
-	async create(createMessageInput: CreateMessageInput): Promise<Message> {
+	async create(createMessageInput: CreatePersonalMessageInput): Promise<PersonalMessage> {
 		const author = await this.userService.getUserById(
 			createMessageInput.author_id,
 		);
@@ -42,7 +42,7 @@ export class MessageService {
 		return await this.messageRepository.save(message);
 	}
 
-	async getAuthor(message: Message): Promise<User> {
+	async getAuthor(message: PersonalMessage): Promise<User> {
 		const message_with_author = await this.messageRepository.findOne({
 			relations: { author: true },
 			where: { id: message.id },
@@ -50,7 +50,7 @@ export class MessageService {
 		return message_with_author.author;
 	}
 
-	async getChannel(message: Message): Promise<Channel> {
+	async getChannel(message: PersonalMessage): Promise<PersonalChat> {
 		const message_with_channel = await this.messageRepository.findOne({
 			relations: { channel: true },
 			where: { id: message.id },

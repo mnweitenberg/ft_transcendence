@@ -44,7 +44,12 @@ export class UserResolver {
 	}
 
 	@ResolveField()
-	async channels(@Parent() user: User) {
-		return this.userService.getChannels(user);
+	async group_chats(@Parent() user: User) {
+		return this.userService.getGroupChats(user);
+	}
+
+	@ResolveField()
+	async personal_chats(@Parent() user: User) {
+		return this.userService.getPersonalChats(user);
 	}
 }

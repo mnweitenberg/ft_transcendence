@@ -8,12 +8,22 @@ import { gql, useQuery } from "@apollo/client";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
-		allChannels {
-			id
-			name
-			logo
-			lastMessage {
-				content
+		currentUserQuery {
+			personal_chats {
+				id
+				name
+				logo
+				lastMessage {
+					content
+				}
+			}
+			group_chats {
+				id
+				name
+				logo
+				lastMessage {
+					content
+				}
 			}
 		}
 	}
@@ -34,30 +44,57 @@ function Overview({
 	if (error) return <p>Error</p>;
 	if (loading) return <p>Loading...</p>;
 
-	// function renderPersonalMessage(friend: i.User) {
-	// 	props.setSelectedUser(friend);
-	// 	setChatState(ChatState.personalMessage);
-	// } // TODO: Add Personal Messages
-	function renderGroupMessage(channel_id: string) {
+	function renderPersonalChat(channel_id: string) {
+		setSelectedChannel(channel_id);
+		setChatState(ChatState.personalMessage);
+	}
+	function renderGroupChat(channel_id: string) {
 		setSelectedChannel(channel_id);
 		setChatState(ChatState.groupMessage);
 	}
 	return (
 		<>
-			{data.allChannels.map((channel: any) => {
+			Personal Chats
+			<br></br>
+			{data.currentUserQuery.personal_chats.map((personal_chat: any) => {
 				return (
 					<div
 						className="chat_container"
-						key={channel.id + "_key"}
-						onClick={() => renderGroupMessage(channel.id)}
+						key={personal_chat.id + "_key"}
+						onClick={() => renderPersonalChat(personal_chat.id)}
 					>
-						<img className="avatar" src={channel.logo} />
+						<img className="avatar" src={personal_chat.logo} />
 						<div className="wrap_name_message">
 							<div className="flex_row_spacebetween">
-								<h3 className="name">{channel.name}</h3>
-								<div className="status">{channel.status}</div>
+								<h3 className="name">{personal_chat.name}</h3>
+								<div className="status">{personal_chat.status}</div>
 							</div>
-							<div className="chat_preview">{channel.lastMessage?.content ?? ""}</div>
+							<div className="chat_preview">
+								{personal_chat.lastMessage?.content ?? ""}
+							</div>
+						</div>
+					</div>
+				);
+			})}
+			<br></br>
+			Group Chats
+			<br></br>
+			{data.currentUserQuery.group_chats.map((group_chat: any) => {
+				return (
+					<div
+						className="chat_container"
+						key={group_chat.id + "_key"}
+						onClick={() => renderGroupChat(group_chat.id)}
+					>
+						<img className="avatar" src={group_chat.logo} />
+						<div className="wrap_name_message">
+							<div className="flex_row_spacebetween">
+								<h3 className="name">{group_chat.name}</h3>
+								<div className="status">{group_chat.status}</div>
+							</div>
+							<div className="chat_preview">
+								{group_chat.lastMessage?.content ?? ""}
+							</div>
 						</div>
 					</div>
 				);

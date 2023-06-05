@@ -7,8 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.service';
 import { UserModule } from './user/user.module';
 import { LoginModule } from './login/login.module';
-import { ChannelModule } from './channel/channel.module';
-import { MessageModule } from './message/message.module';
+// import { AppController } from './app.controller';
+// import { AppService } from './app.service';
+import { GroupChatModule } from './chat/group/chat/group_chat.module';
+import { GroupMessageModule } from './chat/group/message/group_message.module';
+import { PersonalChatModule } from './chat/personal/chat/personal_chat.module';
+import { PersonalMessageModule } from './chat/personal/message/personal_message.module';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthModule } from './auth/auth.module';
 import { PongModule } from './pong/pong.module';
@@ -33,12 +37,14 @@ export const pubSub = new PubSub();
 		ConfigModule.forRoot({ isGlobal: true }),
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
 		AuthModule,
-    AvatarModule,
+		AvatarModule,
 		UserModule,
 		QueueModule,
 		LoginModule,
-		ChannelModule,
-		MessageModule,
+		GroupChatModule,
+		GroupMessageModule,
+		PersonalChatModule,
+		PersonalMessageModule,
 		PongModule,
 	],
 	// controllers: [AppController],
