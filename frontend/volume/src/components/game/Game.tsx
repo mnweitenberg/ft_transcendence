@@ -3,7 +3,6 @@ import Pong from "./Pong";
 import * as i from "../../types/Interfaces";
 import * as C from "../../utils/constants";
 import SocketSingleton from "../../utils/socketSingleton";
-import { startNewGame } from "./UserInput";
 
 function updateScore(props: i.PongProps) {
 	const socketSingleton = SocketSingleton.getInstance();
@@ -27,20 +26,22 @@ function Game(props: i.PongProps) {
 
 	updateScore(props);
 
-	if (props.bothPlayersReady) return <Pong />;
+	// if (props.bothPlayersReady) return <Pong />;
+	if (props.playersAvailable) return <Pong />;
 
-	function startGame() {
-		props.setBothPlayersReady(true);
-		startNewGame();
-	}
+	// function startGame() {
+	// props.setBothPlayersReady(true);
+	// startNewGame();
+	// }
 
-	if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
+	// if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
 	return (
-		<div className="game_menu" onClick={() => startGame()}>
-			<h1>
+		<div className="game_menu">
+			<h1>Waiting for game...</h1>
+			{/* <h1>
 				{props.players[0].username} vs {props.players[1].username}
-			</h1>
-			<h2>start game</h2>
+			</h1> */}
+			{/* <h2>start game</h2> */}
 		</div>
 	);
 }

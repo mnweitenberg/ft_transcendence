@@ -10,7 +10,6 @@ import * as i from './interfaces';
 import { MatchRepository } from './match/match.repository';
 import * as C from './constants';
 import { GameLogicService } from './gameLogic.service';
-import { QueueService } from './queue/queue.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
@@ -22,31 +21,33 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server: Server;
 
 	constructor(
-		private readonly queueService: QueueService,
 		private readonly matchRepo: MatchRepository,
 		private readonly gameLogicService: GameLogicService,
-	) {}
+	) {
+		this.gameStarter();
+		console.log('PongGateway');
+	}
 
 	private state: i.GameState = this.initializeGameState();
 
-	@UseGuards(JwtAuthGuard)
+	// @UseGuards(JwtAuthGuard)
 	async handleConnection(
 		client: Socket,
-		@AuthUser() user: UserInfo,
+		// @AuthUser() user: UserInfo,
 	): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
-		console.log('user', user);
+		// console.log('user', user);
 	}
 
 	handleDisconnect(client: Socket): void {
 		console.log(`Client disconnected: ${client.id}`);
 	}
 
-	@SubscribeMessage('startNewGame')
-	handleNewGame(client: Socket, data: any): void {
-		console.log('New game started');
-		this.startNewGame();
-	}
+	// @SubscribeMessage('startNewGame')
+	// handleNewGame(client: Socket, data: any): void {
+		// console.log('New game started');
+		// this.startNewGame();
+	// }
 
 	@SubscribeMessage('PaddlePosition')
 	handlePaddlePosition(client: Socket, data: any): void {
@@ -75,23 +76,28 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (!player) return;
 		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
 	}
+	private async gameStarter() {
+		// if (!this.state || this.state.match.isFinished)
+		this.state = this.initializeGameState();
+		setInterval(() => this.startNewGame(), 5000);
+	}
 
 	private async startNewGame() {
-		console.log('Starting new game');
-		await this.queueService.createMatches();
-		this.state = this.initializeGameState();
-		this.state.match = await this.matchRepo.initNewMatch();
+		let interval_id;
+		if (!this.state.match || this.state.match.isFinished)
+			this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
+			clearInterval(interval_id);
 			this.server.emit('noPlayers');
 			console.log('No match found');
 			return;
 		}
+		console.log('Starting new game');
 		this.server.emit('players', [
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		// console.log('state.ball.ySpeed', this.state.ball.ySpeed);
-		setInterval(() => this.updateGameState(), 1000 / 24);
+		interval_id = setInterval(() => this.updateGameState(), 1000 / 24);
 	}
 
 	private async updateGameState() {

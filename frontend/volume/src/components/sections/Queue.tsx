@@ -3,18 +3,10 @@ import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const MATCH_FOUND = gql`
-	subscription matchFound {
-		matchFound {
-			p1 {
-				username
-				avatar
-			}
-			p2 {
-				username
-				avatar
-			}
-		}
+const CURRENT_USER = gql`
+	query currentUserQuery {
+		currentUserQuery {
+			id
 	}
 `;
 
@@ -37,6 +29,21 @@ const GET_WHOLE_QUEUE = gql`
 				avatar
 			}
 			p2 {
+				username
+				avatar
+			}
+		}
+	}
+`;
+
+const MATCH_FOUND = gql`
+	subscription matchFound {
+		matchFound {
+			playerOne {
+				username
+				avatar
+			}
+			playerTwo {
 				username
 				avatar
 			}
@@ -118,13 +125,19 @@ function JoinQueueElement() {
 		},
 	] = useMutation(JOIN_QUEUE);
 
-	const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
+	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
+	let user_id = ""; // FIXME: nodig?
+	if (user_loading) {
+		console.log("loading placeholder"); // FIXME:
+	}
+	if (user_error) {
+		console.log("in CURRENT_USER query", user_error);
+	} else if (user_data) {
+		user_id = user_data.currentUserQuery.id;
+	}
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
-
-		const user_id = event.target.elements.user_id.value;
-		set_user_id(user_id); // TODO: remove together with the useState
 
 		joinQueue({
 			variables: {
@@ -138,7 +151,7 @@ function JoinQueueElement() {
 			return <>joining queue...</>;
 		}
 		if (queue_error) {
-			console.log(queue_error);
+			console.log("in JOIN_QUEUE mutation ", queue_error);
 			return <>error joining queue</>;
 		}
 		if (queue_data.joinQueue === null) {
@@ -154,7 +167,7 @@ function JoinQueueElement() {
 	} else {
 		return (
 			<form onSubmit={handleClick}>
-				<input type="text" name="user_id" placeholder="Voor testing only" />
+				{/* <input type="text" name="user_id" placeholder="Voor testing only" /> */}
 				<button type="submit">Join queue</button>
 			</form>
 		);
@@ -164,14 +177,25 @@ function JoinQueueElement() {
 function JoinedQueue({ user_id }: { user_id: string }) {
 	const { data, loading, error } = useSubscription(MATCH_FOUND);
 
-	if (error) alert(error.message);
+	if (loading) {
+		return <div> Joined the queue! </div>;
+	}
+	if (error) console.log("in MATCH_FOUND subscription ", error);
 
-	return <div> Joined the Queue! </div>;
-
+<<<<<<< HEAD
+	if (data)
+		return (
+			<div>
+				Match found: {data.matchFound.playerOne.username} vs{" "}
+				{data.matchFound.playerTwo.username}
+			</div>
+		);
+=======
 	// return (
 	// 	<div>
 	// 		Match found: {data.matchFound.p1.username} vs{" "}
 	// 		{data.matchFound.p2.username}
 	// 	</div>
 	// );
+>>>>>>> temp
 }

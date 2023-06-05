@@ -12,7 +12,10 @@ const DEBUG_PRINT = false;
 export class QueueService {
 	constructor(
 		private readonly userService: UserService, // private readonly matchRepo: MatchRepository,
-	) {}
+	) {
+		this.createMatches();
+		console.log("queue service created");
+	}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 	weWantToRunNewMatch = true;
@@ -74,7 +77,9 @@ export class QueueService {
 	}
 
 	getQueuedMatch(): QueuedMatch | null {
+		// console.log('this.queued_matches: ',  this.queued_matches);
 		const top_match = this.queued_matches.at(0);
+		// console.log('top match: ', top_match);
 		this.queued_matches.splice(0, 1);
 		// console.log(top_match);
 		return top_match;
