@@ -6,8 +6,10 @@ class SocketSingleton {
 
 	private constructor() {
 		this.socket = io("http://localhost:4243");
+		this.socket.on("connect_error", (error: any) => {
+			console.error(error);
+		});
 	}
-
 	public static getInstance(): SocketSingleton {
 		if (!SocketSingleton.instance) {
 			SocketSingleton.instance = new SocketSingleton();

@@ -52,24 +52,21 @@ export interface User {
 // GAMESTATE //
 ///////////////
 
-// interface Score {
-// 	playerOne: number;
-// 	playerTwo: number;
-// }
-
-// export interface GameScore {
-// 	id: number;
-// 	playerOne: User;
-// 	playerTwo: User;
-// 	score: Score;
-// }
+export interface Canvas {
+	height: number;
+	width: number;
+	borderOffset: number;
+	paddleHeight: number;
+	paddleWidth: number;
+	ballSpeed: number;
+	ballDiameter: number;
+}
 
 export interface Ball {
 	x: number;
 	y: number;
-	xSpeed?: number;
-	ySpeed?: number;
-	defaultSpeed?: number;
+	xSpeed: number;
+	ySpeed: number;
 }
 
 export interface Paddle {
@@ -78,29 +75,17 @@ export interface Paddle {
 	height: number;
 }
 
-export interface ServeState {
-	state: boolean;
-	x: number;
-	y: number;
-}
-
-export interface Canvas {
-	height: number;
-	width: number;
-	borderOffset: number;
-	paddleHeight: number;
-	paddleWidth: number;
-	ballDiameter: number;
+export interface Player {
+	paddle: Paddle;
+	isServing: boolean;
 }
 
 export interface GameState {
-	serveLeft: ServeState;
-	serveRight: ServeState;
-	started: boolean;
+	ballIsInPlay: boolean;
+	p1: Player;
+	p2: Player;
 	ball: Ball;
-	paddleLeft: Paddle;
-	paddleRight: Paddle;
-	// gameScore?: GameScore;
+	// match?: Match;
 }
 
 ///////////

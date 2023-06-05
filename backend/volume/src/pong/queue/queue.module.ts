@@ -8,7 +8,6 @@ import { Ranking } from '../../pong/ranking/entities/ranking.entity';
 import { User } from '../../user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { MatchRepository } from '../match/match.repository';
-import { PongService } from '../pong.service';
 import { GameLogicService } from '../gameLogic.service';
 import { UserService } from 'src/user/user.service';
 
@@ -20,13 +19,7 @@ import { UserService } from 'src/user/user.service';
 		TypeOrmModule.forFeature([Ranking]),
 		UserModule,
 	],
-	providers: [
-		QueueResolver,
-		QueueService,
-		GameLogicService,
-		PongService,
-		MatchRepository,
-	],
+	providers: [QueueResolver, QueueService, GameLogicService, MatchRepository],
 	exports: [QueueService],
 })
 export class QueueModule {}
