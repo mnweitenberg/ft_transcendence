@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "src/styles/style.css";
+
 function Lobby(): JSX.Element {
 	return (
 		<div className="background">
