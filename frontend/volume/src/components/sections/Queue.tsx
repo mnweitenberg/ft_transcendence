@@ -7,6 +7,7 @@ const CURRENT_USER = gql`
 	query currentUserQuery {
 		currentUserQuery {
 			id
+		}
 	}
 `;
 
@@ -51,6 +52,21 @@ const MATCH_FOUND = gql`
 	}
 `;
 
+const QUEUE_CHANGED = gql`
+	subscription queueChanged {
+		queueChanged {
+			p1 {
+				username
+				avatar
+			}
+			p2 {
+				username
+				avatar
+			}
+		}
+	}
+`;
+
 const JOIN_QUEUE = gql`
 	mutation joinQueue($user_id: String!) {
 		joinQueue(user_id: $user_id) {
@@ -65,30 +81,20 @@ const JOIN_QUEUE = gql`
 `;
 
 export default function Queue(props: i.ModalProps) {
-	const {
-		data: queue_data,
-		loading: queue_loading,
-		error: queue_error,
-		subscribeToMore,
-	} = useQuery(GET_WHOLE_QUEUE);
-
+	const [queue, setQueue] = useState([]);
+	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
 	useEffect(() => {
-		return subscribeToMore({
-			document: MATCH_FOUND,
-			updateQuery: (prev, { subscriptionData }) => {
-				if (!subscriptionData.data) return prev;
-				const newMatch = subscriptionData.data.matchFound;
-				return Object.assign({}, prev, {
-					getWholeQueue: [...prev.getWholeQueue, newMatch],
-				});
-			},
-		});
-	}, []);
-
-	if (!queue_data) return <div>waarom moet dit</div>; // FIXME: zonder dit werkt frontend niet...
+		if (data) {
+			setQueue(data.queueChanged);
+		}
+	}, [data]);
+	if (loading) {
+		return <div> Queue is changing. Please wait </div>;
+	}
+	if (error) console.log("in QUEUE_CHANGED subscription ", error);
 	return (
 		<>
-			{queue_data.getWholeQueue.map(function (game: any) {
+			{queue.map(function (game: any) {
 				if (!game.p1 || !game.p2) return <JoinQueueElement />;
 				return (
 					<div
@@ -99,7 +105,6 @@ export default function Queue(props: i.ModalProps) {
 							<h3 className="name">{game.p1.username}</h3>
 							<img className="avatar" src={game.p1.avatar} />
 						</div>
-
 						<div className="player player--two">
 							<img className="avatar" src={game.p2.avatar} />
 							<h3 className="name">{game.p2.username}</h3>
@@ -125,25 +130,25 @@ function JoinQueueElement() {
 		},
 	] = useMutation(JOIN_QUEUE);
 
-	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
-	let user_id = ""; // FIXME: nodig?
-	if (user_loading) {
-		console.log("loading placeholder"); // FIXME:
-	}
-	if (user_error) {
-		console.log("in CURRENT_USER query", user_error);
-	} else if (user_data) {
-		user_id = user_data.currentUserQuery.id;
-	}
+	// const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
+	// let user_id = ""; // FIXME: nodig?
+	// if (user_loading) {
+	// 	console.log("loading placeholder"); // FIXME:
+	// }
+	// if (user_error) {
+	// 	console.log("in CURRENT_USER query", user_error);
+	// } else if (user_data) {
+	// 	user_id = user_data.currentUserQuery.id;
+	// }
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
 
-		joinQueue({
-			variables: {
-				user_id: user_id,
-			},
-		});
+		// joinQueue({
+		// 	variables: {
+		// 		user_id: user_id,
+		// 	},
+		// });
 	};
 
 	if (tried_joining_queue) {
@@ -175,27 +180,22 @@ function JoinQueueElement() {
 }
 
 function JoinedQueue({ user_id }: { user_id: string }) {
-	const { data, loading, error } = useSubscription(MATCH_FOUND);
-
-	if (loading) {
-		return <div> Joined the queue! </div>;
-	}
-	if (error) console.log("in MATCH_FOUND subscription ", error);
-
-<<<<<<< HEAD
-	if (data)
-		return (
-			<div>
-				Match found: {data.matchFound.playerOne.username} vs{" "}
-				{data.matchFound.playerTwo.username}
-			</div>
-		);
-=======
+	// const { data, loading, error } = useSubscription(MATCH_FOUND);
+	// if (loading) {
+	// 	return <div> Joined the queue! </div>;
+	// }
+	// if (error) console.log("in MATCH_FOUND subscription ", error);
+	// if (data)
+	// 	return (
+	// 		<div>
+	// 			Match found: {data.matchFound.playerOne.username} vs{" "}
+	// 			{data.matchFound.playerTwo.username}
+	// 		</div>
+	// 	);
 	// return (
 	// 	<div>
 	// 		Match found: {data.matchFound.p1.username} vs{" "}
 	// 		{data.matchFound.p2.username}
 	// 	</div>
 	// );
->>>>>>> temp
 }
