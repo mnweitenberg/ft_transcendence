@@ -4,10 +4,7 @@ import { EventEmitter } from 'events';
 import { MatchRepository } from './match/match.repository';
 import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
-import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
-import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Injectable()
 export class PongService {
@@ -43,7 +40,7 @@ export class PongService {
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		this.gameInterval = setInterval(() => this.updateGameState(), 1000 / 24);
+		this.gameInterval = setInterval(() => this.updateGameState(), C.REFRESH_RATE);
 	}
 
 	private async updateGameState() {
@@ -73,7 +70,6 @@ export class PongService {
 		if (!this.state || !this.state.match) return;
 		if (user.userUid === this.state.match.players[0].id) return this.state.p1;
 		if (user.userUid === this.state.match.players[1].id) return this.state.p2;
-		new Error('Client is not a player in this game');
 		return;
 	}
 

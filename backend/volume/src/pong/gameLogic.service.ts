@@ -11,6 +11,7 @@ export class GameLogicService {
 		this.paddleWidth = C.PADDLE_WIDTH;
 		this.ballWidth = C.BALL_DIAMETER;
 		this.borderOffset = C.BORDER_OFFSET;
+		console.log('GameLogicService constructed');
 	}
 	private width: number;
 	private height: number;
@@ -44,13 +45,11 @@ export class GameLogicService {
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
 			console.log(state.match.p1Score, state.match.p2Score);
 			state.ballIsInPlay = false;
+			this.moveBallDuringServe(state);
 		}
 	}
 
 	private handleCollisions(state: i.GameState) {
-		this.boundPaddleToWindow(state.p1.paddle);
-		this.boundPaddleToWindow(state.p2.paddle);
-
 		if (state.ballIsInPlay) {
 			this.moveBall(state);
 
@@ -62,9 +61,9 @@ export class GameLogicService {
 		if (!state.ballIsInPlay) {
 			this.moveBallDuringServe(state);
 			if (state.p1.isServing)
-				setTimeout(() => this.serveBall(state, state.p1), C.TIMEMOUT);
+				setTimeout(() => this.serveBall(state, state.p1), C.WAIT_TIME);
 			if (state.p2.isServing)
-				setTimeout(() => this.serveBall(state, state.p2), C.TIMEMOUT);
+				setTimeout(() => this.serveBall(state, state.p2), C.WAIT_TIME);
 		}
 	}
 
@@ -125,12 +124,6 @@ export class GameLogicService {
 		if (ballHitsTopOrBottom) state.ball.ySpeed *= -1;
 	}
 
-	private boundPaddleToWindow(paddle: i.Paddle) {
-		if (paddle.y <= 0) paddle.y = 0;
-		if (paddle.y + paddle.height >= this.height)
-			paddle.y = this.height - paddle.height;
-	}
-
 	private moveBallDuringServe(state: i.GameState) {
 		const { p1, p2, ball } = state;
 		ball.xSpeed = 0;
@@ -144,7 +137,7 @@ export class GameLogicService {
 		}
 	}
 
-	serveBall(state: i.GameState, player: i.Player): void {
+	private serveBall(state: i.GameState, player: i.Player): void {
 		if (!state.match || !player) return;
 		if (state.match.isFinished || state.ballIsInPlay || !player.isServing)
 			return;

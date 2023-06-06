@@ -32,22 +32,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(`Client connected: ${client.id}`);
 
 		this.pongService.startLoop();
-
-		this.pongService.on('noPlayers', () => {
-			this.server.emit('noPlayers');
-		});
-	
-		this.pongService.on('players', (players) => {
-			this.server.emit('players', players);
-		});
-	
-		this.pongService.on('gameState', (state) => {
-			this.server.emit('gameState', state);
-		});
-	
-		this.pongService.on('playerScored', (score) => {
-			this.server.emit('playerScored', score);
-		});
+		this.handleEmits();
 	}
 
 	handleDisconnect(client: Socket): void {
@@ -76,5 +61,23 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const player = this.pongService.determinePlayer(user);
 		if (!player) return;
 		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
+	}
+
+	private handleEmits() {
+		this.pongService.on('noPlayers', () => {
+			this.server.emit('noPlayers');
+		});
+	
+		this.pongService.on('players', (players) => {
+			this.server.emit('players', players);
+		});
+	
+		this.pongService.on('gameState', (state) => {
+			this.server.emit('gameState', state);
+		});
+	
+		this.pongService.on('playerScored', (score) => {
+			this.server.emit('playerScored', score);
+		});
 	}
 }

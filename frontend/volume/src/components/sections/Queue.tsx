@@ -87,7 +87,7 @@ function JoinQueueElement() {
 			return <>error joining queue</>;
 		}
 		if (queue_data.joinQueue === null) {
-			return;
+			return null;
 			// return <JoinedQueue user_id={user_id} />;
 		} else {
 			return <>{queue_data.joinQueue}</>;
