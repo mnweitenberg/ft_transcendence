@@ -3,40 +3,6 @@ import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const CURRENT_USER = gql`
-	query currentUserQuery {
-		currentUserQuery {
-			id
-		}
-	}
-`;
-
-const GET_QUEUED_MATCH = gql`
-	query getQueuedMatch {
-		getQueuedMatch {
-			p1 {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
-const GET_WHOLE_QUEUE = gql`
-	query getWholeQueue {
-		getWholeQueue {
-			p1 {
-				username
-				avatar
-			}
-			p2 {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
 const QUEUE_CHANGED = gql`
 	subscription queueChanged {
 		queueChanged {
@@ -52,31 +18,9 @@ const QUEUE_CHANGED = gql`
 	}
 `;
 
-const MATCH_FOUND = gql`
-	subscription matchFound {
-		matchFound {
-			playerOne {
-				username
-				avatar
-			}
-			playerTwo {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
 const JOIN_QUEUE = gql`
-	mutation joinQueue($user_id: String!) {
-		joinQueue(user_id: $user_id) {
-			p1 {
-				username
-			}
-			p2 {
-				username
-			}
-		}
+	mutation joinQueue {
+		joinQueue
 	}
 `;
 
@@ -89,7 +33,7 @@ export default function Queue(props: i.ModalProps) {
 		}
 	}, [data]);
 	if (loading) {
-		return <div> Queue is changing. Please wait </div>;
+		return <div> Queue is loading. Please wait </div>;
 	}
 	if (error) console.log("in QUEUE_CHANGED subscription ", error);
 	return (
@@ -131,12 +75,7 @@ function JoinQueueElement() {
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
-		console.log("join queue klik");
-		// joinQueue({
-		// 	variables: {
-		// 		user_id: user_id,
-		// 	},
-		// });
+		joinQueue();
 	};
 
 	if (tried_joining_queue) {
@@ -150,12 +89,7 @@ function JoinQueueElement() {
 		if (queue_data.joinQueue === null) {
 			return <JoinedQueue user_id={user_id} />;
 		} else {
-			return (
-				<>
-					Match found: {queue_data.joinQueue.p1.username} vs{" "}
-					{queue_data.joinQueue.p2.username}
-				</>
-			);
+			return <>{queue_data.joinQueue}</>;
 		}
 	} else {
 		return (

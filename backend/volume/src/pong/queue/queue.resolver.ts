@@ -2,8 +2,11 @@ import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { pubSub } from 'src/app.module';
-import { Match } from '../match/entities/match.entity';
 import { QueuedMatch } from './queuedmatch.model';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/auth.service';
 
 
 
@@ -11,37 +14,31 @@ import { QueuedMatch } from './queuedmatch.model';
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	
-	@Mutation((returns) => QueuedMatch, { nullable: true })
-	async joinQueue(@Args('user_id') user_id: string) {
-		return this.queueService.joinQueue(user_id);
+	@UseGuards(JwtAuthGuard)
+	@Mutation((returns) => String)
+	async joinQueue(@AuthUser() user: UserInfo,) {
+		return this.queueService.joinQueue(user.userUid);
 	}
 
-	@Subscription((returns) => QueuedMatch)
-	matchFound() {
-		return pubSub.asyncIterator('matchFound');
-	}
-	
 	@Subscription((returns) => [QueuedMatch])
 	queueChanged() {
 		return pubSub.asyncIterator('queueChanged');
 	}
 
-	@Query((returns) => [QueuedMatch])
-	async getWholeQueue(): Promise<QueuedMatch[]> {
-		return this.queueService.getWholeQueue();
-	}
 
-	// Returns first match to be played
-	@Query((returns) => QueuedMatch, { nullable: true })
-	getQueuedMatch() {
-		return this.queueService.getQueuedMatch();
-	}
+
+
+
 
 	/*
 	TESTING
 	*/
-	
+	@Query((returns) => Number)
+	putInQueue(@Args('id') id: string) {
+		return this.queueService.putInQueue(id);
+	}
+
+
 	@Query((returns) => Number)
 	createMatches() {
 		return this.queueService.createMatches();
