@@ -64,9 +64,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@UseGuards(JwtWsGuard)
 	@SubscribeMessage('PaddlePosition')
 	handlePaddlePosition(@AuthUser() user: UserInfo, client: Socket, data: any): void {
-		// console.log('user', user);
 		const player = this.determinePlayer(user.userUid);
-		if (!player) return;
+		console.log('player', player);
+		if (!player || !data) return;
 		player.paddle.y = data.mouseY;
 	}
 	// @UseGuards(JwtWsGuard)
