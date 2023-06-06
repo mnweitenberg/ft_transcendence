@@ -2,11 +2,10 @@ import * as C from './constants';
 import * as i from './interfaces';
 import { P } from './constants';
 import { Injectable } from '@nestjs/common';
-import { MatchRepository } from './match/match.repository';
 
 @Injectable()
 export class GameLogicService {
-	constructor(private readonly matchRepo: MatchRepository) {
+	constructor() {
 		this.width = C.WIDTH;
 		this.height = C.HEIGHT;
 		this.paddleWidth = C.PADDLE_WIDTH;
@@ -23,7 +22,6 @@ export class GameLogicService {
 		if (!state.match || state.match.isFinished) return;
 		this.handleCollisions(state);
 		this.handleScore(state);
-		this.handleEndOfGame(state);
 		return state;
 	}
 
@@ -35,32 +33,18 @@ export class GameLogicService {
 		if (ballIsBehindLeftPaddle) {
 			state.match.p2Score += 1;
 			state.p1.isServing = true;
+			state.ball.xSpeed = C.BALL_SPEED;
 		}
 
 		if (ballIsBehindRightPaddle) {
 			state.match.p1Score += 1;
 			state.p2.isServing = true;
+			state.ball.xSpeed = -C.BALL_SPEED;
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
 			console.log(state.match.p1Score, state.match.p2Score);
 			state.ballIsInPlay = false;
-		}
-	}
-
-	private async handleEndOfGame(state: i.GameState) {
-		if (
-			state.match.p1Score >= C.MAX_SCORE ||
-			state.match.p2Score >= C.MAX_SCORE
-		) {
-			state.match.isFinished = true;
-			const savedMatch = await this.matchRepo.saveMatch(state.match);
-			console.log(
-				'Successfully saved',
-				savedMatch.players[0].username,
-				'vs',
-				savedMatch.players[1].username,
-			);
 		}
 	}
 

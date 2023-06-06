@@ -33,12 +33,13 @@ export class PongService {
 		};
 
 		const state: i.GameState = {
+			gameIsRunning: false,
 			ballIsInPlay: false,
 			p1,
 			p2,
 			ball,
 		};
-		// console.log('C.BALL_SPEED', C.BALL_SPEED);
+
 		return state;
 	}
 }

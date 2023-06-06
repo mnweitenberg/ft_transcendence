@@ -15,9 +15,8 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PongService } from './pong.service';
-// import { WsResponse } from '@nestjs/websockets';
+import { Optional } from '@nestjs/common';
 
-// by default will listen to same port http is listening on
 @UseGuards(JwtWsGuard)
 @WebSocketGateway({
 	cors: {
@@ -34,124 +33,96 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private readonly gameLogicService: GameLogicService,
 		private readonly pongService: PongService,
 	) {
-		this.gameStarter();
-		console.log('PongGateway');
-	}
-
-	private state: i.GameState = this.pongService.initializeGameState();
-	// private user: UserInfo;
-
-	// @UseGuards(JwtWsGuard)
-	async handleConnection(
-		client: Socket,
-		// @AuthUser() user: UserInfo,
-	): Promise<void> {
-		console.log(`Client connected: ${client.id}`);
-		// console.log('user', user);
-	}
-
-	handleDisconnect(client: Socket): void {
-		console.log(`Client disconnected: ${client.id}`);
-	}
-
-	// @UseGuards(JwtWsGuard)
-	// @SubscribeMessage('startNewGame')
-	// handleNewGame(@AuthUser() user: UserInfo): void {
-	// 	console.log('New game started');
-	// 	console.log('user', user);
-	// 	this.startNewGame();
-	// }
-
-	@UseGuards(JwtWsGuard)
-	@SubscribeMessage('PaddlePosition')
-	handlePaddlePosition(@AuthUser() user: UserInfo, client: Socket, data: any): void {
-		const player = this.determinePlayer(user.userUid);
-		console.log('player', player);
-		if (!player || !data) return;
-		player.paddle.y = data.mouseY;
-	}
-	// @UseGuards(JwtWsGuard)
-	// @SubscribeMessage('PaddlePosition')
-	// handlePaddlePosition(@AuthUser() user: UserInfo, data: any): void {
-	// 	const player = this.determinePlayer(user.userUid);
-	// 	if (!player) return;
-	// 	player.paddle.y = data.mouseY;
-	// }
-	// @SubscribeMessage('mouseClick')
-	// handleMouseClick(client: Socket, data: any): void {
-	// 	const player = this.determinePlayer(data.id);
-	// 	if (!player) return;
-	// 	this.gameLogicService.serveBall(this.state, player);
-	// }
-
-	// @SubscribeMessage('enlargePaddle')
-	// handleEnlargePaddle(client: Socket, data: any): void {
-	// 	const player = this.determinePlayer(data.id);
-	// 	if (!player) return;
-	// 	if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
-	// }
-
-	@SubscribeMessage('enlargePaddle')
-	handleEnlargePaddle(client: Socket, data: any): void {
-		const player = this.determinePlayer(data.id);
-		if (!player) return;
-		if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
-	}
-
-	@SubscribeMessage('reducePaddle')
-	handleReducePaddle(client: Socket, data: any): void {
-		const player = this.determinePlayer(data.id);
-		if (!player) return;
-		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
-	}
-	private async gameStarter() {
-		// if (!this.state || this.state.match.isFinished)
 		this.state = this.pongService.initializeGameState();
-		setInterval(() => this.startNewGame(), 5000);
+		this.startLoop();
+		// this.startNewGame();
+	}
+
+	private loopInterval: NodeJS.Timeout;
+	private gameInterval: NodeJS.Timeout;
+	private state: i.GameState = this.pongService.initializeGameState();
+
+	private startLoop() {
+		setInterval(() => this.startNewGame(), 1000);
 	}
 
 	private async startNewGame() {
-		let interval_id;
-		if (!this.state.match || this.state.match.isFinished)
-			this.state.match = await this.matchRepo.initNewMatch();
+		if (this.state.gameIsRunning) return;
+		if (!this.state.match) this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
-			clearInterval(interval_id);
 			this.server.emit('noPlayers');
-			console.log('No match found');
 			return;
 		}
-		console.log('Starting new game');
+		this.state.gameIsRunning = true;
 		this.server.emit('players', [
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		interval_id = setInterval(() => this.updateGameState(), 1000 / 24);
+		this.gameInterval = setInterval(() => this.updateGameState(), 1000 / 24);
 	}
 
 	private async updateGameState() {
+		if (!this.state.match) return;
+		this.server.emit('gameState', this.state);
+		await this.handleEndOfGame();
 		if (!this.state.match || this.state.match.isFinished) return;
 		this.state = await this.gameLogicService.runGame(this.state);
 		this.server.emit('playerScored', [
 			this.state.match.p1Score,
 			this.state.match.p2Score,
 		]);
-		this.server.emit('gameState', this.state);
-		// this.server.to(gameId).emit('gameState', game);
 	}
 
-	// @UseGuards(JwtWsGuard)
-	// private determinePlayer(@AuthUser() user: UserInfo): i.Player {
-	// 	if (!this.state || !this.state.match) return;
-	// 	if (user.userUid === this.state.match.players[0].id) return this.state.p1;
-	// 	if (user.userUid === this.state.match.players[1].id) return this.state.p2;
-	// 	new Error('Client is not a player in this game');
-	// 	return;
-	// }
+	private async handleEndOfGame() {
+		const { p1Score, p2Score } = this.state.match;
+		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE ) {
+			clearInterval(this.gameInterval);
+			this.state.match.isFinished = true;
+			await this.matchRepo.saveMatch(this.state.match);
+			this.state = this.pongService.initializeGameState();
+			this.state.match = await this.matchRepo.initNewMatch();
+		}
+	}
 
-	private determinePlayer(id: string): i.Player {
-		if (!this.state || !this.state.match) return;
-		if (id === this.state.match.players[0].id) return this.state.p1;
-		if (id === this.state.match.players[1].id) return this.state.p2;
+	handleConnection( client: Socket ): void {
+		console.log(`Client connected: ${client.id}`);
+	}
+
+	handleDisconnect(client: Socket): void {
+		console.log(`Client disconnected: ${client.id}`);
+	}
+
+	@SubscribeMessage('PaddlePosition')
+	handlePaddlePosition(@AuthUser() user: UserInfo, client: Socket, data: any): void {
+		// const player = this.determinePlayer();
+		// console.log('user.uuid ', user.userUid);
+		// if (!player || !data) return;
+		// console.log('data ', data);
+		if (!data || data.mouseY) return;
+		console.log('data.mouseY ', data.mouseY);
+		// console.log('player', player);
+		// player.paddle.y = data.mouseY;
+	}
+
+	@SubscribeMessage('enlargePaddle')
+	handleEnlargePaddle(@AuthUser() user: UserInfo): void {
+		const player = this.determinePlayer(user);
+		if (!player) return;
+		if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
+	}
+
+	@SubscribeMessage('reducePaddle')
+	handleReducePaddle(@AuthUser() user: UserInfo): void {
+		const player = this.determinePlayer(user);
+		if (!player) return;
+		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
+	}
+
+	@UseGuards(JwtWsGuard)
+	determinePlayer(@AuthUser() user: UserInfo | null): i.Player {
+		if (!this.state || !this.state.match || !user) return;
+		if (user.userUid === this.state.match.players[0].id) return this.state.p1;
+		if (user.userUid === this.state.match.players[1].id) return this.state.p2;
 		new Error('Client is not a player in this game');
 		return;
 	}
