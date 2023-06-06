@@ -8,18 +8,23 @@ import { UserInfo } from '../auth.service';
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor() {
 		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
+			jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWTFromHttpOrWs]),
 			ignoreExpiration: false,
 			secretOrKey: process.env.JWT_SECRET,
 		});
 	}
 
-	private static extractJWT(req: Request): string | null {
-		const cookieName = 'session_cookie';
-
-		if (req.cookies && req.cookies[cookieName]) {
-			console.log(req.cookies[cookieName]);
-			return JSON.parse(req.cookies[cookieName]).access_token;
+	private static extractJWTFromHttpOrWs(request): string | null {
+		console.log('Extracting JWT from HTTP request or websocket query parameter');
+		// Check for JWT in HTTP cookie
+		if (request.cookies && request.cookies['session_cookie']) {
+			console.log('Found JWT in HTTP cookie');
+			return JSON.parse(request.cookies['session_cookie']).access_token;
+		}
+		// Check for JWT in websocket query parameter
+		else if (request.handshake && request.handshake.query && request.handshake.query['token']) {
+			console.log('Found JWT in websocket query parameter');
+			return request.handshake.query['token'];
 		}
 		return null;
 	}
@@ -29,3 +34,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		return payload;
 	}
 }
+

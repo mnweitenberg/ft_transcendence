@@ -14,29 +14,50 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
 @Injectable()
 export class JwtWsGuard extends AuthGuard('jwt') {
-  constructor(private readonly jwtService: JwtService) {
-    super();
-  }
+	constructor(private readonly jwtService: JwtService) {super();}
 
-  getRequest(context: ExecutionContext) {
-    const socket: Socket = context.switchToWs().getClient<Socket>();
-    const request = socket.request;
-    return request;
-  }
+	getRequest(context: ExecutionContext) {
+		const socket: Socket = context.switchToWs().getClient<Socket>();
+		const request = socket.request;
+		return request;
+	}
 
-  async canActivate(context: ExecutionContext) {
-    const request = this.getRequest(context);
-	const token = extractJwtToken(request.headers.cookie);
-    const payload = await this.jwtService.verifyAsync(token);
-    if (!payload) return false;
-    context.switchToHttp().getRequest().user = payload;
-    return true;
-  }
+	async canActivate(context: ExecutionContext) {
+		const request = this.getRequest(context);
+		const token = extractJwtToken(request.headers.cookie);
+		try {
+			// console.log('Verifying token:', token);
+			// console.log('Current system time:', new Date());
+			const payload = await this.jwtService.verifyAsync(token);
+			// console.log(payload);
+			if (!payload) return false;
+			// console.log(context.switchToHttp().getRequest().user = payload);
+			context.switchToHttp().getRequest().user = payload;
+		} catch (error) {
+			console.error('Error occurred while verifying token:', error);
+			return false;
+		}
+		return true;
+	}
 }
 
 function extractJwtToken(cookieString: string): string | null {
-	const tokenRegex = /"access_token":"([^"]+)"/;
-	const match = cookieString.match(tokenRegex);
-  	if (match && match.length > 1) return match[1];
+	const cookieRegex = /session_cookie=({[^;]*})/;
+	const cookieMatch = cookieString.match(cookieRegex);
+	if (cookieMatch && cookieMatch.length > 1) {
+		const sessionCookie = cookieMatch[1];
+
+		let sessionObject: any;
+		try {
+			sessionObject = JSON.parse(decodeURIComponent(sessionCookie));
+		} catch (error) {
+			console.error('Error occurred while parsing session cookie:', error);
+		return null;
+		}
+
+		return sessionObject.access_token || null;
+	}
+
 	return null;
-  }
+}
+  

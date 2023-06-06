@@ -18,8 +18,8 @@ import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PongService } from './pong.service';
 // import { WsResponse } from '@nestjs/websockets';
 
-
 // by default will listen to same port http is listening on
+@UseGuards(JwtWsGuard)
 @WebSocketGateway({
 	cors: {
 	  credentials: true,
@@ -28,7 +28,7 @@ import { PongService } from './pong.service';
   })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
-	server!: Server;
+	server: Server;
 
 	constructor(
 		private readonly queueService: QueueService,
@@ -40,31 +40,32 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private state: i.GameState = this.pongService.initializeGameState();
 	// private user: UserInfo;
 
-	// @UseGuards(JwtWsGuard)
+	@UseGuards(JwtWsGuard)
 	async handleConnection(
 		client: Socket,
-		// @AuthUser() user: UserInfo,
+		@AuthUser() user: UserInfo,
 	): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
-		// console.log('user', user);
+		console.log('user', user);
 	}
 
 	handleDisconnect(client: Socket): void {
 		console.log(`Client disconnected: ${client.id}`);
 	}
 
-	// @UseGuards(JwtWsGuard)
+	@UseGuards(JwtWsGuard)
 	@SubscribeMessage('startNewGame')
-	handleNewGame(): void {
+	handleNewGame(@AuthUser() user: UserInfo): void {
 		console.log('New game started');
-		// console.log('user', user);
+		console.log('user', user);
 		this.startNewGame();
 	}
 
+	@UseGuards(JwtWsGuard)
 	@SubscribeMessage('PaddlePosition')
-	handlePaddlePosition(client: Socket, data: any): void {
+	handlePaddlePosition(@AuthUser() user: UserInfo, client: Socket, data: any): void {
 		// console.log('user', user);
-		const player = this.determinePlayer(data.id);
+		const player = this.determinePlayer(user.userUid);
 		if (!player) return;
 		player.paddle.y = data.mouseY;
 	}

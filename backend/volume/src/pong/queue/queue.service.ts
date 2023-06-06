@@ -137,9 +137,9 @@ export class QueueService {
 	*/
 
 	async createMatches() {
-		this.createMatch('Marius');
+		this.createMatch('mweitenb');
 		this.createMatch('Justin');
-		this.createMatch('Milan');
+		// this.createMatch('Milan');
 		this.createMatch('Jonathan');
 		// this.createMatch("Henk1");
 		// this.createMatch("Henk2");
