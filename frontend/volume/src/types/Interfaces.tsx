@@ -39,10 +39,11 @@ interface Stats {
 }
 
 export interface User {
-	name: string;
-	avatar: string;
-	stats: Stats;
-	status: "in game" | "online" | "offline" | "";
+	intraId?: string;
+	username: string;
+	avatar?: string;
+	stats?: Stats;
+	status?: "in game" | "online" | "offline" | "";
 	// chat?: Array<Chat>;
 	friends?: Array<User>;
 }
@@ -51,24 +52,21 @@ export interface User {
 // GAMESTATE //
 ///////////////
 
-interface Score {
-	playerOne: number;
-	playerTwo: number;
-}
-
-export interface GameScore {
-	id: number;
-	playerOne: User;
-	playerTwo: User;
-	score: Score;
+export interface Canvas {
+	height: number;
+	width: number;
+	borderOffset: number;
+	paddleHeight: number;
+	paddleWidth: number;
+	ballSpeed: number;
+	ballDiameter: number;
 }
 
 export interface Ball {
 	x: number;
 	y: number;
-	xSpeed?: number;
-	ySpeed?: number;
-	defaultSpeed?: number;
+	xSpeed: number;
+	ySpeed: number;
 }
 
 export interface Paddle {
@@ -77,29 +75,17 @@ export interface Paddle {
 	height: number;
 }
 
-export interface ServeState {
-	state: boolean;
-	x: number;
-	y: number;
-}
-
-export interface Canvas {
-	height: number;
-	width: number;
-	borderOffset: number;
-	paddleHeight: number;
-	paddleWidth: number;
-	ballDiameter: number;
+export interface Player {
+	paddle: Paddle;
+	isServing: boolean;
 }
 
 export interface GameState {
-	serveLeft: ServeState;
-	serveRight: ServeState;
-	started: boolean;
+	ballIsInPlay: boolean;
+	p1: Player;
+	p2: Player;
 	ball: Ball;
-	paddleLeft: Paddle;
-	paddleRight: Paddle;
-	gameScore?: GameScore;
+	// match?: Match;
 }
 
 ///////////
@@ -117,13 +103,14 @@ export interface ModalProps {
 }
 
 export interface PongProps {
+	players: User[];
+	setPlayers: (players: User[]) => void;
 	bothPlayersReady: boolean;
 	setBothPlayersReady: (bothPlayersReady: boolean) => void;
-	gameScore: GameScore;
-	setScorePlayerOne: (score: number) => void;
-	setScorePlayerTwo: (score: number) => void;
+	playersAvailable: boolean;
+	setPlayersAvailable: (playersAvailable: boolean) => void;
+	score: number[];
+	setScore: (score: number[]) => void;
 	finished: boolean;
 	setFinished: (finished: boolean) => void;
-	goToMenu: boolean;
-	setGoToMenu: (goToMenu: boolean) => void;
 }

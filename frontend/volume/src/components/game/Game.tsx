@@ -1,77 +1,86 @@
 import { useState } from "react";
 import Pong from "./Pong";
-import { matchHistory, queue, ranking } from "../../utils/data";
 import * as i from "../../types/Interfaces";
+import * as C from "../../utils/constants";
 import SocketSingleton from "../../utils/socketSingleton";
 
 function updateScore(props: i.PongProps) {
 	const socketSingleton = SocketSingleton.getInstance();
 
-	// update score
-	socketSingleton.socket.on("gameScore", (gameScore: i.GameScore) => {
-		props.setScorePlayerOne(gameScore.score.playerOne);
-		props.setScorePlayerTwo(gameScore.score.playerTwo);
+	socketSingleton.socket.on("players", (users: i.User[]) => {
+		props.setPlayersAvailable(true);
+		props.setPlayers(users);
 	});
-	socketSingleton.socket.on("endOfGame", (gameScore: i.GameScore) => {
-		props.setScorePlayerOne(gameScore.score.playerOne);
-		props.setScorePlayerTwo(gameScore.score.playerTwo);
-		props.setFinished(true);
+	socketSingleton.socket.on("playerScored", (score: number[]) => {
+		props.setScore(score);
+		if (score[0] === C.MAX_SCORE || score[1] === C.MAX_SCORE) props.setFinished(true);
+	});
+
+	socketSingleton.socket.on("noPlayers", () => {
+		props.setPlayersAvailable(false);
 	});
 }
 
 function Game(props: i.PongProps) {
-	if (!props.gameScore) return <h1 className="game_menu">No one wants to play</h1>;
+	if (!props.players) return <h1 className="game_menu">No one wants to play</h1>;
 
 	updateScore(props);
 
-	if (props.bothPlayersReady) return <Pong />;
+	// if (props.bothPlayersReady) return <Pong />;
+	if (props.playersAvailable) return <Pong />;
 
-	const winner = determineWinner();
+	// function startGame() {
+	// props.setBothPlayersReady(true);
+	// startNewGame();
+	// }
+
+	// if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
 	return (
-		<div className="game_menu" onClick={() => props.setBothPlayersReady(true)}>
-			<h2>{winner ? `${winner} Won` : ""}</h2>
-			<h1>
-				{props.gameScore.playerOne.name} vs {props.gameScore.playerTwo.name}
-			</h1>
-			<h2>start game</h2>
+		<div className="game_menu">
+			<h1>Waiting for game...</h1>
+			{/* <h1>
+				{props.players[0].username} vs {props.players[1].username}
+			</h1> */}
+			{/* <h2>start game</h2> */}
 		</div>
 	);
 }
 
 export default Game;
 
-function determineWinner(): string | null {
-	const lastMatch = matchHistory.at(-1);
-	if (!lastMatch) return null;
-
-	if (lastMatch.score.playerOne > lastMatch.score.playerTwo) return lastMatch.playerOne.name;
-	return lastMatch.playerTwo.name;
-}
-
 export function createPongProps(): i.PongProps {
 	const [bothPlayersReady, setBothPlayersReady] = useState(false);
-	const [scorePlayerOne, setScorePlayerOne] = useState(0);
-	const [scorePlayerTwo, setScorePlayerTwo] = useState(0);
 	const [finished, setFinished] = useState(false);
-	const [goToMenu, setGoToMenu] = useState(false);
 
-	const nextGame = queue[0] || null;
+	const [p1, setp1] = useState<i.User>({ username: "", avatar: "" });
+	const [p2, setp2] = useState<i.User>({ username: "", avatar: "" });
+	const [scorep1, setScorep1] = useState(0);
+	const [scorep2, setScorep2] = useState(0);
+	const [playersAvailable, setPlayersAvailable] = useState(false);
 
-	if (nextGame) {
-		nextGame.score.playerOne = scorePlayerOne;
-		nextGame.score.playerTwo = scorePlayerTwo;
+	const players = [p1, p2];
+	function setPlayers(players: i.User[]) {
+		setp1(players[0]);
+		setp2(players[1]);
+	}
+
+	const score = [scorep1, scorep2];
+	function setScore(score: number[]) {
+		setScorep1(score[0]);
+		setScorep2(score[1]);
 	}
 
 	const pongProps: i.PongProps = {
-		gameScore: nextGame,
-		setScorePlayerOne,
-		setScorePlayerTwo,
+		players,
+		setPlayers,
+		playersAvailable,
+		setPlayersAvailable,
 		bothPlayersReady,
 		setBothPlayersReady,
 		finished,
+		score,
+		setScore,
 		setFinished,
-		goToMenu,
-		setGoToMenu,
 	};
 
 	return pongProps;
@@ -79,32 +88,27 @@ export function createPongProps(): i.PongProps {
 
 export function handleFinishGame(pongProps: i.PongProps) {
 	pongProps.setBothPlayersReady(false);
-	if (pongProps.gameScore) {
-		matchHistory.push(pongProps.gameScore);
-		queue.shift();
-	}
-	updateRanking(pongProps.gameScore);
-	pongProps.setGoToMenu(false);
+	// updateRanking(pongProps.gameScore);
 	pongProps.setFinished(false);
 }
 
-function updateRanking(match: i.GameScore) {
-	if (match.score.playerOne > match.score.playerTwo) {
-		match.playerOne.stats.wins += 1;
-		match.playerOne.stats.score += 3;
-		match.playerTwo.stats.losses += 1;
-		match.playerTwo.stats.score -= 1;
-	} else {
-		match.playerTwo.stats.wins += 1;
-		match.playerTwo.stats.score += 3;
-		match.playerOne.stats.losses += 1;
-		match.playerOne.stats.score -= 1;
-	}
-	// sort users based on their stats
-	ranking.sort((a, b) => b.user.stats.score - a.user.stats.score);
-	// update ranks
-	ranking.forEach((item, index) => {
-		item.rank = index + 1;
-		item.user.stats.ranking = index + 1;
-	});
-}
+// function updateRanking(match: i.GameScore) {
+// 	if (match.score.p1 > match.score.p2) {
+// 		match.p1.stats.wins += 1;
+// 		match.p1.stats.score += 3;
+// 		match.p2.stats.losses += 1;
+// 		match.p2.stats.score -= 1;
+// 	} else {
+// 		match.p2.stats.wins += 1;
+// 		match.p2.stats.score += 3;
+// 		match.p1.stats.losses += 1;
+// 		match.p1.stats.score -= 1;
+// 	}
+// 	// sort users based on their stats
+// 	ranking.sort((a, b) => b.user.stats.score - a.user.stats.score);
+// 	// update ranks
+// 	ranking.forEach((item, index) => {
+// 		item.rank = index + 1;
+// 		item.user.stats.ranking = index + 1;
+// 	});
+// }

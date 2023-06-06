@@ -5,20 +5,22 @@ export function initCanvas(width = 800): i.Canvas {
 	const paddleHeight = height / 5;
 	const paddleWidth = paddleHeight / 10;
 	const borderOffset = paddleWidth / 2;
+	const ballSpeed = paddleHeight / 2;
 	const ballDiameter = paddleWidth * 2;
 	const canvas: i.Canvas = {
 		height,
 		width,
 		paddleHeight,
 		paddleWidth,
-		ballDiameter,
+		ballSpeed,
 		borderOffset,
+		ballDiameter,
 	};
 	return canvas;
 }
 
 export function initializeGameState(canvas: i.Canvas): i.GameState {
-	const { borderOffset, paddleHeight, paddleWidth, ballDiameter, height, width } = canvas;
+	const { borderOffset, paddleHeight, paddleWidth, ballSpeed, height, width } = canvas;
 
 	const paddleLeft: i.Paddle = {
 		x: borderOffset,
@@ -32,29 +34,27 @@ export function initializeGameState(canvas: i.Canvas): i.GameState {
 		height: paddleHeight,
 	};
 
-	const serveLeft: i.ServeState = {
-		state: false,
-		x: paddleLeft.x + paddleWidth + ballDiameter / 2,
-		y: paddleLeft.y + 0.5 * paddleHeight,
+	const p1: i.Player = {
+		paddle: paddleLeft,
+		isServing: false,
 	};
 
-	const serveRight: i.ServeState = {
-		state: false,
-		x: paddleRight.x - ballDiameter / 2,
-		y: paddleRight.y + 0.5 * paddleHeight,
+	const p2: i.Player = {
+		paddle: paddleRight,
+		isServing: true,
 	};
 
 	const ball: i.Ball = {
-		x: serveRight.x,
+		x: paddleRight.x,
 		y: paddleRight.y + paddleHeight / 2,
+		xSpeed: -ballSpeed,
+		ySpeed: ballSpeed,
 	};
 
 	const state: i.GameState = {
-		started: false,
-		paddleLeft,
-		paddleRight,
-		serveLeft,
-		serveRight,
+		ballIsInPlay: false,
+		p1,
+		p2,
 		ball,
 	};
 

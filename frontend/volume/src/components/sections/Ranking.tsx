@@ -6,7 +6,7 @@ import * as i from "src/types/Interfaces";
 function Ranking(propsModal: i.ModalProps) {
 	return (
 		<table>
-			<tbody>
+			{/* <tbody>
 				{ranking.map(function (ranking: any) {
 					return (
 						<tr
@@ -23,7 +23,7 @@ function Ranking(propsModal: i.ModalProps) {
 						</tr>
 					);
 				})}
-			</tbody>
+			</tbody> */}
 		</table>
 	);
 }

@@ -16,7 +16,7 @@ function Welcome(): JSX.Element {
 	let username;
 
 	if (loading) return <Loading />;
-	if (error && error.message != "Unauthorized") return <div>{data.message}</div>;
+	if (error && error.message != "Unauthorized") return <div>{error.message}</div>;
 	else if (error) {
 		console.log(error.message);
 		username = "unavailable";

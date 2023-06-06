@@ -2,32 +2,27 @@ import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { Queue } from './queue.model';
 import { pubSub } from 'src/app.module';
-import { Match } from '../match/entities/match.entity';
+import { QueuedMatch } from './queuedmatch.model';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/auth.service';
+
+
 
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	@Mutation((returns) => Match, { nullable: true })
-	joinQueue(@Args('user_id') user_id: string) {
-		return this.queueService.lookForMatch(user_id);
+	@UseGuards(JwtAuthGuard)
+	@Mutation((returns) => String)
+	async joinQueue(@AuthUser() user: UserInfo,) {
+		return this.queueService.joinQueue(user.userUid);
 	}
 
-	@Subscription((returns) => Match, {
-		filter: (payload, variable) => {
-			return (
-				payload.gameScoreFound.playerOne.user_id === variable.user_id ||
-				payload.gameScoreFound.playerTwo.user_id === variable.user_id
-			);
-		},
-	})
-	matchFound(@Args('user_id') user_id: string) {
-		return pubSub.asyncIterator('matchFound');
-	}
-
-	@Query((returns) => [Match])
-	async getQueueQuery(): Promise<Match[]> {
-		return this.queueService.getQueue();
+	@Subscription((returns) => [QueuedMatch])
+	queueChanged() {
+		return pubSub.asyncIterator('queueChanged');
 	}
 
 
@@ -38,19 +33,29 @@ export class QueueResolver {
 	/*
 	TESTING
 	*/
+	@Query((returns) => Number)
+	putInQueue(@Args('id') id: string) {
+		return this.queueService.putInQueue(id);
+	}
+
 
 	@Query((returns) => Number)
-	createMatchesQuery() {
+	createMatches() {
 		return this.queueService.createMatches();
 	}
 
 	@Query((returns) => Number)
-	fillDbUserQuery() {
+	fillDbUser() {
 		return this.queueService.fillDbUser();
 	}
 
 	@Query((returns) => Number)
 	printQueue() {
 		return this.queueService.queuePrint();
+	}
+
+	@Query((returns) => Number)
+	removeQueue() {
+		return this.queueService.removeQueue();
 	}
 }
