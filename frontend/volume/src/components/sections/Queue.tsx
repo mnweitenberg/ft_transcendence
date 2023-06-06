@@ -61,7 +61,6 @@ export default function Queue(props: i.ModalProps) {
 	);
 }
 
-// TODO: Join queue moet werken via guards decorater op backend
 function JoinQueueElement() {
 	const [
 		joinQueue,
@@ -83,7 +82,6 @@ function JoinQueueElement() {
 			return <>joining queue...</>;
 		}
 		if (queue_error) {
-			console.log("in JOIN_QUEUE mutation ", queue_error);
 			return <>error joining queue</>;
 		}
 		if (queue_data.joinQueue === null) {
@@ -94,7 +92,6 @@ function JoinQueueElement() {
 	} else {
 		return (
 			<form onSubmit={handleClick}>
-				{/* <input type="text" name="user_id" placeholder="Voor testing only" /> */}
 				<button type="submit">Join queue</button>
 			</form>
 		);
