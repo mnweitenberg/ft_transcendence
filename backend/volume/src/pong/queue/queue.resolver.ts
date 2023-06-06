@@ -18,6 +18,11 @@ export class QueueResolver {
 	matchFound() {
 		return pubSub.asyncIterator('matchFound');
 	}
+	
+	@Subscription((returns) => [QueuedMatch])
+	queueChanged() {
+		return pubSub.asyncIterator('queueChanged');
+	}
 
 	@Query((returns) => [QueuedMatch])
 	async getWholeQueue(): Promise<QueuedMatch[]> {

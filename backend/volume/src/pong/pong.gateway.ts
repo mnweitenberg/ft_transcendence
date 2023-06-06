@@ -10,7 +10,6 @@ import * as i from './interfaces';
 import { MatchRepository } from './match/match.repository';
 import * as C from './constants';
 import { GameLogicService } from './gameLogic.service';
-import { QueueService } from './queue/queue.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
@@ -31,35 +30,37 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	server: Server;
 
 	constructor(
-		private readonly queueService: QueueService,
 		private readonly matchRepo: MatchRepository,
 		private readonly gameLogicService: GameLogicService,
 		private readonly pongService: PongService,
-	) {}
+	) {
+		this.gameStarter();
+		console.log('PongGateway');
+	}
 
 	private state: i.GameState = this.pongService.initializeGameState();
 	// private user: UserInfo;
 
-	@UseGuards(JwtWsGuard)
+	// @UseGuards(JwtWsGuard)
 	async handleConnection(
 		client: Socket,
-		@AuthUser() user: UserInfo,
+		// @AuthUser() user: UserInfo,
 	): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
-		console.log('user', user);
+		// console.log('user', user);
 	}
 
 	handleDisconnect(client: Socket): void {
 		console.log(`Client disconnected: ${client.id}`);
 	}
 
-	@UseGuards(JwtWsGuard)
-	@SubscribeMessage('startNewGame')
-	handleNewGame(@AuthUser() user: UserInfo): void {
-		console.log('New game started');
-		console.log('user', user);
-		this.startNewGame();
-	}
+	// @UseGuards(JwtWsGuard)
+	// @SubscribeMessage('startNewGame')
+	// handleNewGame(@AuthUser() user: UserInfo): void {
+	// 	console.log('New game started');
+	// 	console.log('user', user);
+	// 	this.startNewGame();
+	// }
 
 	@UseGuards(JwtWsGuard)
 	@SubscribeMessage('PaddlePosition')
@@ -90,30 +91,41 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// 	if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
 	// }
 
-	// @UseGuards(JwtWsGuard)
-	// @SubscribeMessage('reducePaddle')
-	// handleReducePaddle(@AuthUser() user: UserInfo): void {
-	// 	const player = this.determinePlayer(user.userUid);
-	// 	if (!player) return;
-	// 	if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
-	// }
+	@SubscribeMessage('enlargePaddle')
+	handleEnlargePaddle(client: Socket, data: any): void {
+		const player = this.determinePlayer(data.id);
+		if (!player) return;
+		if (player.paddle.height < C.HEIGHT) player.paddle.height *= 1.2;
+	}
+
+	@SubscribeMessage('reducePaddle')
+	handleReducePaddle(client: Socket, data: any): void {
+		const player = this.determinePlayer(data.id);
+		if (!player) return;
+		if (player.paddle.height > C.PADDLE_HEIGHT) player.paddle.height *= 0.8;
+	}
+	private async gameStarter() {
+		// if (!this.state || this.state.match.isFinished)
+		this.state = this.pongService.initializeGameState();
+		setInterval(() => this.startNewGame(), 5000);
+	}
 
 	private async startNewGame() {
-		console.log('Starting new game');
-		await this.queueService.createMatches();
-		this.state = this.pongService.initializeGameState();
-		this.state.match = await this.matchRepo.initNewMatch();
+		let interval_id;
+		if (!this.state.match || this.state.match.isFinished)
+			this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
+			clearInterval(interval_id);
 			this.server.emit('noPlayers');
 			console.log('No match found');
 			return;
 		}
+		console.log('Starting new game');
 		this.server.emit('players', [
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		// console.log('state.ball.ySpeed', this.state.ball.ySpeed);
-		setInterval(() => this.updateGameState(), 1000 / 24);
+		interval_id = setInterval(() => this.updateGameState(), 1000 / 24);
 	}
 
 	private async updateGameState() {

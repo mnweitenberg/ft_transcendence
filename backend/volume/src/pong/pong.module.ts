@@ -8,21 +8,22 @@ import { Ranking } from './ranking/entities/ranking.entity';
 import { GameLogicService } from './gameLogic.service';
 import { PongGateway } from './pong.gateway';
 import { QueueService } from './queue/queue.service';
-import { QueueModule } from './queue/queue.module';
 import { UserResolver } from 'src/user/user.resolver';
 import { AuthService } from 'src/auth/auth.service';
 import { PongService } from './pong.service';
 import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
+import { QueueResolver } from './queue/queue.resolver';
+import { Queue } from './queue/queue.model';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Match, User, Ranking]),
-		QueueModule,
+		TypeOrmModule.forFeature([Queue, Match, User, Ranking]),
 		UserModule,
 	],
 	providers: [
 		MatchRepository,
 		GameLogicService,
+		QueueResolver,
 		QueueService,
 		PongGateway,
 		UserResolver,

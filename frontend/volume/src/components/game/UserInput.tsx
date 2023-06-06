@@ -26,11 +26,11 @@ import SocketSingleton from "../../utils/socketSingleton";
 
 const id = "941ac863-2dd8-462f-9a47-288c7cd0a850";
 
-export function startNewGame() {
-	// const id = useUserId();
-	const socketSingleton = SocketSingleton.getInstance();
-	socketSingleton.socket.emit("startNewGame", { id: id });
-}
+// export function startNewGame() {
+// 	// const id = useUserId();
+// 	const socketSingleton = SocketSingleton.getInstance();
+// 	socketSingleton.socket.emit("startNewGame", { id: id });
+// }
 
 export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 	// const id = useUserId();

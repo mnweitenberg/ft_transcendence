@@ -12,7 +12,10 @@ const DEBUG_PRINT = false;
 export class QueueService {
 	constructor(
 		private readonly userService: UserService, // private readonly matchRepo: MatchRepository,
-	) {}
+	) {
+		this.createMatches();
+		console.log("queue service created");
+	}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 	weWantToRunNewMatch = true;
@@ -32,7 +35,8 @@ export class QueueService {
 		new_queued_match.p2 = players[1];
 		this.queued_matches.push(new_queued_match);
 
-		pubSub.publish('matchFound', { matchFound: new_queued_match });
+
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		// this.startNewMatch();
 
 		// if (this.weWantToRunNewMatch) {
@@ -74,8 +78,11 @@ export class QueueService {
 	}
 
 	getQueuedMatch(): QueuedMatch | null {
+		// console.log('this.queued_matches: ',  this.queued_matches);
 		const top_match = this.queued_matches.at(0);
+		// console.log('top match: ', top_match);
 		this.queued_matches.splice(0, 1);
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		// console.log(top_match);
 		return top_match;
 	}

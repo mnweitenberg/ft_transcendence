@@ -163,6 +163,7 @@ export class GameLogicService {
 	}
 
 	serveBall(state: i.GameState, player: i.Player): void {
+		if (!state.match || !player) return;
 		if (state.match.isFinished || state.ballIsInPlay || !player.isServing)
 			return;
 		player.isServing = false;
