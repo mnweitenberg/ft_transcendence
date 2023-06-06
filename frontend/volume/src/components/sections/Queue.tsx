@@ -3,55 +3,6 @@ import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const CURRENT_USER = gql`
-	query currentUserQuery {
-		currentUserQuery {
-			id
-		}
-	}
-`;
-
-const GET_QUEUED_MATCH = gql`
-	query getQueuedMatch {
-		getQueuedMatch {
-			p1 {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
-const GET_WHOLE_QUEUE = gql`
-	query getWholeQueue {
-		getWholeQueue {
-			p1 {
-				username
-				avatar
-			}
-			p2 {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
-const MATCH_FOUND = gql`
-	subscription matchFound {
-		matchFound {
-			playerOne {
-				username
-				avatar
-			}
-			playerTwo {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
 const QUEUE_CHANGED = gql`
 	subscription queueChanged {
 		queueChanged {
@@ -68,15 +19,8 @@ const QUEUE_CHANGED = gql`
 `;
 
 const JOIN_QUEUE = gql`
-	mutation joinQueue($user_id: String!) {
-		joinQueue(user_id: $user_id) {
-			p1 {
-				username
-			}
-			p2 {
-				username
-			}
-		}
+	mutation joinQueue {
+		joinQueue
 	}
 `;
 
@@ -114,72 +58,48 @@ export default function Queue(props: i.ModalProps) {
 					</div>
 				);
 			})}
-			{/* <JoinQueueElement /> */}
+			<JoinQueueElement />
 		</>
 	);
 }
 
-// TODO: joinQueue moet userid automatisch opvragen (uit cookie?). 'Join Queue' knop moet wel /niet zichtbaar zijn op
-// basis van of iemand al gequeued is.
-// function JoinQueueElement() {
-// 	const [
-// 		joinQueue,
-// 		{
-// 			data: queue_data,
-// 			loading: queue_loading,
-// 			error: queue_error,
-// 			called: tried_joining_queue,
-// 		},
-// 	] = useMutation(JOIN_QUEUE);
+function JoinQueueElement() {
+	const [
+		joinQueue,
+		{
+			data: queue_data,
+			loading: queue_loading,
+			error: queue_error,
+			called: tried_joining_queue,
+		},
+	] = useMutation(JOIN_QUEUE);
 
-// 	// const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
-// 	// let user_id = ""; // FIXME: nodig?
-// 	// if (user_loading) {
-// 	// 	console.log("loading placeholder"); // FIXME:
-// 	// }
-// 	// if (user_error) {
-// 	// 	console.log("in CURRENT_USER query", user_error);
-// 	// } else if (user_data) {
-// 	// 	user_id = user_data.currentUserQuery.id;
-// 	// }
+	const handleClick = (event: any) => {
+		event.preventDefault();
+		joinQueue();
+	};
 
-// 	const handleClick = (event: any) => {
-// 		event.preventDefault();
-
-// 		// joinQueue({
-// 		// 	variables: {
-// 		// 		user_id: user_id,
-// 		// 	},
-// 		// });
-// 	};
-
-// 	if (tried_joining_queue) {
-// 		if (queue_loading) {
-// 			return <>joining queue...</>;
-// 		}
-// 		if (queue_error) {
-// 			console.log("in JOIN_QUEUE mutation ", queue_error);
-// 			return <>error joining queue</>;
-// 		}
-// 		if (queue_data.joinQueue === null) {
-// 			return <JoinedQueue user_id={user_id} />;
-// 		} else {
-// 			return (
-// 				<>
-// 					Match found: {queue_data.joinQueue.p1.username} vs{" "}
-// 					{queue_data.joinQueue.p2.username}
-// 				</>
-// 			);
-// 		}
-// 	} else {
-// 		return (
-// 			<form onSubmit={handleClick}>
-// 				{/* <input type="text" name="user_id" placeholder="Voor testing only" /> */}
-// 				<button type="submit">Join queue</button>
-// 			</form>
-// 		);
-// 	}
-// }
+	if (tried_joining_queue) {
+		if (queue_loading) {
+			return <>joining queue...</>;
+		}
+		if (queue_error) {
+			return <>error joining queue</>;
+		}
+		if (queue_data.joinQueue === null) {
+			return;
+			// return <JoinedQueue user_id={user_id} />;
+		} else {
+			return <>{queue_data.joinQueue}</>;
+		}
+	} else {
+		return (
+			<form onSubmit={handleClick}>
+				<button type="submit">Join queue</button>
+			</form>
+		);
+	}
+}
 
 // function JoinedQueue({ user_id }: { user_id: string }) {
 // 	// const { data, loading, error } = useSubscription(MATCH_FOUND);

@@ -1,54 +1,55 @@
 version: "3.8"
 
 services:
-    frontend:
-        container_name: pong-frontend
-        build: ./frontend/
-        restart: always
-        ports:
-            - 5574:5574
-        networks:
-            - pong-network
-        volumes:
-            - ./frontend/volume:/home/frontend-volume
-    backend:
-        container_name: pong-backend
-        build: ./backend/
-        restart: always
-        env_file:
-            - .env
-        ports:
-            - 4242:4242
-            # - 4243:4243
-        networks:
-            - pong-network
-        volumes:
-            - ./backend/volume:/home/backend-volume
-    postgres_db:
-        container_name: pong-database
-        build: ./database/
-        restart: always
-        environment:
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
-            - POSTGRES_DB_PORT=${POSTGRES_DB_PORT}
-            - PONG_DB_USER=${PONG_DB_USER}
-            - PONG_DB_PASSWORD=${PONG_DB_PASSWORD}
-        ports:
-            - 5432:5432
-        networks:
-            - pong-network
-        volumes:
-            - database:/var/lib/postgresql/data
-    adminer:
-        image: adminer
-        restart: always
-        ports:
-            - 8080:8080
-        networks:
-            - pong-network
+  frontend:
+    container_name: pong-frontend
+    build: ./frontend/
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 5574:5574
+    networks:
+      - pong-network
+    volumes:
+      - ./frontend/volume:/home/frontend-volume
+  backend:
+    container_name: pong-backend
+    build: ./backend/
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 4242:4242
+    networks:
+      - pong-network
+    volumes:
+      - ./backend/volume:/home/backend-volume
+  postgres_db:
+    container_name: pong-database
+    build: ./database/
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
+      - POSTGRES_DB_PORT=${POSTGRES_DB_PORT}
+      - PONG_DB_USER=${PONG_DB_USER}
+      - PONG_DB_PASSWORD=${PONG_DB_PASSWORD}
+    ports:
+      - 5432:5432
+    networks:
+      - pong-network
+    volumes:
+      - database:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - pong-network
 networks:
     pong-network:
         driver: bridge

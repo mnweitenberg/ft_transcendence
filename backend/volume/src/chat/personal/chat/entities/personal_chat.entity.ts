@@ -8,23 +8,23 @@ import {
 } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/entities/user.entity';
-import { Message } from 'src/message/entities/message.entity';
+import { PersonalMessage } from '../../message/entities/personal_message.entity';
 
 @Entity()
 @ObjectType()
-export class Channel {
+export class PersonalChat {
 	@PrimaryGeneratedColumn('uuid')
 	@Field()
 	id: string;
 
-	@ManyToMany((type) => User, (user) => user.channels)
+	@ManyToMany((type) => User, (user) => user.personal_chats)
 	@JoinTable()
 	@Field((type) => [User], { nullable: true })
 	members: User[];
 
-	@OneToMany(() => Message, (message) => message.channel)
-	@Field((type) => [Message], { nullable: true })
-	messages: Message[];
+	@OneToMany(() => PersonalMessage, (message) => message.channel)
+	@Field((type) => [PersonalMessage])
+	messages: PersonalMessage[];
 
 	@Column()
 	@Field(() => String, {
@@ -38,6 +38,6 @@ export class Channel {
 	})
 	logo: string;
 
-	@Field(() => Message, {nullable: true})
-	lastMessage: Message;
+	@Field(() => PersonalMessage, {nullable: true})
+	lastMessage: PersonalMessage;
 }
