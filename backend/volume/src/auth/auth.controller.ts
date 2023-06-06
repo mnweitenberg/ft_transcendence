@@ -1,4 +1,4 @@
-import { Controller, Get, createParamDecorator } from '@nestjs/common';
+import { Controller, Get, Post, createParamDecorator } from '@nestjs/common';
 import { AuthService, IntraToken } from './auth.service';
 import { Res, Req } from '@nestjs/common';
 import { Response, Request } from 'express';

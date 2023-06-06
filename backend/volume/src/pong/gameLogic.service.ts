@@ -9,13 +9,13 @@ export class GameLogicService {
 		this.width = C.WIDTH;
 		this.height = C.HEIGHT;
 		this.paddleWidth = C.PADDLE_WIDTH;
-		this.ballDiameter = C.BALL_DIAMETER;
+		this.ballWidth = C.BALL_DIAMETER;
 		this.borderOffset = C.BORDER_OFFSET;
 	}
 	private width: number;
 	private height: number;
 	private paddleWidth: number;
-	private ballDiameter: number;
+	private ballWidth: number;
 	private borderOffset: number;
 
 	async runGame(state: i.GameState): Promise<i.GameState> {
@@ -26,9 +26,8 @@ export class GameLogicService {
 	}
 
 	private handleScore(state: i.GameState) {
-		const ballIsBehindLeftPaddle = state.ball.x < this.ballDiameter / 2;
-		const ballIsBehindRightPaddle =
-			state.ball.x + this.ballDiameter / 2 > this.width;
+		const ballIsBehindLeftPaddle = state.ball.x < this.ballWidth / 2;
+		const ballIsBehindRightPaddle = state.ball.x + this.ballWidth / 2 > this.width;
 
 		if (ballIsBehindLeftPaddle) {
 			state.match.p2Score += 1;
@@ -82,8 +81,7 @@ export class GameLogicService {
 	private checkIfBallHitsPaddle(state: i.GameState, side: number): boolean {
 		const paddle = this.getPaddleBySide(state, side);
 
-		const offset =
-			this.paddleWidth + this.borderOffset + this.ballDiameter / 2;
+		const offset = this.paddleWidth + this.borderOffset + this.ballWidth / 2;
 		const ballIsAbovePaddle = state.ball.y > paddle.y + paddle.height;
 		const ballIsBelowPaddle = state.ball.y < paddle.y;
 		const ballIsAtLeftLine = state.ball.x <= paddle.x + offset;
@@ -122,8 +120,8 @@ export class GameLogicService {
 
 	private handleBounceTopBottom(state: i.GameState): void {
 		const ballHitsTopOrBottom =
-			state.ball.y < this.ballDiameter / 2 ||
-			state.ball.y > this.height - this.ballDiameter;
+			state.ball.y < this.ballWidth / 2 ||
+			state.ball.y > this.height - this.ballWidth;
 		if (ballHitsTopOrBottom) state.ball.ySpeed *= -1;
 	}
 
@@ -137,11 +135,11 @@ export class GameLogicService {
 		const { p1, p2, ball } = state;
 		ball.xSpeed = 0;
 		if (p1.isServing) {
-			ball.x = p1.paddle.x + this.paddleWidth + this.ballDiameter / 2;
+			ball.x = p1.paddle.x + this.paddleWidth + this.ballWidth / 2;
 			ball.y = p1.paddle.y + 0.5 * p1.paddle.height;
 		}
 		if (p2.isServing) {
-			ball.x = p2.paddle.x - this.ballDiameter / 2;
+			ball.x = p2.paddle.x - this.ballWidth / 2;
 			ball.y = p2.paddle.y + 0.5 * p2.paddle.height;
 		}
 	}

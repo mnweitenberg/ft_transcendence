@@ -12,8 +12,9 @@ export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 function sendMouseY(canvas: i.Canvas, p5: p5Types, socketSingleton: SocketSingleton) {
 	let relativeMouseY = p5.mouseY / canvas.height;
 	relativeMouseY = clamp(relativeMouseY, 0, 1);
-	// console.log(relativeMouseY);
+	// console.log("relativeMouseY: ", relativeMouseY);
 	socketSingleton.socket.emit("PaddlePosition", { mouseY: relativeMouseY });
+	// console.log("PaddlePosition event emitted");
 }
 
 function sendMouseClick(p5: p5Types, socketSingleton: SocketSingleton) {

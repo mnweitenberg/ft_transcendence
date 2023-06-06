@@ -33,6 +33,7 @@ export class JwtWsGuard extends AuthGuard('jwt') {
 			if (!payload) return false;
 			// console.log(context.switchToHttp().getRequest().user = payload);
 			context.switchToHttp().getRequest().user = payload;
+			context.switchToWs().getClient().user = payload;
 		} catch (error) {
 			console.error('Error occurred while verifying token:', error);
 			return false;
