@@ -1,4 +1,3 @@
-import { Buffer } from 'node:buffer';
 import { InputType, Field } from '@nestjs/graphql';
 import { IsNumberString } from 'class-validator';
 
@@ -10,7 +9,4 @@ export class CreateUserInput {
 
 	@Field()
 	username: string;
-
-	@Field()
-	avatar?: string;
 }

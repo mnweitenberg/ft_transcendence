@@ -44,10 +44,10 @@ export class QueueResolver {
 		return this.queueService.createMatches();
 	}
 
-	@Query((returns) => Number)
-	fillDbUser() {
-		return this.queueService.fillDbUser();
-	}
+	// @Query((returns) => Number)
+	// fillDbUser() {
+	// 	return this.queueService.fillDbUser();
+	// }
 
 	@Query((returns) => Number)
 	printQueue() {

@@ -116,19 +116,19 @@ export class QueueService {
 		if (user) await this.joinQueue(user.id);
 	}
 
-	async fillDbUser() {
-		await this.randomUser('Marius');
-		await this.randomUser('Justin');
-		await this.randomUser('Milan');
-		await this.randomUser('Jonathan');
-		// await this.randomUser('Henk1');
-		// await this.randomUser('Henk2');
-		// await this.randomUser('Henk3');
-		// await this.randomUser('Henk4');
-		// await this.randomUser('Henk5');
-		// await this.randomUser('Henk6');
-		return 3;
-	}
+	// async fillDbUser() {
+	// 	await this.randomUser('Marius');
+	// 	await this.randomUser('Justin');
+	// 	await this.randomUser('Milan');
+	// 	await this.randomUser('Jonathan');
+	// 	// await this.randomUser('Henk1');
+	// 	// await this.randomUser('Henk2');
+	// 	// await this.randomUser('Henk3');
+	// 	// await this.randomUser('Henk4');
+	// 	// await this.randomUser('Henk5');
+	// 	// await this.randomUser('Henk6');
+	// 	return 3;
+	// }
 
 	queuePrint() {
 		console.log('\t\t\t USER queue op backend');
@@ -138,14 +138,14 @@ export class QueueService {
 		return 3;
 	}
 
-	async randomUser(name: string) {
-		const newUser: CreateUserInput = {
-			username: name,
-			avatar: 'img/' + name.toLowerCase() + '.png',
-			intraId: name + '_intra_id',
-		};
-		return await this.userService.create(newUser);
-	}
+	// async randomUser(name: string) {
+	// 	const newUser: CreateUserInput = {
+	// 		username: name,
+	// 		avatar: 'img/' + name.toLowerCase() + '.png',
+	// 		intraId: name + '_intra_id',
+	// 	};
+	// 	return await this.userService.create(newUser);
+	// }
 
 	removeQueue() {
 		this.queued_matches.splice(0, this.queued_matches.length);

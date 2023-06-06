@@ -1,19 +1,23 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Avatar } from "./avatar.entity";
+import { Avatar } from "./entities/avatar.entity";
 import { UploadAvatarInput } from "./dto/upload-avatar.input";
 
 @Injectable()
 export class UserAvatarService {
-  constructor(
-    @InjectRepository(Avatar)
-    private readonly avatarRepository: Repository<Avatar>,
-  ) {}
+	constructor(
+		@InjectRepository(Avatar)
+		private readonly avatarRepository: Repository<Avatar>,
+	) {}
 
-  async create(uploadAvatarInput: UploadAvatarInput)
-  {
-    const avatar = this.avatarRepository.create(uploadAvatarInput);
-    return this.avatarRepository.save(avatar);
-  }
+	async create(uploadAvatarInput: UploadAvatarInput)
+	{
+		const avatar = this.avatarRepository.create(uploadAvatarInput);
+		return this.avatarRepository.save(avatar);
+	}
+
+	async getAvatar() {
+		return null;
+	}
 }

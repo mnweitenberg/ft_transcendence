@@ -37,7 +37,6 @@ export class UserService {
 
 	async create(createUserInput: CreateUserInput): Promise<User> {
 		const user = this.userRepository.create(createUserInput);
-		user.avatar = ""; 	// FIXME: temp fix, untill avatar is default set
 		return await this.userRepository.save(user);
 	}
 

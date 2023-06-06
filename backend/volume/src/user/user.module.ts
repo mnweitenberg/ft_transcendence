@@ -20,6 +20,6 @@ import { PersonalChat } from 'src/chat/personal/chat/entities/personal_chat.enti
 		TypeOrmModule.forFeature([PersonalMessage]),
 	],
 	providers: [UserResolver, UserService, UserAvatarService],
-	exports: [UserService],
+	exports: [UserService, UserAvatarService],
 })
 export class UserModule {}

@@ -8,12 +8,14 @@ import {
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
+import { Avatar } from './entities/avatar.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 import { UserAvatarService } from './user-avatar.service';
+import { ChangeUserDataInput } from './dto/change-user-data-input';
 
 @Resolver(of => User)
 export class UserResolver {
@@ -34,10 +36,6 @@ export class UserResolver {
 		return this.userService.getUser(usernameParam);
 	}
 
-	@ResolveField('avatar', returns => Avatar)
-	async getAvatar(@Parent() user: User) {
-		return this.userAvatarService.getAvatar();
-	}
 
 	@UseGuards(JwtAuthGuard)
 	@Query((returns) => User)
@@ -50,6 +48,21 @@ export class UserResolver {
 		@Args('createUserInput') createUserInput: CreateUserInput,
 	) {
 		return this.userService.create(createUserInput);
+	}
+
+	@Mutation(returns => User)
+	async changeUserData(
+		@Args('changeUserData') changeUserData: ChangeUserDataInput
+	) {
+		if (changeUserData.avatar) {
+			this.userAvatarService.create(this.changeUserData.avatar);
+		}
+		return null;
+	}
+
+	@ResolveField('avatar', returns => Avatar)
+	async getAvatar(@Parent() user: User) {
+		return this.userAvatarService.getAvatar();
 	}
 
 	@ResolveField()

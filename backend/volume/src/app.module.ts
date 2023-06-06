@@ -16,7 +16,6 @@ import { PersonalMessageModule } from './chat/personal/message/personal_message.
 import { PubSub } from 'graphql-subscriptions';
 import { AuthModule } from './auth/auth.module';
 import { PongModule } from './pong/pong.module';
-import { AvatarModule } from './avatar/avatar.module';
 
 export const pubSub = new PubSub();
 
@@ -37,7 +36,6 @@ export const pubSub = new PubSub();
 		ConfigModule.forRoot({ isGlobal: true }),
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
 		AuthModule,
-    AvatarModule,
 		UserModule,
 		// QueueModule,
 		LoginModule,
