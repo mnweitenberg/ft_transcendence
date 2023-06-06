@@ -13,21 +13,30 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
+import { UserAvatarService } from './user-avatar.service';
 
-@Resolver((of) => User)
+@Resolver(of => User)
 export class UserResolver {
-	constructor(private userService: UserService) {}
+	constructor(
+		private userService: UserService,
+		private userAvatarService: UserAvatarService
+	) {}
 
 	@Query((returns) => [User])
 	async allUsersQuery() {
 		return this.userService.getAllUsers();
 	}
 
-	@Query((returns) => User)
+	@Query((returns) => User, { name: 'user'})
 	async userQuery(
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
 		return this.userService.getUser(usernameParam);
+	}
+
+	@ResolveField('avatar', returns => Avatar)
+	async getAvatar(@Parent() user: User) {
+		return this.userAvatarService.getAvatar();
 	}
 
 	@UseGuards(JwtAuthGuard)

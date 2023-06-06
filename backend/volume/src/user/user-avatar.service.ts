@@ -5,7 +5,7 @@ import { Avatar } from "./avatar.entity";
 import { UploadAvatarInput } from "./dto/upload-avatar.input";
 
 @Injectable()
-export class AvatarService {
+export class UserAvatarService {
   constructor(
     @InjectRepository(Avatar)
     private readonly avatarRepository: Repository<Avatar>,

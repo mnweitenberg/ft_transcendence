@@ -1,6 +1,7 @@
 import {
 	Column,
 	Entity,
+	JoinColumn,
 	ManyToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Channel } from 'src/channel/entities/channel.entity';
 import { Ranking } from 'src/pong/ranking/entities/ranking.entity';
 import { Match } from 'src/pong/match/entities/match.entity';
+import { Avatar } from 'src/avatar/avatar.entity';
 
 @Entity()
 @ObjectType()
@@ -29,6 +31,11 @@ export class User {
 	})
 	@Field()
 	username: string;
+
+	@OneToOne(() => Avatar)
+	@JoinColumn()
+	@Field()
+	avatar: Avatar;
 
 	@ManyToMany(() => Channel, (channel) => channel.members)
 	@Field(() => [Channel], { nullable: true })

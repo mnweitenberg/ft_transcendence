@@ -9,10 +9,11 @@ import { Message } from 'src/message/entities/message.entity';
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([User]),
+		TypeOrmModule.forFeature([Avatar]),
 		TypeOrmModule.forFeature([Channel]),
 		TypeOrmModule.forFeature([Message]),
 	],
-	providers: [UserResolver, UserService],
+	providers: [UserResolver, UserService, UserAvatarService],
 	exports: [UserService],
 })
 export class UserModule {}
