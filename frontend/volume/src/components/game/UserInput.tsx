@@ -24,13 +24,13 @@ import { gql, useQuery } from "@apollo/client";
 // 	return id;
 // }
 
-const id = "d18621e6-46a6-4df1-b30f-4b24c8fa6b34";
+const id = "d6c32164-9f4b-4584-91a0-f31ecdc9abac";
 
-export function startNewGame() {
-	// const id = useUserId();
-	const socketSingleton = SocketSingleton.getInstance();
-	socketSingleton.socket.emit("startNewGame", { id: id });
-}
+// export function startNewGame() {
+// 	// const id = useUserId();
+// 	const socketSingleton = SocketSingleton.getInstance();
+// 	socketSingleton.socket.emit("startNewGame", { id: id });
+// }
 
 export function handleUserInput(canvas: i.Canvas, p5: p5Types) {
 	// const id = useUserId();

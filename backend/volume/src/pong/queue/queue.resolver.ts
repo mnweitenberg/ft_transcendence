@@ -11,6 +11,7 @@ import { QueuedMatch } from './queuedmatch.model';
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
+	
 	@Mutation((returns) => QueuedMatch, { nullable: true })
 	async joinQueue(@Args('user_id') user_id: string) {
 		return this.queueService.joinQueue(user_id);
@@ -19,6 +20,11 @@ export class QueueResolver {
 	@Subscription((returns) => QueuedMatch)
 	matchFound() {
 		return pubSub.asyncIterator('matchFound');
+	}
+	
+	@Subscription((returns) => [QueuedMatch])
+	queueChanged() {
+		return pubSub.asyncIterator('queueChanged');
 	}
 
 	@Query((returns) => [QueuedMatch])
