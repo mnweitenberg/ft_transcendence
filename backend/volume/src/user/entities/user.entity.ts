@@ -34,7 +34,7 @@ export class User {
 		nullable: true,
 	})
 	@Field()
-	avatar: string;
+	avatar: string = ""; // FIXME: temp fix
 
 	@ManyToMany(() => GroupChat, (channel) => channel.members)
 	@Field(() => [GroupChat])

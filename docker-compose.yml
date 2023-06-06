@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   frontend:
@@ -52,7 +52,7 @@ services:
     networks:
       - pong-network
 networks:
-  pong-network:
-    driver: bridge
+    pong-network:
+        driver: bridge
 volumes:
-  database:
+    database:

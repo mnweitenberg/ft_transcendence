@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import { ReactDOM } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { useEffect } from "react";
 import "src/styles/style.css";
 import Chat from "src/components/chat/Chat";
 import Header from "src/components/sections/Header";
@@ -28,7 +26,7 @@ function Home(): JSX.Element {
 		<div className="grid-container">
 			<div id="left_top"></div>
 
-			<Header />
+			<Header {...pongProps} />
 
 			<div id="right_top">
 				<a
@@ -53,7 +51,7 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">{user.name}</h1>
+				<h1 className="section_header chat_profile_header">{user.username}</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>

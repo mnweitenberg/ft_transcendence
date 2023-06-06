@@ -37,6 +37,7 @@ export class UserService {
 
 	async create(createUserInput: CreateUserInput): Promise<User> {
 		const user = this.userRepository.create(createUserInput);
+		user.avatar = ""; 	// FIXME: temp fix, untill avatar is default set
 		return await this.userRepository.save(user);
 	}
 
@@ -54,5 +55,9 @@ export class UserService {
 			where: { id: user.id },
 		});
 		return user_with_channels.personal_chats;
+	}
+
+	async save(user: User): Promise<User> {
+		return await this.userRepository.save(user);
 	}
 }

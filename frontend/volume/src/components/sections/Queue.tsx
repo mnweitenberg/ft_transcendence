@@ -1,110 +1,57 @@
 import "src/styles/style.css";
-import UserStats from "src/components/common/UserStats";
-import { queue } from "src/utils/data";
 import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
 import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const MATCH_FOUND = gql`
-	subscription matchFound($user_id: String!) {
-		matchFound(user_id: $user_id) {
-			playerOne {
-				id
-			}
-			playerTwo {
-				id
-			}
-		}
-	}
-`;
-
-const GET_QUEUE = gql`
-	query getQueueQuery {
-		getQueueQuery {
-			gameId
-			playerOne {
+const QUEUE_CHANGED = gql`
+	subscription queueChanged {
+		queueChanged {
+			p1 {
 				username
+				avatar
 			}
-			playerTwo {
+			p2 {
 				username
+				avatar
 			}
 		}
 	}
 `;
 
 const JOIN_QUEUE = gql`
-	mutation joinQueue($userId: String!) {
-		joinQueue(user_id: $userId) {
-			playerOne {
-				id
-			}
-			playerTwo {
-				id
-			}
-		}
+	mutation joinQueue {
+		joinQueue
 	}
 `;
 
 export default function Queue(props: i.ModalProps) {
-	// TODO:
-	// queue niet meer importen maar bijhouden op backend en dan hier queryen. Dan
-	// subscription op queue die update als er nieuwe match is gevonden.
-	//
-	// versimpelen van joinQueue joinedQueue. zou geen verschil moeten zijn
-	// tussen joinen als eerste en joinen als tweede. gewoon beide (en iedereen)
-	// subscriben op de queue
-
-	// OPZET
-	// const {loading, error, data, subscribeToMore} = useQuery(CURRENT_QUEUE);
-	// zie ook NewGroupMessage.tsx
-
-	// const { loading, data, error, subscribeToMore } = useQuery(GET_QUEUE);
-
-	// let user_id = "Henk1";
-
-	// useEffect(() => {
-	// 	return subscribeToMore({
-	// 		document: MATCH_FOUND,
-	// 		variables: { user_id: user_id },
-	// 		updateQuery: (prev, { subscriptionData }) => {
-	// 			if (!subscriptionData.data) return prev;
-	// 			const newMatch = subscriptionData.data.match;
-	// 			return Object.assign({}, prev, {
-	// 				// TODO: query voor match die dan nieuwe match toevoegt aan de queue (GameScore)
-	// 			});
-	// 		},
-	// 	});
-	// }, []);
-
-	// const rij: Array<i.GameScore> = [data];  		// rij wordt dan queue
-
+	const [queue, setQueue] = useState([]);
+	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
+	useEffect(() => {
+		if (data) {
+			setQueue(data.queueChanged);
+		}
+	}, [data]);
+	if (loading) {
+		return <div> Queue is loading. Please wait </div>;
+	}
+	if (error) console.log("in QUEUE_CHANGED subscription ", error);
 	return (
 		<>
-			{queue.map(function (game) {
-				if (!game.playerOne || !game.playerTwo) return <JoinQueueElement />;
+			{queue.map(function (game: any) {
+				if (!game.p1 || !game.p2) return <JoinQueueElement />;
 				return (
 					<div
 						className="flex_row_spacebetween"
-						key={game.playerOne.name + game.playerTwo.name}
+						key={game.p1.username + game.p2.username}
 					>
-						<div
-							className="player player--one"
-							onClick={() =>
-								props.toggleModal(game.playerOne, <UserStats {...props} />)
-							}
-						>
-							<h3 className="name">{game.playerOne.name}</h3>
-							<img className="avatar" src={game.playerOne.avatar} />
+						<div className="player player--one">
+							<h3 className="name">{game.p1.username}</h3>
+							<img className="avatar" src={game.p1.avatar} />
 						</div>
-
-						<div
-							className="player player--two"
-							onClick={() =>
-								props.toggleModal(game.playerTwo, <UserStats {...props} />)
-							}
-						>
-							<img className="avatar" src={game.playerTwo.avatar} />
-							<h3 className="name">{game.playerTwo.name}</h3>
+						<div className="player player--two">
+							<img className="avatar" src={game.p2.avatar} />
+							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>
 				);
@@ -125,19 +72,9 @@ function JoinQueueElement() {
 		},
 	] = useMutation(JOIN_QUEUE);
 
-	const [user_id, set_user_id] = useState(""); // TODO: use other way to get own user_id
-
 	const handleClick = (event: any) => {
 		event.preventDefault();
-
-		const user_id = event.target.elements.userId.value;
-		set_user_id(user_id); // TODO: remove together with the useState
-
-		joinQueue({
-			variables: {
-				userId: user_id,
-			},
-		});
+		joinQueue();
 	};
 
 	if (tried_joining_queue) {
@@ -145,23 +82,16 @@ function JoinQueueElement() {
 			return <>joining queue...</>;
 		}
 		if (queue_error) {
-			console.log(queue_error);
 			return <>error joining queue</>;
 		}
 		if (queue_data.joinQueue === null) {
 			return <JoinedQueue user_id={user_id} />;
 		} else {
-			return (
-				<>
-					Match found: {queue_data.joinQueue.playerOne.userId} vs{" "}
-					{queue_data.joinQueue.playerTwo.userId}
-				</>
-			);
+			return <>{queue_data.joinQueue}</>;
 		}
 	} else {
 		return (
 			<form onSubmit={handleClick}>
-				<input type="text" name="userId" placeholder="Voor testing only" />
 				<button type="submit">Join queue</button>
 			</form>
 		);
@@ -169,17 +99,22 @@ function JoinQueueElement() {
 }
 
 function JoinedQueue({ user_id }: { user_id: string }) {
-	const { data, loading, error } = useSubscription(MATCH_FOUND, {
-		variables: { user_id: user_id },
-	});
-
-	if (error) alert(error.message);
-
-	if (loading) return <div> Joined the Queue! </div>;
-
-	return (
-		<div>
-			Match found: {data.matchFound.playerOne.userId} vs {data.matchFound.playerTwo.userId}
-		</div>
-	);
+	// const { data, loading, error } = useSubscription(MATCH_FOUND);
+	// if (loading) {
+	// 	return <div> Joined the queue! </div>;
+	// }
+	// if (error) console.log("in MATCH_FOUND subscription ", error);
+	// if (data)
+	// 	return (
+	// 		<div>
+	// 			Match found: {data.matchFound.playerOne.username} vs{" "}
+	// 			{data.matchFound.playerTwo.username}
+	// 		</div>
+	// 	);
+	// return (
+	// 	<div>
+	// 		Match found: {data.matchFound.p1.username} vs{" "}
+	// 		{data.matchFound.p2.username}
+	// 	</div>
+	// );
 }

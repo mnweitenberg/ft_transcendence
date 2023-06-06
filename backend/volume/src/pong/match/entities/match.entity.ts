@@ -18,17 +18,17 @@ export class Match {
 	@ManyToMany(() => User, (user) => user.match_history)
 	@JoinTable()
 	@Field(() => [User])
-	players: [User, User];
+	players: User[];
 
 	@Column()
 	@Field(() => Int)
-	playerOneScore: number;
+	p1Score: number;
 
 	@Column()
 	@Field(() => Int)
-	playerTwoScore: number;
-	
-	// @Column()
-	// @Field(() => [Int])
-	// playerScores: [number, number];
+	p2Score: number;
+
+	@Column()
+	@Field(() => Boolean)
+	isFinished: boolean;
 }
