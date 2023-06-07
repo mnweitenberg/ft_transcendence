@@ -30,7 +30,8 @@ export class PongService {
 
 	private async startNewGame() {
 		if (this.state.gameIsRunning) return;
-		if (!this.state.match) this.state.match = await this.matchRepo.initNewMatch();
+		if (!this.state.match)
+			this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
 			this.emitter.emit('noPlayers');
 			return;
@@ -40,7 +41,10 @@ export class PongService {
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		this.gameInterval = setInterval(() => this.updateGameState(), C.REFRESH_RATE);
+		this.gameInterval = setInterval(
+			() => this.updateGameState(),
+			C.REFRESH_RATE,
+		);
 	}
 
 	private async updateGameState() {
@@ -57,7 +61,7 @@ export class PongService {
 
 	private async handleEndOfGame() {
 		const { p1Score, p2Score } = this.state.match;
-		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE ) {
+		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE) {
 			clearInterval(this.gameInterval);
 			this.state.match.isFinished = true;
 			await this.matchRepo.saveMatch(this.state.match);
@@ -68,8 +72,10 @@ export class PongService {
 
 	determinePlayer(user: UserInfo): i.Player {
 		if (!this.state || !this.state.match) return;
-		if (user.userUid === this.state.match.players[0].id) return this.state.p1;
-		if (user.userUid === this.state.match.players[1].id) return this.state.p2;
+		if (user.userUid === this.state.match.players[0].id)
+			return this.state.p1;
+		if (user.userUid === this.state.match.players[1].id)
+			return this.state.p2;
 		return;
 	}
 

@@ -28,7 +28,8 @@ export class GameLogicService {
 
 	private handleScore(state: i.GameState) {
 		const ballIsBehindLeftPaddle = state.ball.x < this.ballWidth / 2;
-		const ballIsBehindRightPaddle = state.ball.x + this.ballWidth / 2 > this.width;
+		const ballIsBehindRightPaddle =
+			state.ball.x + this.ballWidth / 2 > this.width;
 
 		if (ballIsBehindLeftPaddle) {
 			state.match.p2Score += 1;
@@ -80,7 +81,8 @@ export class GameLogicService {
 	private checkIfBallHitsPaddle(state: i.GameState, side: number): boolean {
 		const paddle = this.getPaddleBySide(state, side);
 
-		const offset = this.paddleWidth + this.borderOffset + this.ballWidth / 2;
+		const offset =
+			this.paddleWidth + this.borderOffset + this.ballWidth / 2;
 		const ballIsAbovePaddle = state.ball.y > paddle.y + paddle.height;
 		const ballIsBelowPaddle = state.ball.y < paddle.y;
 		const ballIsAtLeftLine = state.ball.x <= paddle.x + offset;

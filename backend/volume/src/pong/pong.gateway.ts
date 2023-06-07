@@ -17,13 +17,13 @@ import { PongService } from './pong.service';
 
 @WebSocketGateway({
 	cors: {
-	  credentials: true,
-	  origin: 'http://localhost:5574',
+		credentials: true,
+		origin: 'http://localhost:5574',
 	},
 })
 @UseGuards(JwtWsGuard)
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor( private readonly pongService: PongService ) {}
+	constructor(private readonly pongService: PongService) {}
 
 	@WebSocketServer()
 	server: Server;
@@ -41,7 +41,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@UseGuards(JwtWsGuard)
 	@SubscribeMessage('PaddlePosition')
-	handlePaddlePosition(@ConnectedSocket() client: Socket, @MessageBody() data: any, @AuthUser() user: UserInfo): void {
+	handlePaddlePosition(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() data: any,
+		@AuthUser() user: UserInfo,
+	): void {
 		const player = this.pongService.determinePlayer(user);
 		if (!data || !data.mouseY || !player) return;
 		player.paddle.y = data.mouseY;
@@ -67,15 +71,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.pongService.on('noPlayers', () => {
 			this.server.emit('noPlayers');
 		});
-	
+
 		this.pongService.on('players', (players) => {
 			this.server.emit('players', players);
 		});
-	
+
 		this.pongService.on('gameState', (state) => {
 			this.server.emit('gameState', state);
 		});
-	
+
 		this.pongService.on('playerScored', (score) => {
 			this.server.emit('playerScored', score);
 		});

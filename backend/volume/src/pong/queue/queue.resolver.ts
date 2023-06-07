@@ -8,15 +8,13 @@ import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 
-
-
 @Resolver((of) => Queue)
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation((returns) => String)
-	async joinQueue(@AuthUser() user: UserInfo,) {
+	async joinQueue(@AuthUser() user: UserInfo) {
 		if (!user) return;
 		return this.queueService.joinQueue(user.userUid);
 	}
@@ -26,11 +24,6 @@ export class QueueResolver {
 		return pubSub.asyncIterator('queueChanged');
 	}
 
-
-
-
-
-
 	/*
 	TESTING
 	*/
@@ -38,7 +31,6 @@ export class QueueResolver {
 	putInQueue(@Args('id') id: string) {
 		return this.queueService.putInQueue(id);
 	}
-
 
 	@Query((returns) => Number)
 	createMatches() {
