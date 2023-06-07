@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "src/styles/style.css";
 
-function Layout(): JSX.Element {
+function Layout({ children }: { children: any }): JSX.Element {
 	return (
 		<div className="background">
 			<div className="content-block">
@@ -18,7 +18,7 @@ function Layout(): JSX.Element {
 						</Link>
 					</section>
 				</div>
-				<div className="content"></div>
+				<div className="content">{children}</div>
 			</div>
 		</div>
 	);

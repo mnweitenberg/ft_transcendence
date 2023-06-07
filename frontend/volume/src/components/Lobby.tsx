@@ -1,10 +1,6 @@
 import Layout from "./common/Layout";
 
 function Lobby(): JSX.Element {
-	return (
-		<Layout>
-			<div>hello world this is the lobby</div>
-		</Layout>
-	);
+	return <Layout>this is the lobby</Layout>;
 }
 export default Lobby;
