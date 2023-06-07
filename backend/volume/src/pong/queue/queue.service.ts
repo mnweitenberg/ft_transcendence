@@ -7,7 +7,9 @@ import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class QueueService {
-	constructor(private readonly userService: UserService) {}
+	constructor(private readonly userService: UserService) {
+		console.log('QueueService created');
+	}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 

@@ -16,6 +16,8 @@ import { PersonalMessageModule } from './chat/personal/message/personal_message.
 import { PubSub } from 'graphql-subscriptions';
 import { AuthModule } from './auth/auth.module';
 import { PongModule } from './pong/pong.module';
+import { RankingModule } from './pong/ranking/ranking.module';
+import { MatchModule } from './pong/match/match.module';
 
 export const pubSub = new PubSub();
 
@@ -37,15 +39,14 @@ export const pubSub = new PubSub();
 		TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
 		AuthModule,
 		UserModule,
-		// QueueModule,
 		LoginModule,
 		GroupChatModule,
 		GroupMessageModule,
 		PersonalChatModule,
 		PersonalMessageModule,
 		PongModule,
+		MatchModule,
+		// RankingModule,
 	],
-	// controllers: [AppController],
-	// providers: [AppService],
 })
 export class AppModule {}

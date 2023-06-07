@@ -15,7 +15,7 @@ export interface IContextProps {
 export const AuthContext = createContext({} as IContextProps);
 
 export function AuthProvider({ children }: { children: any }): JSX.Element {
-	const [login, setLogin] = useState(false);
+	// const [login, setLogin] = useState(false);
 	const [logoutMutation, { loading, error, data }] = useMutation(LOGOUT_MUTATION);
 	const navigate = useNavigate();
 

@@ -6,15 +6,13 @@ import { UserService } from '../../user/user.service';
 import { User } from '../../user/entities/user.entity';
 import { QueueService } from '../queue/queue.service';
 
-import { Query } from '@nestjs/graphql';
-
 @Injectable()
 export class MatchRepository {
 	constructor(
 		@InjectRepository(Match)
 		private readonly matchRepo: Repository<Match>,
 		private readonly userService: UserService,
-		readonly queueService: QueueService,
+		private readonly queueService: QueueService,
 	) {}
 
 	public async findAll(): Promise<Match[]> {
@@ -39,22 +37,8 @@ export class MatchRepository {
 		await this.userService.save(user);
 	}
 
-	// public async initNewMatch(queuedMatch): Promise<Match> {
-	// 	if (!queuedMatch) return;
-	// 	const match = new Match();
-	// 	match.players = await this.checkPlayers([
-	// 		queuedMatch.p1,
-	// 		queuedMatch.p2,
-	// 	]);
-	// 	match.p1Score = 0;
-	// 	match.p2Score = 0;
-	// 	match.isFinished = false;
-	// 	return match;
-	// }
-
 	public async initNewMatch(): Promise<Match> {
 		const queuedMatch = this.queueService.getQueuedMatch();
-		// console.log('queuedMatch :', queuedMatch);
 		if (!queuedMatch) return;
 		const match = new Match();
 		match.players = [queuedMatch.p1, queuedMatch.p2];
@@ -71,10 +55,4 @@ export class MatchRepository {
 			throw new Error("One or more users don't exist in the database");
 		return [p1, p2];
 	}
-
-	// @Query((returns) => Number)
-	// createMatches() {
-	// 	return this.queueService.createMatches();
-	// }
-
 }

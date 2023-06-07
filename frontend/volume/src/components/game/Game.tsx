@@ -89,27 +89,5 @@ export function createPongProps(): i.PongProps {
 
 export function handleFinishGame(pongProps: i.PongProps) {
 	pongProps.setBothPlayersReady(false);
-	// updateRanking(pongProps.gameScore);
 	pongProps.setFinished(false);
 }
-
-// function updateRanking(match: i.GameScore) {
-// 	if (match.score.p1 > match.score.p2) {
-// 		match.p1.stats.wins += 1;
-// 		match.p1.stats.score += 3;
-// 		match.p2.stats.losses += 1;
-// 		match.p2.stats.score -= 1;
-// 	} else {
-// 		match.p2.stats.wins += 1;
-// 		match.p2.stats.score += 3;
-// 		match.p1.stats.losses += 1;
-// 		match.p1.stats.score -= 1;
-// 	}
-// 	// sort users based on their stats
-// 	ranking.sort((a, b) => b.user.stats.score - a.user.stats.score);
-// 	// update ranks
-// 	ranking.forEach((item, index) => {
-// 		item.rank = index + 1;
-// 		item.user.stats.ranking = index + 1;
-// 	});
-// }
