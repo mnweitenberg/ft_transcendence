@@ -60,8 +60,8 @@ export class QueueService {
 		return top_match;
 	}
 
-	async getWholeQueue(): Promise<QueuedMatch[]> {
-		return await this.queued_matches;
+	getWholeQueue() {
+		return this.queued_matches;
 	}
 
 	setInitialQueue() {
@@ -153,6 +153,7 @@ export class QueueService {
 			0,
 			this.users_looking_for_match.length,
 		);
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches});
 		return 3;
 	}
 }

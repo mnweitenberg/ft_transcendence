@@ -1,69 +1,57 @@
-import "src/styles/style.css";
-import * as i from "src/types/Interfaces";
-import { useState, useEffect } from "react";
-import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
+// import "src/styles/style.css";
+// import * as i from "src/types/Interfaces";
+// import { useState, useEffect } from "react";
+// import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const QUEUE_CHANGED = gql`
-	subscription queueChanged {
-		queueChanged {
-			p1 {
-				username
-				avatar
-			}
-			p2 {
-				username
-				avatar
-			}
-		}
-	}
-`;
+// const QUEUE_CHANGED = gql`
+// 	subscription queueChanged {
+// 		queueChanged {
+// 			p1 {
+// 				username
+// 				avatar
+// 			}
+// 			p2 {
+// 				username
+// 				avatar
+// 			}
+// 		}
+// 	}
+// `;
 
-const JOIN_QUEUE = gql`
-	mutation joinQueue {
-		joinQueue
-	}
-`;
+// const JOIN_QUEUE = gql`
+// 	mutation joinQueue {
+// 		joinQueue
+// 	}
+// `;
 
-const GET_WHOLE_QUEUE = gql`
-	query getWholeQueue {
-		getWholeQueue {
-			p1 {
-				username
-				avatar
-			}
-			p2 {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
-const SET_INITIAL_QUEUE = gql`
-	query setInitialQueue {
-		setInitialQueue
-	}
-`;
+// const SET_INITIAL_QUEUE = gql`
+// 	query setInitialQueue {
+// 		setInitialQueue
+// 	}
+// `;
 
 // export default function Queue(props: i.ModalProps) {
-// 	const [queue, setQueue] = useState([]);
 // 	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
-
-// 	useQuery(SET_INITIAL_QUEUE);
-
+// 	const { loading: initial_loading, error: initial_error } = useQuery(SET_INITIAL_QUEUE);
+// 	const [queue, setQueue] = useState([]);
 // 	useEffect(() => {
 // 		if (data) {
 // 			setQueue(data.queueChanged);
 // 		}
 // 	}, [data]);
-// 	if (loading) {
-// 		return <div> Queue is loading. Please wait </div>;
-// 	}
-// 	if (error) console.log("in QUEUE_CHANGED subscription ", error);
+// 	if (error) return <div> Error </div>;
+// 	if (loading) console.log("");
+
+// 	console.log(queue);
+
+// 	if (initial_error) return <div> Error </div>;
+// 	if (initial_loading) return <div> laoding queue </div>;
+
 // 	return (
 // 		<>
 // 			{queue.map(function (game: any) {
-// 				if (!game.p1 || !game.p2) return <JoinQueueElement />;
+// 				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
+// 				if (!game.p1 || !game.p2) return;
 // 				return (
 // 					<div
 // 						className="flex_row_spacebetween"
@@ -85,23 +73,113 @@ const SET_INITIAL_QUEUE = gql`
 // 	);
 // }
 
-export default function Queue(props: i.ModalProps) {
-	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
-	const [queue, setQueue] = useState([]);
-	useQuery(SET_INITIAL_QUEUE);
-	useEffect(() => {
-		if (data) {
-			setQueue(data.queueChanged);
-		}
-	}, [data]);
-	if (loading) return <div> Queue is loading. Please wait </div>;
-	if (error) return <div> Error </div>;
+import "src/styles/style.css";
+import * as i from "src/types/Interfaces";
+import { useState, useEffect } from "react";
+import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
+// const CURRENT_USER = gql`
+// 	query currentUserQuery {
+// 		currentUserQuery {
+// 			id
+// 	}
+// `;
+
+// const GET_QUEUED_MATCH = gql`
+// 	query getQueuedMatch {
+// 		getQueuedMatch {
+// 			p1 {
+// 				username
+// 				avatar
+// 			}
+// 		}
+// 	}
+// `;
+
+const GET_WHOLE_QUEUE = gql`
+	query getWholeQueue {
+		getWholeQueue {
+			p1 {
+				username
+				avatar
+			}
+			p2 {
+				username
+				avatar
+			}
+		}
+	}
+`;
+
+const MATCH_FOUND = gql`
+	subscription matchFound {
+		matchFound {
+			playerOne {
+				username
+				avatar
+			}
+			playerTwo {
+				username
+				avatar
+			}
+		}
+	}
+`;
+
+const JOIN_QUEUE = gql`
+	mutation joinQueue($user_id: String!) {
+		joinQueue(user_id: $user_id) {
+			p1 {
+				username
+			}
+			p2 {
+				username
+			}
+		}
+	}
+`;
+
+const QUEUE_CHANGED = gql`
+	subscription queueChanged {
+		queueChanged {
+			p1 {
+				username
+				avatar
+			}
+			p2 {
+				username
+				avatar
+			}
+		}
+	}
+`;
+
+export default function Queue(props: i.ModalProps) {
+	const {
+		data: queue_data,
+		loading: queue_loading,
+		error: queue_error,
+		subscribeToMore,
+	} = useQuery(GET_WHOLE_QUEUE);
+
+	useEffect(() => {
+		return subscribeToMore({
+			document: QUEUE_CHANGED,
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newQueue = subscriptionData.data.queueChanged;
+				return Object.assign({}, prev, {
+					getWholeQueue: newQueue,
+				});
+			},
+		});
+	}, []);
+
+	if (!queue_data) return <div>waarom moet dit</div>; // FIXME: zonder dit werkt frontend niet...
 	return (
 		<>
-			{queue.map(function (game: any) {
+			{queue_data.getWholeQueue.map(function (game: any) {
 				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
-				if (!game.p1 || !game.p2) return;
 				return (
 					<div
 						className="flex_row_spacebetween"
@@ -111,6 +189,7 @@ export default function Queue(props: i.ModalProps) {
 							<h3 className="name">{game.p1.username}</h3>
 							<img className="avatar" src={game.p1.avatar} />
 						</div>
+
 						<div className="player player--two">
 							<img className="avatar" src={game.p2.avatar} />
 							<h3 className="name">{game.p2.username}</h3>
