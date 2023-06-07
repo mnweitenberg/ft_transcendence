@@ -26,7 +26,7 @@ export class JwtWsGuard extends AuthGuard('jwt') {
 
 	async canActivate(context: ExecutionContext) {
 		const request = this.getRequest(context);
-		const token = extractJwtToken(request.headers.cookie);
+		const token = this.extractJwtToken(request.headers.cookie);
 		try {
 			const payload = await this.jwtService.verifyAsync(token);
 			if (!payload) return false;
@@ -38,24 +38,22 @@ export class JwtWsGuard extends AuthGuard('jwt') {
 		}
 		return true;
 	}
-}
 
-function extractJwtToken(cookieString: string): string | null {
-	const cookieRegex = /session_cookie=({[^;]*})/;
-	const cookieMatch = cookieString.match(cookieRegex);
-	if (cookieMatch && cookieMatch.length > 1) {
-		const sessionCookie = cookieMatch[1];
+	private extractJwtToken(cookieString: string): string | null {
+		const cookieRegex = /session_cookie=({[^;]*})/;
+		const cookieMatch = cookieString.match(cookieRegex);
+		if (cookieMatch && cookieMatch.length > 1) {
+			const sessionCookie = cookieMatch[1];
 
-		let sessionObject: any;
-		try {
-			sessionObject = JSON.parse(decodeURIComponent(sessionCookie));
-		} catch (error) {
-			console.error('Error: parsing session cookie:', error);
-			return null;
+			let sessionObject: any;
+			try {
+				sessionObject = JSON.parse(decodeURIComponent(sessionCookie));
+			} catch (error) {
+				console.error('Error: parsing session cookie:', error);
+				return null;
+			}
+			return sessionObject.access_token || null;
 		}
-
-		return sessionObject.access_token || null;
+		return null;
 	}
-
-	return null;
 }

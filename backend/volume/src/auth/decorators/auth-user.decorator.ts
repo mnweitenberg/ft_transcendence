@@ -12,7 +12,6 @@ export const AuthUser = createParamDecorator(
 			const user = client.user;
 			if (user) return user;
 		}
-
 		return null;
 	},
 );

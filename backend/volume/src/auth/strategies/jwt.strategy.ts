@@ -6,23 +6,15 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor() {
 		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([
-				JwtStrategy.extractJWTFromHttpOrWs,
-			]),
+			jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
 			ignoreExpiration: false,
 			secretOrKey: process.env.JWT_SECRET,
 		});
 	}
 
-	private static extractJWTFromHttpOrWs(request): string | null {
+	private static extractJWT(request: any): string | null {
 		if (request.cookies && request.cookies['session_cookie'])
 			return JSON.parse(request.cookies['session_cookie']).access_token;
-		else if (
-			request.handshake &&
-			request.handshake.query &&
-			request.handshake.query['token']
-		)
-			return request.handshake.query['token'];
 		return null;
 	}
 
