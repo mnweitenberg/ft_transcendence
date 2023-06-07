@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserInfo } from '../auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,12 +12,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	private static extractJWT(req: Request): string | null {
-		const cookieName = 'session_cookie';
-
-		if (req.cookies && req.cookies[cookieName]) {
-			return JSON.parse(req.cookies[cookieName]).access_token;
-		}
+	private static extractJWT(request: any): string | null {
+		if (request.cookies && request.cookies['session_cookie'])
+			return JSON.parse(request.cookies['session_cookie']).access_token;
 		return null;
 	}
 

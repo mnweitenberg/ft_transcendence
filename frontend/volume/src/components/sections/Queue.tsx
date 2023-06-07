@@ -27,19 +27,21 @@ const JOIN_QUEUE = gql`
 export default function Queue(props: i.ModalProps) {
 	const [queue, setQueue] = useState([]);
 	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
+
 	useEffect(() => {
 		if (data) {
 			setQueue(data.queueChanged);
 		}
 	}, [data]);
-	if (loading) {
-		return <div> Queue is loading. Please wait </div>;
-	}
-	if (error) console.log("in QUEUE_CHANGED subscription ", error);
+
+	if (loading) return <div> Queue is changing. Please wait </div>;
+	if (error) return <div> Error </div>;
+
 	return (
 		<>
 			{queue.map(function (game: any) {
-				if (!game.p1 || !game.p2) return <JoinQueueElement />;
+				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
+				if (!game.p1 || !game.p2) return;
 				return (
 					<div
 						className="flex_row_spacebetween"
@@ -85,7 +87,8 @@ function JoinQueueElement() {
 			return <>error joining queue</>;
 		}
 		if (queue_data.joinQueue === null) {
-			return <JoinedQueue user_id={user_id} />;
+			return null;
+			// return <JoinedQueue user_id={user_id} />;
 		} else {
 			return <>{queue_data.joinQueue}</>;
 		}
@@ -98,23 +101,23 @@ function JoinQueueElement() {
 	}
 }
 
-function JoinedQueue({ user_id }: { user_id: string }) {
-	// const { data, loading, error } = useSubscription(MATCH_FOUND);
-	// if (loading) {
-	// 	return <div> Joined the queue! </div>;
-	// }
-	// if (error) console.log("in MATCH_FOUND subscription ", error);
-	// if (data)
-	// 	return (
-	// 		<div>
-	// 			Match found: {data.matchFound.playerOne.username} vs{" "}
-	// 			{data.matchFound.playerTwo.username}
-	// 		</div>
-	// 	);
-	// return (
-	// 	<div>
-	// 		Match found: {data.matchFound.p1.username} vs{" "}
-	// 		{data.matchFound.p2.username}
-	// 	</div>
-	// );
-}
+// function JoinedQueue({ user_id }: { user_id: string }) {
+// 	// const { data, loading, error } = useSubscription(MATCH_FOUND);
+// 	// if (loading) {
+// 	// 	return <div> Joined the queue! </div>;
+// 	// }
+// 	// if (error) console.log("in MATCH_FOUND subscription ", error);
+// 	// if (data)
+// 	// 	return (
+// 	// 		<div>
+// 	// 			Match found: {data.matchFound.playerOne.username} vs{" "}
+// 	// 			{data.matchFound.playerTwo.username}
+// 	// 		</div>
+// 	// 	);
+// 	// return (
+// 	// 	<div>
+// 	// 		Match found: {data.matchFound.p1.username} vs{" "}
+// 	// 		{data.matchFound.p2.username}
+// 	// 	</div>
+// 	// );
+// }

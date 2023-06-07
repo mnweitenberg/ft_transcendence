@@ -5,7 +5,7 @@ export function initCanvas(width = 800): i.Canvas {
 	const paddleHeight = height / 5;
 	const paddleWidth = paddleHeight / 10;
 	const borderOffset = paddleWidth / 2;
-	const ballSpeed = paddleHeight / 2;
+	const ballSpeed = paddleWidth / 20;
 	const ballDiameter = paddleWidth * 2;
 	const canvas: i.Canvas = {
 		height,

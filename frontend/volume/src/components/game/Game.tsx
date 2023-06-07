@@ -11,6 +11,7 @@ function updateScore(props: i.PongProps) {
 		props.setPlayersAvailable(true);
 		props.setPlayers(users);
 	});
+
 	socketSingleton.socket.on("playerScored", (score: number[]) => {
 		props.setScore(score);
 		if (score[0] === C.MAX_SCORE || score[1] === C.MAX_SCORE) props.setFinished(true);

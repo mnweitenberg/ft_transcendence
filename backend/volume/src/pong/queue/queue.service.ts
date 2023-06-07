@@ -5,16 +5,12 @@ import { UserService } from 'src/user/user.service';
 import { CreateUserInput } from 'src/user/dto/create-user.input';
 import { User } from 'src/user/entities/user.entity';
 
-
 @Injectable()
 export class QueueService {
-	constructor(
-		private readonly userService: UserService,
-	) {
-	}
+	constructor(private readonly userService: UserService) {}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
-	
+
 	async addQueuedMatch(
 		player_one_id: string,
 		player_two_id: string,
@@ -39,9 +35,9 @@ export class QueueService {
 		return [p1, p2];
 	}
 
-	async joinQueue(player_id: string): Promise<String> {
-		let ret = this.canPlayerLookForMatch(player_id)
-		if (ret !== "yes") return ret;
+	async joinQueue(player_id: string): Promise<string> {
+		const ret = this.canPlayerLookForMatch(player_id);
+		if (ret !== 'yes') return ret;
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
@@ -50,11 +46,11 @@ export class QueueService {
 					player_id,
 				);
 				this.users_looking_for_match.splice(i, 1);
-				return "Match found";
+				return 'Match found';
 			}
 		}
 		this.users_looking_for_match.push(player_id);
-		return "Joined the queue";
+		return 'Joined the queue';
 	}
 
 	getQueuedMatch(): QueuedMatch | null {
@@ -63,49 +59,36 @@ export class QueueService {
 		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		return top_match;
 	}
-	
-	canPlayerLookForMatch(playerId: string): String {
+
+	canPlayerLookForMatch(playerId: string): string {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
-				return "You are already in the queue";
+				return 'You are already in the queue';
 			}
 		}
 		for (let i = 0; i < this.queued_matches.length; i++) {
 			if (
 				playerId === this.queued_matches[i].p1.id ||
 				playerId === this.queued_matches[i].p2.id
-				) {
-				return "You are matched with another player";
+			) {
+				return 'You are matched with another player';
 			}
-		}		
-		return "yes";
+		}
+		return 'yes';
 	}
-		
 
-
-
-
-
-
-
-
-
-
-
-
-			/*
+	/*
 	TESTING	
 	*/
-	putInQueue(id: string) : Number {
+	putInQueue(id: string): number {
 		this.users_looking_for_match.push(id);
 		return 3;
 	}
-	
 
 	async createMatches() {
-		this.createMatch('Marius');
+		this.createMatch('mweitenb');
 		this.createMatch('Justin');
-		this.createMatch('Milan');
+		// this.createMatch('Milan');
 		this.createMatch('Jonathan');
 		return 4;
 	}
