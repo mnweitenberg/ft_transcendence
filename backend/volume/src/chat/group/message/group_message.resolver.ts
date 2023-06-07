@@ -21,7 +21,10 @@ export class GroupMessageResolver {
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation((returns) => GroupMessage, { nullable: true })
-	async createGroupMessage(@Args() message_input: CreateGroupMessageInput, @AuthUser() user: User) {
+	async createGroupMessage(
+		@Args() message_input: CreateGroupMessageInput,
+		@AuthUser() user: User,
+	) {
 		const message = this.group_message_service.create(message_input, user);
 		pubSub.publish('group_message_sent', { group_message_sent: message });
 		return message;
@@ -29,12 +32,22 @@ export class GroupMessageResolver {
 
 	@Subscription((returns) => GroupMessage, {
 		filter: async (payload, variables) => {
-			console.log({payload: {group_message_sent: await payload.group_message_sent}, variables})
+			console.log({
+				payload: {
+					group_message_sent: await payload.group_message_sent,
+				},
+				variables,
+			});
 			if (variables.channel_id === null) return true;
-			return (await payload.group_message_sent).channel.id === variables.channel_id;
-		}
+			return (
+				(await payload.group_message_sent).channel.id ===
+				variables.channel_id
+			);
+		},
 	})
-	async group_message_sent(@Args('channel_id', {nullable: true}) channel_id: string) {
+	async group_message_sent(
+		@Args('channel_id', { nullable: true }) channel_id: string,
+	) {
 		return pubSub.asyncIterator('group_message_sent');
 	}
 

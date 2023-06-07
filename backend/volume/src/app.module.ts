@@ -46,7 +46,7 @@ export const pubSub = new PubSub();
 		PersonalMessageModule,
 		PongModule,
 		MatchModule,
-		// RankingModule,
+		RankingModule,
 	],
 })
 export class AppModule {}

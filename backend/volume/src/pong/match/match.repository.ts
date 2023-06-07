@@ -19,6 +19,12 @@ export class MatchRepository {
 		return this.matchRepo.find();
 	}
 
+	// public async getMatchesByUserUid(userUid: string): Promise<Match[]> {
+	// 	const user = await this.userService.getUserById(userUid);
+	// 	if (!user) throw new Error('User not found');
+	// 	return user.match_history;
+	// }
+
 	public async saveMatch(match: Match): Promise<Match> {
 		if (!match) throw new Error('No score received');
 		const players: User[] = await this.checkPlayers(match.players);

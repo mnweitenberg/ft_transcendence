@@ -1,15 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { MatchRepository } from 'src/pong/match/match.repository';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class RankingService {
-	constructor(private readonly matchRepo: MatchRepository) {
+	constructor(
+		private readonly matchRepo: MatchRepository,
+		private readonly userService: UserService,
+	) {
 		this.printAllMatches();
 	}
-	matches = this.matchRepo.findAll();
 
-	printAllMatches() {
-		console.log('matches :', this.matches);
+	async printAllMatches() {
+		const matches = await this.matchRepo.findAll();
+		for (const match of matches) {
+			console.log('match score\t:', match.p1Score, match.p2Score);
+			console.log('match players\t:', match.players);
+		}
+
+		const users = await this.userService.getAllUsers();
+		for (const user of users) {
+			// get all matches by a certain user
+			// const matches = await this.matchRepo.getMatchesByUserUid(user.id);
+
+			console.log('user\t:', user.username);
+			// console.log('matches\t:', matches);
+		}
 	}
 }
 

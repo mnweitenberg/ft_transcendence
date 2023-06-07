@@ -28,6 +28,12 @@ export class UserService {
 			where: { id: id },
 		});
 	}
+	// async getUserById(id: string) {
+	// 	return this.userRepository.findOne({
+	// 		where: { id: id },
+	// 		relations: ['match_history'],
+	// 	});
+	// }
 
 	async getUserByIntraId(intraId: string) {
 		return this.userRepository.findOne({
