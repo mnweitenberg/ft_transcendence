@@ -20,8 +20,7 @@ export class JwtWsGuard extends AuthGuard('jwt') {
 
 	getRequest(context: ExecutionContext) {
 		const socket: Socket = context.switchToWs().getClient<Socket>();
-		const request = socket.request;
-		return request;
+		return socket.request;
 	}
 
 	async canActivate(context: ExecutionContext) {
@@ -30,7 +29,6 @@ export class JwtWsGuard extends AuthGuard('jwt') {
 		try {
 			const payload = await this.jwtService.verifyAsync(token);
 			if (!payload) return false;
-			context.switchToHttp().getRequest().user = payload;
 			context.switchToWs().getClient().user = payload;
 		} catch (error) {
 			console.error('Error: verifying token:', error);
