@@ -24,19 +24,11 @@ export class QueueResolver {
 		return pubSub.asyncIterator('queueChanged');
 	}
 
-	@Query ((returns) => Number)
-	setInitialQueue() {
-		return this.queueService.setInitialQueue();
-	}
-
 	@Query ((returns) => [QueuedMatch])
 	getWholeQueue() {
 		return this.queueService.getWholeQueue();
 	}
 	
-
-
-
 
 	/*
 	TESTING

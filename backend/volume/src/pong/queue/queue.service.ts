@@ -64,11 +64,6 @@ export class QueueService {
 		return this.queued_matches;
 	}
 
-	setInitialQueue() {
-		pubSub.publish('queueChanged', { queueChanged: this.queued_matches});
-		return 3;
-	}
-
 	canPlayerLookForMatch(playerId: string): string {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
