@@ -40,24 +40,24 @@ export const user: i.User = milan;
 /////////////
 // RANKING //
 /////////////
-export const ranking = [
-	{
-		rank: 1,
-		user: marius,
-	},
-	{
-		rank: 2,
-		user: justin,
-	},
-	{
-		rank: 3,
-		user: jonathan,
-	},
-	{
-		rank: 4,
-		user: user,
-	},
-];
+// export const ranking = [
+// 	{
+// 		rank: 1,
+// 		user: marius,
+// 	},
+// 	{
+// 		rank: 2,
+// 		user: justin,
+// 	},
+// 	{
+// 		rank: 3,
+// 		user: jonathan,
+// 	},
+// 	{
+// 		rank: 4,
+// 		user: user,
+// 	},
+// ];
 
 /////////////
 // MATCHES //
