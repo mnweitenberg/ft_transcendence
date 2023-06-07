@@ -12,6 +12,10 @@ import { UserInfo } from 'src/auth/auth.service';
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
+
+
+	authguard geeft hier null ipv user...
+
 	@UseGuards(JwtAuthGuard)
 	@Mutation((returns) => String)
 	async joinQueue(@AuthUser() user: UserInfo) {
