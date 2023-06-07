@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { GroupChat } from 'src/chat/group/chat/entities/group_chat.entity';
 import { PersonalChat } from 'src/chat/personal/chat/entities/personal_chat.entity';
+import { Match } from 'src/pong/match/entities/match.entity';
 
 @Injectable()
 export class UserService {
@@ -28,12 +29,6 @@ export class UserService {
 			where: { id: id },
 		});
 	}
-	// async getUserById(id: string) {
-	// 	return this.userRepository.findOne({
-	// 		where: { id: id },
-	// 		relations: ['match_history'],
-	// 	});
-	// }
 
 	async getUserByIntraId(intraId: string) {
 		return this.userRepository.findOne({
@@ -61,6 +56,14 @@ export class UserService {
 			where: { id: user.id },
 		});
 		return user_with_channels.personal_chats;
+	}
+
+	async getMatchHistory(user: User): Promise<Array<Match>> {
+		const userMatchHistory = await this.userRepository.findOne({
+			relations: { match_history: true },
+			where: { id: user.id },
+		});
+		return userMatchHistory.match_history;
 	}
 
 	async save(user: User): Promise<User> {

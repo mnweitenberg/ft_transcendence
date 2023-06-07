@@ -1,51 +1,74 @@
 import { Injectable } from '@nestjs/common';
 import { MatchRepository } from 'src/pong/match/match.repository';
 import { UserService } from 'src/user/user.service';
+import { User } from 'src/user/entities/user.entity';
+import { Match } from 'src/pong/match/entities/match.entity';
+import { RankingRepository } from './ranking.repository';
+import { Ranking } from './entities/ranking.entity';
+import { pubSub } from 'src/app.module';
 
 @Injectable()
 export class RankingService {
 	constructor(
+		private readonly rankingRepo: RankingRepository,
 		private readonly matchRepo: MatchRepository,
 		private readonly userService: UserService,
 	) {
-		this.printAllMatches();
+		this.updateRanking();
 	}
 
-	async printAllMatches() {
-		const matches = await this.matchRepo.findAll();
-		for (const match of matches) {
-			console.log('match score\t:', match.p1Score, match.p2Score);
-			console.log('match players\t:', match.players);
-		}
-
+	async updateRanking() {
 		const users = await this.userService.getAllUsers();
+		console.log('UPDATE RANKING');
 		for (const user of users) {
-			// get all matches by a certain user
-			// const matches = await this.matchRepo.getMatchesByUserUid(user.id);
-
 			console.log('user\t:', user.username);
+
+			let ranking = await this.rankingRepo.getRankingByUser(user);
+			if (!ranking) {
+				ranking = new Ranking();
+				ranking.user = user;
+				ranking.rank = 0;
+			}
+
+			const matches = await this.userService.getMatchHistory(user);
+			const matchesThatHaveBeenCalculated = ranking.wins + ranking.losses;
 			// console.log('matches\t:', matches);
+			for (
+				let i = matchesThatHaveBeenCalculated;
+				i < matches.length;
+				i++
+			) {
+				const winner = await this.findWinner(matches[i]);
+				if (winner.id === user.id) {
+					ranking.wins += 1;
+					ranking.score += 3;
+				} else {
+					ranking.losses += 1;
+					ranking.score -= 1;
+				}
+				// console.log(ranking);
+				await this.rankingRepo.saveRanking(ranking);
+			}
 		}
+		await this.determineRankingOrder();
+	}
+
+	async findWinner(match: Match): Promise<User> {
+		const [p1, p2] = await this.matchRepo.getPlayersInMatch(match);
+		if (match.p1Score > match.p2Score) return p1;
+		else return p2;
+	}
+
+	async determineRankingOrder() {
+		const ranking = await this.rankingRepo.findAll();
+		ranking.sort((a, b) => b.score - a.score);
+		for (const rank in ranking) {
+			ranking[rank].rank = parseInt(rank) + 1;
+			await this.rankingRepo.saveRanking(ranking[rank]);
+		}
+		console.log(ranking);
+		pubSub.publish('rankingHasBeenUpdated', {
+			rankingHasBeenUpdated: ranking,
+		});
 	}
 }
-
-// function updateRanking(match: i.GameScore) {
-// 	if (match.score.p1 > match.score.p2) {
-// 		match.p1.stats.wins += 1;
-// 		match.p1.stats.score += 3;
-// 		match.p2.stats.losses += 1;
-// 		match.p2.stats.score -= 1;
-// 	} else {
-// 		match.p2.stats.wins += 1;
-// 		match.p2.stats.score += 3;
-// 		match.p1.stats.losses += 1;
-// 		match.p1.stats.score -= 1;
-// 	}
-// 	// sort users based on their stats
-// 	ranking.sort((a, b) => b.user.stats.score - a.user.stats.score);
-// 	// update ranks
-// 	ranking.forEach((item, index) => {
-// 		item.rank = index + 1;
-// 		item.user.stats.ranking = index + 1;
-// 	});
-// }

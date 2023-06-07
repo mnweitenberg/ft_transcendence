@@ -1,9 +1,44 @@
 import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
-import { ranking } from "src/utils/data";
 import * as i from "src/types/Interfaces";
+import { useState, useEffect } from "react";
+import { gql, useSubscription } from "@apollo/client";
+
+const RANKING_CHANGED = gql`
+	subscription rankingHasBeenUpdated {
+		rankingHasBeenUpdated {
+			id
+			user {
+				id
+				intra_id
+				username
+				avatar
+				groups_chats
+				personal_chats
+				ranking
+				match_history
+			}
+			rank
+			wins
+			losses
+			score
+		}
+	}
+`;
 
 function Ranking(propsModal: i.ModalProps) {
+	const [ranking, setRanking] = useState([]);
+	const { data, loading, error } = useSubscription(RANKING_CHANGED);
+
+	useEffect(() => {
+		if (data) {
+			setRanking(data.rankingHasBeenUpdated);
+		}
+	}, [data]);
+
+	if (loading) return <div> Updating ranking. Please wait </div>;
+	if (error) return <div> Error </div>;
+	console.log(ranking);
 	return (
 		<table>
 			{/* <tbody>

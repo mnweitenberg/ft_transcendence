@@ -1,7 +1,7 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
-import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 
 const QUEUE_CHANGED = gql`
 	subscription queueChanged {
