@@ -24,17 +24,77 @@ const JOIN_QUEUE = gql`
 	}
 `;
 
-export default function Queue(props: i.ModalProps) {
-	const [queue, setQueue] = useState([]);
-	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
+const GET_WHOLE_QUEUE = gql`
+	query getWholeQueue {
+		getWholeQueue {
+			p1 {
+				username
+				avatar
+			}
+			p2 {
+				username
+				avatar
+			}
+		}
+	}
+`;
 
+const SET_INITIAL_QUEUE = gql`
+	query setInitialQueue {
+		setInitialQueue
+	}
+`;
+
+// export default function Queue(props: i.ModalProps) {
+// 	const [queue, setQueue] = useState([]);
+// 	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
+
+// 	useQuery(SET_INITIAL_QUEUE);
+
+// 	useEffect(() => {
+// 		if (data) {
+// 			setQueue(data.queueChanged);
+// 		}
+// 	}, [data]);
+// 	if (loading) {
+// 		return <div> Queue is loading. Please wait </div>;
+// 	}
+// 	if (error) console.log("in QUEUE_CHANGED subscription ", error);
+// 	return (
+// 		<>
+// 			{queue.map(function (game: any) {
+// 				if (!game.p1 || !game.p2) return <JoinQueueElement />;
+// 				return (
+// 					<div
+// 						className="flex_row_spacebetween"
+// 						key={game.p1.username + game.p2.username}
+// 					>
+// 						<div className="player player--one">
+// 							<h3 className="name">{game.p1.username}</h3>
+// 							<img className="avatar" src={game.p1.avatar} />
+// 						</div>
+// 						<div className="player player--two">
+// 							<img className="avatar" src={game.p2.avatar} />
+// 							<h3 className="name">{game.p2.username}</h3>
+// 						</div>
+// 					</div>
+// 				);
+// 			})}
+// 			<JoinQueueElement />
+// 		</>
+// 	);
+// }
+
+export default function Queue(props: i.ModalProps) {
+	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
+	const [queue, setQueue] = useState([]);
+	useQuery(SET_INITIAL_QUEUE);
 	useEffect(() => {
 		if (data) {
 			setQueue(data.queueChanged);
 		}
 	}, [data]);
-
-	if (loading) return <div> Queue is changing. Please wait </div>;
+	if (loading) return <div> Queue is loading. Please wait </div>;
 	if (error) return <div> Error </div>;
 
 	return (
@@ -102,22 +162,22 @@ function JoinQueueElement() {
 }
 
 // function JoinedQueue({ user_id }: { user_id: string }) {
-// 	// const { data, loading, error } = useSubscription(MATCH_FOUND);
-// 	// if (loading) {
-// 	// 	return <div> Joined the queue! </div>;
-// 	// }
-// 	// if (error) console.log("in MATCH_FOUND subscription ", error);
-// 	// if (data)
-// 	// 	return (
-// 	// 		<div>
-// 	// 			Match found: {data.matchFound.playerOne.username} vs{" "}
-// 	// 			{data.matchFound.playerTwo.username}
-// 	// 		</div>
-// 	// 	);
-// 	// return (
-// 	// 	<div>
-// 	// 		Match found: {data.matchFound.p1.username} vs{" "}
-// 	// 		{data.matchFound.p2.username}
-// 	// 	</div>
-// 	// );
+// const { data, loading, error } = useSubscription(MATCH_FOUND);
+// if (loading) {
+// 	return <div> Joined the queue! </div>;
+// }
+// if (error) console.log("in MATCH_FOUND subscription ", error);
+// if (data)
+// 	return (
+// 		<div>
+// 			Match found: {data.matchFound.playerOne.username} vs{" "}
+// 			{data.matchFound.playerTwo.username}
+// 		</div>
+// 	);
+// return (
+// 	<div>
+// 		Match found: {data.matchFound.p1.username} vs{" "}
+// 		{data.matchFound.p2.username}
+// 	</div>
+// );
 // }

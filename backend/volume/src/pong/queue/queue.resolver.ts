@@ -12,6 +12,11 @@ import { UserInfo } from 'src/auth/auth.service';
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
+	@Query((returns) => [QueuedMatch]) 
+	async getWholeQueue() {
+		return await this.queueService.getWholeQueue();
+	}
+
 	@UseGuards(JwtAuthGuard)
 	@Mutation((returns) => String)
 	async joinQueue(@AuthUser() user: UserInfo) {
@@ -22,6 +27,11 @@ export class QueueResolver {
 	@Subscription((returns) => [QueuedMatch])
 	queueChanged() {
 		return pubSub.asyncIterator('queueChanged');
+	}
+
+	@Query ((returns) => Number)
+	setInitialQueue() {
+		return this.queueService.setInitialQueue();
 	}
 
 	/*

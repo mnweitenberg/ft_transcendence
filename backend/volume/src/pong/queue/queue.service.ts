@@ -60,6 +60,15 @@ export class QueueService {
 		return top_match;
 	}
 
+	async getWholeQueue(): Promise<QueuedMatch[]> {
+		return await this.queued_matches;
+	}
+
+	setInitialQueue() {
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches});
+		return 3;
+	}
+
 	canPlayerLookForMatch(playerId: string): string {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
@@ -90,6 +99,14 @@ export class QueueService {
 		this.createMatch('Justin');
 		// this.createMatch('Milan');
 		this.createMatch('Jonathan');
+		this.createMatch('Henk1');
+		this.createMatch('Henk2');
+		this.createMatch('Henk3');
+		this.createMatch('Henk4');
+		this.createMatch('Henk5');
+		this.createMatch('Henk6');
+
+
 		return 4;
 	}
 
@@ -104,12 +121,12 @@ export class QueueService {
 		await this.randomUser('Justin');
 		await this.randomUser('Milan');
 		await this.randomUser('Jonathan');
-		// await this.randomUser('Henk1');
-		// await this.randomUser('Henk2');
-		// await this.randomUser('Henk3');
-		// await this.randomUser('Henk4');
-		// await this.randomUser('Henk5');
-		// await this.randomUser('Henk6');
+		await this.randomUser('Henk1');
+		await this.randomUser('Henk2');
+		await this.randomUser('Henk3');
+		await this.randomUser('Henk4');
+		await this.randomUser('Henk5');
+		await this.randomUser('Henk6');
 		return 3;
 	}
 

@@ -41,10 +41,10 @@ export class PongService {
 			this.state.match.players[0],
 			this.state.match.players[1],
 		]);
-		this.gameInterval = setInterval(
-			() => this.updateGameState(),
-			C.REFRESH_RATE,
-		);
+		// this.gameInterval = setInterval(
+		// 	() => this.updateGameState(),
+		// 	C.REFRESH_RATE,
+		// );
 	}
 
 	private async updateGameState() {
