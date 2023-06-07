@@ -19,15 +19,8 @@ const GET_WHOLE_QUEUE = gql`
 `;
 
 const JOIN_QUEUE = gql`
-	mutation joinQueue($user_id: String!) {
-		joinQueue(user_id: $user_id) {
-			p1 {
-				username
-			}
-			p2 {
-				username
-			}
-		}
+	mutation joinQueue {
+		joinQueue
 	}
 `;
 
@@ -117,10 +110,11 @@ function JoinQueueElement() {
 		if (queue_error) {
 			return <>error joining queue</>;
 		}
-		if (queue_data.joinQueue === null) {
-			return null;
-			// return <JoinedQueue user_id={user_id} />;
-		} else {
+		// if (queue_data.joinQueue === null) {
+		// 	return null;
+		// 	// return <JoinedQueue user_id={user_id} />;
+		// } else
+		{
 			return <>{queue_data.joinQueue}</>;
 		}
 	} else {
