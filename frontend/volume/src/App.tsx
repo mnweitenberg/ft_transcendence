@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/authorization/ProtectedRoute";
 import Welcome from "./components/login/Welcome";
 import Auth from "src/components/login/Auth";
 import Home from "src/components/Home";
+import Lobby from "./components/Lobby";
 
 import { AuthProvider } from "./utils/authLogic";
 
@@ -19,6 +20,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<Home />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/lobby"
+						element={
+							<ProtectedRoute>
+								<Lobby />
 							</ProtectedRoute>
 						}
 					/>
