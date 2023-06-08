@@ -6,10 +6,10 @@ import { Field, ObjectType } from "@nestjs/graphql";
 export class Avatar {
 
   @PrimaryGeneratedColumn({
-    name: "avatar_id"
+    name: "avatarId"
   })
   @Field()
-  id: number;
+  avatarId: number;
 
   @Column()
   @Field()

@@ -11,13 +11,15 @@ export class UserAvatarService {
 		private readonly avatarRepository: Repository<Avatar>,
 	) {}
 
-	async create(uploadAvatarInput: UploadAvatarInput)
+	async create(userUid: string, uploadAvatarInput: UploadAvatarInput)
 	{
 		const avatar = this.avatarRepository.create(uploadAvatarInput);
 		return this.avatarRepository.save(avatar);
 	}
 
-	async getAvatar() {
-		return null;
+	async getAvatar(avatarIdParam: number) {
+		return this.avatarRepository.findOne({
+			where: { avatarId: avatarIdParam },
+		});
 	}
 }
