@@ -12,24 +12,24 @@ import { UserInfo } from 'src/auth/auth.service';
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
+	
 
-
-	authguard geeft hier null ipv user...
+	// authguard geeft hier null ipv user...
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation((returns) => String)
+	@Mutation(() => String)
 	async joinQueue(@AuthUser() user: UserInfo) {
 		console.log(user);
 		if (!user) return;
 		return this.queueService.joinQueue(user.userUid);
 	}
 
-	@Subscription((returns) => [QueuedMatch])
+	@Subscription(() => [QueuedMatch])
 	queueChanged() {
 		return pubSub.asyncIterator('queueChanged');
 	}
 
-	@Query ((returns) => [QueuedMatch])
+	@Query (() => [QueuedMatch])
 	getWholeQueue() {
 		return this.queueService.getWholeQueue();
 	}
@@ -38,7 +38,7 @@ export class QueueResolver {
 	/*
 	TESTING
 	*/
-	@Query((returns) => Number)
+	@Query(() => Number)
 	putInQueue(@Args('id') id: string) {
 		return this.queueService.putInQueue(id);
 	}

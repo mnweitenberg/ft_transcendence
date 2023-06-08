@@ -39,6 +39,8 @@ const QUEUE_CHANGED = gql`
 	}
 `;
 
+// TODO: add waiting for queue met plaatje (zie begin code voor html) f
+
 export default function Queue(props: i.ModalProps) {
 	const {
 		data: queue_data,

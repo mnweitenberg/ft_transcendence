@@ -33,7 +33,7 @@ export class QueueService {
 		const p1 = await this.userService.getUserById(id1);
 		const p2 = await this.userService.getUserById(id2);
 		if (!p1 || !p2)
-			throw new Error("One or more users don't exist in the database");
+			return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat
 		return [p1, p2];
 	}
 
