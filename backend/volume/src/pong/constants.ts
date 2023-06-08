@@ -1,6 +1,7 @@
 // GAME
 export const MAX_SCORE = 2;
-export const TIMEMOUT = 3000;
+export const REFRESH_RATE = 1000 / 24;
+export const WAIT_TIME = 3000;
 
 export const HEIGHT = 1;
 export const WIDTH = 2;

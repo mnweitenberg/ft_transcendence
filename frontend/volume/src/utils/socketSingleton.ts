@@ -5,7 +5,13 @@ class SocketSingleton {
 	public socket: any;
 
 	private constructor() {
-		this.socket = io("http://localhost:4243");
+		this.socket = io("http://localhost:4242", {
+			withCredentials: true,
+		});
+
+		this.socket.on("connect", () => {
+			console.log("Successfully connected to the server!");
+		});
 		this.socket.on("connect_error", (error: any) => {
 			console.error(error);
 		});

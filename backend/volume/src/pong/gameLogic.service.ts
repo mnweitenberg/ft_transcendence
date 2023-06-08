@@ -2,72 +2,55 @@ import * as C from './constants';
 import * as i from './interfaces';
 import { P } from './constants';
 import { Injectable } from '@nestjs/common';
-import { MatchRepository } from './match/match.repository';
 
 @Injectable()
 export class GameLogicService {
-	constructor(private readonly matchRepo: MatchRepository) {
+	constructor() {
 		this.width = C.WIDTH;
 		this.height = C.HEIGHT;
 		this.paddleWidth = C.PADDLE_WIDTH;
-		this.ballDiameter = C.BALL_DIAMETER;
+		this.ballWidth = C.BALL_DIAMETER;
 		this.borderOffset = C.BORDER_OFFSET;
+		console.log('GameLogicService constructed');
 	}
 	private width: number;
 	private height: number;
 	private paddleWidth: number;
-	private ballDiameter: number;
+	private ballWidth: number;
 	private borderOffset: number;
 
 	async runGame(state: i.GameState): Promise<i.GameState> {
 		if (!state.match || state.match.isFinished) return;
 		this.handleCollisions(state);
 		this.handleScore(state);
-		this.handleEndOfGame(state);
 		return state;
 	}
 
 	private handleScore(state: i.GameState) {
-		const ballIsBehindLeftPaddle = state.ball.x < this.ballDiameter / 2;
+		const ballIsBehindLeftPaddle = state.ball.x < this.ballWidth / 2;
 		const ballIsBehindRightPaddle =
-			state.ball.x + this.ballDiameter / 2 > this.width;
+			state.ball.x + this.ballWidth / 2 > this.width;
 
 		if (ballIsBehindLeftPaddle) {
 			state.match.p2Score += 1;
 			state.p1.isServing = true;
+			state.ball.xSpeed = C.BALL_SPEED;
 		}
 
 		if (ballIsBehindRightPaddle) {
 			state.match.p1Score += 1;
 			state.p2.isServing = true;
+			state.ball.xSpeed = -C.BALL_SPEED;
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
 			console.log(state.match.p1Score, state.match.p2Score);
 			state.ballIsInPlay = false;
-		}
-	}
-
-	private async handleEndOfGame(state: i.GameState) {
-		if (
-			state.match.p1Score >= C.MAX_SCORE ||
-			state.match.p2Score >= C.MAX_SCORE
-		) {
-			state.match.isFinished = true;
-			const savedMatch = await this.matchRepo.saveMatch(state.match);
-			console.log(
-				'Successfully saved',
-				savedMatch.players[0].username,
-				'vs',
-				savedMatch.players[1].username,
-			);
+			this.moveBallDuringServe(state);
 		}
 	}
 
 	private handleCollisions(state: i.GameState) {
-		this.boundPaddleToWindow(state.p1.paddle);
-		this.boundPaddleToWindow(state.p2.paddle);
-
 		if (state.ballIsInPlay) {
 			this.moveBall(state);
 
@@ -79,9 +62,9 @@ export class GameLogicService {
 		if (!state.ballIsInPlay) {
 			this.moveBallDuringServe(state);
 			if (state.p1.isServing)
-				setTimeout(() => this.serveBall(state, state.p1), C.TIMEMOUT);
+				setTimeout(() => this.serveBall(state, state.p1), C.WAIT_TIME);
 			if (state.p2.isServing)
-				setTimeout(() => this.serveBall(state, state.p2), C.TIMEMOUT);
+				setTimeout(() => this.serveBall(state, state.p2), C.WAIT_TIME);
 		}
 	}
 
@@ -99,7 +82,7 @@ export class GameLogicService {
 		const paddle = this.getPaddleBySide(state, side);
 
 		const offset =
-			this.paddleWidth + this.borderOffset + this.ballDiameter / 2;
+			this.paddleWidth + this.borderOffset + this.ballWidth / 2;
 		const ballIsAbovePaddle = state.ball.y > paddle.y + paddle.height;
 		const ballIsBelowPaddle = state.ball.y < paddle.y;
 		const ballIsAtLeftLine = state.ball.x <= paddle.x + offset;
@@ -138,31 +121,25 @@ export class GameLogicService {
 
 	private handleBounceTopBottom(state: i.GameState): void {
 		const ballHitsTopOrBottom =
-			state.ball.y < this.ballDiameter / 2 ||
-			state.ball.y > this.height - this.ballDiameter;
+			state.ball.y < this.ballWidth / 2 ||
+			state.ball.y > this.height - this.ballWidth;
 		if (ballHitsTopOrBottom) state.ball.ySpeed *= -1;
-	}
-
-	private boundPaddleToWindow(paddle: i.Paddle) {
-		if (paddle.y <= 0) paddle.y = 0;
-		if (paddle.y + paddle.height >= this.height)
-			paddle.y = this.height - paddle.height;
 	}
 
 	private moveBallDuringServe(state: i.GameState) {
 		const { p1, p2, ball } = state;
 		ball.xSpeed = 0;
 		if (p1.isServing) {
-			ball.x = p1.paddle.x + this.paddleWidth + this.ballDiameter / 2;
+			ball.x = p1.paddle.x + this.paddleWidth + this.ballWidth / 2;
 			ball.y = p1.paddle.y + 0.5 * p1.paddle.height;
 		}
 		if (p2.isServing) {
-			ball.x = p2.paddle.x - this.ballDiameter / 2;
+			ball.x = p2.paddle.x - this.ballWidth / 2;
 			ball.y = p2.paddle.y + 0.5 * p2.paddle.height;
 		}
 	}
 
-	serveBall(state: i.GameState, player: i.Player): void {
+	private serveBall(state: i.GameState, player: i.Player): void {
 		if (!state.match || !player) return;
 		if (state.match.isFinished || state.ballIsInPlay || !player.isServing)
 			return;

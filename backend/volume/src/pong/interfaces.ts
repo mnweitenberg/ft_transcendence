@@ -34,6 +34,7 @@ export interface Player {
 }
 
 export interface GameState {
+	gameIsRunning: boolean;
 	ballIsInPlay: boolean;
 	p1: Player;
 	p2: Player;

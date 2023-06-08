@@ -5,6 +5,10 @@ import Welcome from "./components/login/Welcome";
 import Auth from "src/components/login/Auth";
 import Home from "src/components/Home";
 import NewUser from "./components/login/NewUser";
+import Lobby from "./components/Lobby";
+import Leaderboard from "./components/Leaderboard";
+import Settings from "./components/Settings";
+
 import { AuthProvider } from "./utils/authLogic";
 
 function App() {
@@ -27,6 +31,30 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<NewUser />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/lobby"
+						element={
+							<ProtectedRoute>
+								<Lobby />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/leaderboard"
+						element={
+							<ProtectedRoute>
+								<Leaderboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/settings"
+						element={
+							<ProtectedRoute>
+								<Settings />
 							</ProtectedRoute>
 						}
 					/>
