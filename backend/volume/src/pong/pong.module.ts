@@ -10,14 +10,16 @@ import { UserResolver } from 'src/user/user.resolver';
 import { AuthService } from 'src/auth/auth.service';
 import { PongService } from './pong.service';
 import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Queue } from './queue/queue.model';
 import { MatchModule } from './match/match.module';
+import { RankingModule } from './ranking/ranking.module';
+import { RankingService } from './ranking/ranking.service';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Queue, Match, User, Ranking]),
+		TypeOrmModule.forFeature([Match, User, Ranking]),
 		UserModule,
 		MatchModule,
+		RankingModule,
 	],
 	providers: [
 		GameLogicService,
@@ -26,6 +28,7 @@ import { MatchModule } from './match/match.module';
 		AuthService,
 		PongService,
 		JwtWsGuard,
+		RankingService,
 	],
 })
 export class PongModule {}

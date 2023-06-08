@@ -1,6 +1,5 @@
 import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
-import { Queue } from './queue.model';
 import { pubSub } from 'src/app.module';
 import { QueuedMatch } from './queuedmatch.model';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -8,20 +7,18 @@ import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 
-@Resolver((of) => Queue)
+@Resolver()
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
-	
 
-	// authguard geeft hier null ipv user...
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation(() => String)
 	async joinQueue(@AuthUser() user: UserInfo) {
 		console.log(user);
 		if (!user) return;
-		return this.queueService.joinQueue(user.userUid);
+		return await this.queueService.joinQueue(user.userUid);
 	}
 
 	@Subscription(() => [QueuedMatch])
@@ -43,22 +40,22 @@ export class QueueResolver {
 		return this.queueService.putInQueue(id);
 	}
 
-	@Query((returns) => Number)
+	@Query(() => Number)
 	createMatches() {
 		return this.queueService.createMatches();
 	}
 
-	@Query((returns) => Number)
+	@Query(() => Number)
 	fillDbUser() {
 		return this.queueService.fillDbUser();
 	}
 
-	@Query((returns) => Number)
+	@Query(() => Number)
 	printQueue() {
 		return this.queueService.queuePrint();
 	}
 
-	@Query((returns) => Number)
+	@Query(() => Number)
 	removeQueue() {
 		return this.queueService.removeQueue();
 	}

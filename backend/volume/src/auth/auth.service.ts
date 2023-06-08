@@ -65,14 +65,12 @@ export class AuthService {
 		let user: User = await this.userService.getUserByIntraId(
 			response.data.id,
 		);
-		console.log(response.data);
 		if (!user) {
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,
 			});
 		}
-		console.log(user);
 		return { userUid: user.id, intraId: user.intraId };
 	}
 

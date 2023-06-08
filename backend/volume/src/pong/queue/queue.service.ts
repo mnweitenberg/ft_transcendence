@@ -7,9 +7,7 @@ import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class QueueService {
-	constructor(private readonly userService: UserService) {
-		console.log('QueueService created');
-	}
+	constructor(private readonly userService: UserService) {}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 
@@ -94,7 +92,7 @@ export class QueueService {
 	async createMatches() {
 		this.createMatch('mweitenb');
 		this.createMatch('Justin');
-		// this.createMatch('Milan');
+		this.createMatch('Milan');
 		this.createMatch('Jonathan');
 		this.createMatch('Henk1');
 		this.createMatch('Henk2');

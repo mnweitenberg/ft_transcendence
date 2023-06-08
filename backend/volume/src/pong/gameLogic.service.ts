@@ -44,7 +44,6 @@ export class GameLogicService {
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
-			console.log(state.match.p1Score, state.match.p2Score);
 			state.ballIsInPlay = false;
 			this.moveBallDuringServe(state);
 		}
@@ -145,6 +144,5 @@ export class GameLogicService {
 			return;
 		player.isServing = false;
 		state.ballIsInPlay = true;
-		console.log('Ball is in play');
 	}
 }

@@ -1,7 +1,7 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
-import { useState, useEffect } from "react";
-import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
+import { useEffect } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
 
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
@@ -39,7 +39,8 @@ const QUEUE_CHANGED = gql`
 	}
 `;
 
-// TODO: add waiting for queue met plaatje (zie begin code voor html) f
+// TODO: add waiting for queue met plaatje (zie begin code voor html)
+//	check of queue goed update nadat joinQueue is geklikt
 
 export default function Queue(props: i.ModalProps) {
 	const {

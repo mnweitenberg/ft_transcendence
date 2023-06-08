@@ -19,9 +19,24 @@ export class MatchRepository {
 		return this.matchRepo.find();
 	}
 
+	// public async getMatchesByUserUid(userUid: string): Promise<Match[]> {
+	// 	const user = await this.userService.getUserById(userUid);
+	// 	if (!user) throw new Error('User not found');
+	// 	return user.match_history;
+	// }
+	async getPlayersInMatch(match: Match): Promise<Array<User>> {
+		const userMatchHistory = await this.matchRepo.findOne({
+			relations: { players: true },
+			where: { gameId: match.gameId },
+		});
+		console.log(userMatchHistory.players);
+		return userMatchHistory.players;
+	}
+
 	public async saveMatch(match: Match): Promise<Match> {
 		if (!match) throw new Error('No score received');
 		const players: User[] = await this.checkPlayers(match.players);
+		if (!players || !players[0] || !players[1]) return;
 		await this.addMatchToPlayerHistory(match, players[0].id);
 		await this.addMatchToPlayerHistory(match, players[1].id);
 		return this.matchRepo.save(match);
@@ -51,8 +66,6 @@ export class MatchRepository {
 	private async checkPlayers(players: User[]): Promise<User[]> {
 		const p1 = await this.userService.getUserById(players[0].id);
 		const p2 = await this.userService.getUserById(players[1].id);
-		if (!p1 || !p2)
-			throw new Error("One or more users don't exist in the database");
 		return [p1, p2];
 	}
 }
