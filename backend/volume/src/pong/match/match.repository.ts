@@ -19,18 +19,16 @@ export class MatchRepository {
 		return this.matchRepo.find();
 	}
 
-	// public async getMatchesByUserUid(userUid: string): Promise<Match[]> {
-	// 	const user = await this.userService.getUserById(userUid);
-	// 	if (!user) throw new Error('User not found');
-	// 	return user.match_history;
-	// }
 	async getPlayersInMatch(match: Match): Promise<Array<User>> {
-		const userMatchHistory = await this.matchRepo.findOne({
-			relations: { players: true },
-			where: { gameId: match.gameId },
-		});
-		console.log(userMatchHistory.players);
-		return userMatchHistory.players;
+		try {
+			const userMatchHistory = await this.matchRepo.findOne({
+				relations: { players: true },
+				where: { gameId: match.gameId },
+			});
+			return userMatchHistory.players;
+		}
+		catch (e) { console.log('cant find players'); }
+		return null;
 	}
 
 	public async saveMatch(match: Match): Promise<Match> {

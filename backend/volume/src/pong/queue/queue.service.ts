@@ -94,14 +94,6 @@ export class QueueService {
 		this.createMatch('Justin');
 		this.createMatch('Milan');
 		this.createMatch('Jonathan');
-		this.createMatch('Henk1');
-		this.createMatch('Henk2');
-		this.createMatch('Henk3');
-		this.createMatch('Henk4');
-		this.createMatch('Henk5');
-		this.createMatch('Henk6');
-
-
 		return 4;
 	}
 
