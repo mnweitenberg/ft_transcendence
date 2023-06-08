@@ -1,7 +1,12 @@
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import "src/styles/style.css";
 
-function Layout({ children }: { children: any }): JSX.Element {
+interface ComponentProps {
+	children: ReactNode;
+}
+
+function Layout({ children }: ComponentProps): JSX.Element {
 	return (
 		<div className="background">
 			<div className="content-block">
@@ -10,10 +15,10 @@ function Layout({ children }: { children: any }): JSX.Element {
 						<Link to="/lobby">
 							<div>Lobby</div>
 						</Link>
-						<Link to="/lobby">
+						<Link to="/leaderboard">
 							<div>Leaderboard</div>
 						</Link>
-						<Link to="/lobby">
+						<Link to="/settings">
 							<div>Settings</div>
 						</Link>
 					</section>
