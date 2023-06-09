@@ -14,38 +14,44 @@ const FORM_MUTATION = gql`
 	}
 `;
 
+interface PictureForm {
+	name: string;
+	data: string;
+}
+
 function NewUser(): JSX.Element {
 	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION);
-	const [base64Data, setBase64Data] = useState("");
+	const [picture, setPicture] = useState<PictureForm>({ name: "", data: "" });
+	const [usernameInput, setUsernameInput] = useState("");
 
-	const handleSubmit = (event: React.FormEvent<HTMLInputElement>) => {
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const username = event.currentTarget.username.value;
-		const file = base64Data;
-		const filename = event.currentTarget.profilePicture.value.name;
-
+		const formData = {
+			username: usernameInput,
+			avatar: {
+				file: picture.data,
+				filename: picture.name,
+			},
+		};
 		formMutation({
 			variables: {
-				input: {
-					username,
-					avatar: { file, filename },
-				},
+				input: formData,
 			},
 		});
-	};
-
-	const handleFile = (e: any) => {
-		const fileContent = e.result as string;
-		const imgData = window.btoa(fileContent);
-		setBase64Data(imgData);
 	};
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (!event.target.files) throw new Error();
 		const fileReader = new FileReader();
 		const file = event.target.files[0];
+		const fileName = file.name;
 
-		fileReader.onloadend = handleFile;
+		fileReader.onloadend = (e: any) => {
+			const fileContent = e.result as string;
+			const imgData = window.btoa(fileContent);
+			setPicture({ name: fileName, data: imgData });
+		};
 		fileReader.readAsBinaryString(file);
 	};
 
