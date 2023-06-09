@@ -41,6 +41,10 @@ function NewUser(): JSX.Element {
 		});
 	};
 
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setUsernameInput(event.currentTarget.value);
+	};
+
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (!event.target.files) throw new Error();
 		const fileReader = new FileReader();
@@ -61,7 +65,7 @@ function NewUser(): JSX.Element {
 				<form method="post" onSubmit={handleSubmit}>
 					<label htmlFor="name">
 						Username
-						<input type="text" name="username" />
+						<input type="text" name="username" onChange={handleChange} />
 					</label>
 					<label htmlFor="Profile Picture">
 						Profile Picture

@@ -11,7 +11,7 @@ export class UserAvatarService {
 		private readonly avatarRepository: Repository<Avatar>,
 	) {}
 
-	async create(userUid: string, uploadAvatarInput: UploadAvatarInput)
+	async create(uploadAvatarInput: UploadAvatarInput)
 	{
 		const avatar = this.avatarRepository.create(uploadAvatarInput);
 		return this.avatarRepository.save(avatar);

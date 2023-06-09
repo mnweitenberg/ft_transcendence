@@ -33,7 +33,10 @@ export class User {
 	@Field()
 	username: string;
 
-	@OneToOne(() => Avatar)
+	@OneToOne(
+		() => Avatar,
+		{ orphanedRowAction: 'delete' },
+	)
 	@JoinColumn()
 	@Field()
 	avatar: Avatar;

@@ -58,8 +58,9 @@ export class UserResolver {
 	) {
 		const user = await this.userService.getUserByIntraId(userInfo.intraId)
 		if (changeUserData.avatar) {
-			user.avatar = await this.userAvatarService.create(userInfo.intraId, changeUserData.avatar);
+			user.avatar = await this.userAvatarService.create(changeUserData.avatar);
 		}
+		user.username = changeUserData.username;
 		return this.userService.save(user);
 	}
 
