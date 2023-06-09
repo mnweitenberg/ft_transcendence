@@ -29,7 +29,6 @@ export class MatchRepository {
 			relations: { players: true },
 			where: { gameId: match.gameId },
 		});
-		console.log(userMatchHistory.players);
 		return userMatchHistory.players;
 	}
 

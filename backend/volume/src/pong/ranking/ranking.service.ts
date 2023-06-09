@@ -14,7 +14,7 @@ export class RankingService {
 		private readonly matchRepo: MatchRepository,
 		private readonly userService: UserService,
 	) {
-		this.updateRanking();
+		// this.updateRanking();
 	}
 
 	async updateRanking() {
@@ -60,7 +60,7 @@ export class RankingService {
 	async findWinner(match: Match): Promise<User> {
 		
 		const [p1, p2] = await this.matchRepo.getPlayersInMatch(match);
-		console.log(p1, p2)
+		// console.log(p1, p2)
 		if (match.p1Score > match.p2Score) return p1;
 		else return p2;
 	}
@@ -78,5 +78,9 @@ export class RankingService {
 		pubSub.publish('rankingHasBeenUpdated', {
 			rankingHasBeenUpdated: ranking,
 		});
+	}
+
+	async getRanking() : Promise<Ranking[]> {
+		return await this.rankingRepo.findAll();
 	}
 }

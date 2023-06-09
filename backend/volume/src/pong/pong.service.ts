@@ -18,6 +18,7 @@ export class PongService {
 		private readonly rankingService: RankingService,
 		private readonly gameLogicService: GameLogicService,
 	) {
+		this.rankingService.updateRanking();
 		this.emitter = new EventEmitter();
 		this.state = this.initializeGameState();
 	}

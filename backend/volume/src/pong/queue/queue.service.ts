@@ -90,10 +90,12 @@ export class QueueService {
 	}
 
 	async createMatches() {
-		this.createMatch('mweitenb');
-		this.createMatch('Justin');
-		this.createMatch('Milan');
-		this.createMatch('Jonathan');
+		// this.createMatch('mweitenb');
+		
+		this.createMatch('Marius1');
+		this.createMatch('Justin1');
+		this.createMatch('Milan1');
+		this.createMatch('Jonathan1');
 		this.createMatch('Henk1');
 		this.createMatch('Henk2');
 		this.createMatch('Henk3');
@@ -112,10 +114,10 @@ export class QueueService {
 	}
 
 	async fillDbUser() {
-		await this.randomUser('Marius');
-		await this.randomUser('Justin');
-		await this.randomUser('Milan');
-		await this.randomUser('Jonathan');
+		await this.randomUser('Marius1');
+		await this.randomUser('Justin1');
+		await this.randomUser('Milan1');
+		await this.randomUser('Jonathan1');
 		await this.randomUser('Henk1');
 		await this.randomUser('Henk2');
 		await this.randomUser('Henk3');

@@ -2,7 +2,7 @@ import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 const RANKING_CHANGED = gql`
 	subscription rankingHasBeenUpdated {
@@ -21,28 +21,56 @@ const RANKING_CHANGED = gql`
 	}
 `;
 
+const GET_RANKING = gql`
+	query getRanking {
+		getRanking {
+			user {
+				id
+				intraId
+				username
+				avatar
+			}
+			rank
+			wins
+			losses
+			score
+		}
+	}
+`;
+
 function Ranking(propsModal: i.ModalProps) {
-	const [ranking, setRanking] = useState([]);
-	const { data, loading, error } = useSubscription(RANKING_CHANGED);
+	const {
+		data: ranking_data,
+		loading: ranking_loading,
+		error: ranking_error,
+		subscribeToMore,
+	} = useQuery(GET_RANKING);
 
 	useEffect(() => {
-		if (data) {
-			setRanking(data.rankingHasBeenUpdated);
-		}
-	}, [data]);
+		return subscribeToMore({
+			document: RANKING_CHANGED,
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newRanking = subscriptionData.data.rankingChanged;
+				return Object.assign({}, prev, {
+					getRanking: newRanking,
+				});
+			},
+		});
+	}, []);
 
-	if (loading) return <div> Updating ranking. Please wait </div>;
-	if (error) {
-		console.log(error);
+	if (ranking_loading) return <div> Updating ranking. Please wait </div>;
+	if (ranking_error) {
+		console.log(ranking_error);
 		return <div> Error </div>;
 	}
-	console.log(ranking);
+	// console.log(data.ranking);
 	return (
 		<table>
 			{
 				<tbody>
 					//{" "}
-					{ranking.map(function (ranking: any) {
+					{ranking_data.getRanking.map(function (ranking: any) {
 						return (
 							<tr
 								key={ranking.user.username}
