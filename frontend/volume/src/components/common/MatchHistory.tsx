@@ -3,37 +3,40 @@ import * as i from "../../types/Interfaces";
 import { gql, useQuery, useSubscription } from "@apollo/client";
 import { useState, useEffect } from "react";
 
-const MATCH_HISTORY_CHANGED = gql`
-	subscription matchHistoryHasBeenUpdated {
-		matchHistoryHasBeenUpdated {
-			id
-			p1
-			p1Avatar
-			p1Score
-			p2
-			p2Avatar
-			p2Score
-		}
-	}
-`;
-
 const GET_INITIAL_MATCH_HISTORY = gql`
 	query getInitialMatchHistory {
 		getInitialMatchHistory {
 			id
-			p1
-			p1Avatar
+			players {
+				id
+				username
+				avatar
+			}
 			p1Score
-			p2
-			p2Avatar
 			p2Score
+			isFinished
+		}
+	}
+`;
+
+const MATCH_HISTORY_CHANGED = gql`
+	subscription matchHistoryHasBeenUpdated {
+		matchHistoryHasBeenUpdated {
+			id
+			players {
+				id
+				username
+				avatar
+			}
+			p1Score
+			p2Score
+			isFinished
 		}
 	}
 `;
 
 function MatchHistory() {
-	// function MatchHistory({ user }: { user: i.User }) {
-	const [matchHistory, setRanking] = useState([]);
+	const [matchHistory, setMatchHistory] = useState([]);
 	const { data: subscriptionData } = useSubscription(MATCH_HISTORY_CHANGED);
 	const {
 		data: queryData,
@@ -42,14 +45,15 @@ function MatchHistory() {
 	} = useQuery(GET_INITIAL_MATCH_HISTORY);
 
 	useEffect(() => {
-		if (subscriptionData) setRanking(subscriptionData.matchHistoryHasBeenUpdated);
-		if (queryData) setRanking(queryData.getInitialMatchHistory);
-	}, [subscriptionData, queryData]);
+		if (queryData) setMatchHistory(queryData.getInitialMatchHistory);
+	}, [queryData]);
+
+	useEffect(() => {
+		if (subscriptionData) setMatchHistory(subscriptionData.matchHistoryHasBeenUpdated);
+	}, [subscriptionData]);
 
 	if (queryLoading) return <div> Loading </div>;
 	if (queryError) return <div> Error </div>;
-
-	console.log("matchHistory", matchHistory);
 	return (
 		<div className="stat_block">
 			<h2>Match history</h2>
@@ -58,10 +62,10 @@ function MatchHistory() {
 					{matchHistory.map((match: any) => (
 						<tr key={match.id}>
 							<td className="td_ava">
-								<img className="match_avatar" src={match.p1Avatar} />
+								<img className="match_avatar" src={match.players[0]?.avatar} />
 							</td>
 
-							<td className="td_name">{match.p1}</td>
+							<td className="td_name">{match.players[0]?.username}</td>
 
 							<td className="td_score align_right">
 								<h4>{match.p1Score}</h4>
@@ -71,10 +75,10 @@ function MatchHistory() {
 								<h4>{match.p2Score}</h4>
 							</td>
 
-							<td className="td_name align_right">{match.p2}</td>
+							<td className="td_name align_right">{match.players[1]?.username}</td>
 
 							<td className="td_ava">
-								<img className="match_avatar" src={match.p2Avatar} />
+								<img className="match_avatar" src={match.players[1]?.avatar} />
 							</td>
 						</tr>
 					))}

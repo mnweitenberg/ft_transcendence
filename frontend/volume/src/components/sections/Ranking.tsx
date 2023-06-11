@@ -48,13 +48,15 @@ function Ranking(propsModal: i.ModalProps) {
 	} = useQuery(GET_INITIAL_RANKING);
 
 	useEffect(() => {
-		if (subscriptionData) setRanking(subscriptionData.rankingHasBeenUpdated);
 		if (queryData) setRanking(queryData.getInitialRanking);
-	}, [subscriptionData, queryData]);
+	}, [queryData]);
+
+	useEffect(() => {
+		if (subscriptionData) setRanking(subscriptionData.rankingHasBeenUpdated);
+	}, [subscriptionData]);
 
 	if (queryLoading) return <div> Loading </div>;
 	if (queryError) return <div> Error </div>;
-
 	return (
 		<table>
 			<thead>

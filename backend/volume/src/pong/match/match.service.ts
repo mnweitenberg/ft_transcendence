@@ -30,27 +30,8 @@ export class MatchService {
 	// @UseGuards(JwtAuthGuard)
 	async updateMatchHistory() {
 		console.log('UPDATE MATCH HISTORY');
-		// console.log (user);
-		const matchHistory = await this.matchRepo.findAll();
-		// const matchHistory = await this.userService.getMatchHistory(user);
-		// console.log('matchHistory', matchHistory);
-		let cleanHistory: GameScore[] = [];
-		for (const match of matchHistory) {
-			// console.log('match', match);
-			const [p1, p2] = await this.matchRepo.getPlayersInMatch(match);
-			if (!p1 || !p2) continue;
-			// console.log('players', p1.username, p2.username);
-			cleanHistory.push({
-				id: match.id,
-				p1: p1.username,
-				p1Avatar: p1.avatar,
-				p1Score: match.p1Score,
-				p2: p2.username,
-				p2Avatar: p2.avatar,
-				p2Score: match.p2Score,
-			});
-		}
-		// console.log('cleanHistory', cleanHistory);
-		pubSub.publish('matchHistoryHasBeenUpdated', { matchHistoryHasBeenUpdated: cleanHistory, });
+		const matches = await this.matchRepo.findAll();
+		pubSub.publish('matchHistoryHasBeenUpdated', { matchHistoryHasBeenUpdated: matches });
 	}
+
 }
