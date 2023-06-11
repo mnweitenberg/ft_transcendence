@@ -23,12 +23,14 @@ import { PongService } from './pong.service';
 })
 @UseGuards(JwtWsGuard)
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor(private readonly pongService: PongService) {}
+	constructor(
+		private readonly pongService: PongService,
+	) {}
 
 	@WebSocketServer()
 	server: Server;
 
-	handleConnection(client: Socket, ...args: any[]): void {
+	async handleConnection(client: Socket, ...args: any[]): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
 
 		this.pongService.startLoop();

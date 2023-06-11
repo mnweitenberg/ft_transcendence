@@ -23,7 +23,7 @@ export class MatchRepository {
 		try {
 			const userMatchHistory = await this.matchRepo.findOne({
 				relations: { players: true },
-				where: { gameId: match.gameId },
+				where: { id: match.id },
 			});
 			return userMatchHistory.players;
 		}

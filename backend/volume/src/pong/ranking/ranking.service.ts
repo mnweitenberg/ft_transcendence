@@ -14,7 +14,7 @@ export class RankingService {
 		private readonly matchRepo: MatchRepository,
 		private readonly userService: UserService,
 	) {
-		this.recalculateTotalRanking();
+		// this.recalculateTotalRanking();
 	}
 
 	async updateRanking(match: Match, p1: User, p2: User) {
@@ -90,11 +90,10 @@ export class RankingService {
 			await this.rankingRepo.saveRanking(ranking[rank]);
 		}
 		console.log('rank\tscore\twins\tlosses\tname:');			
-		for (const rank of ranking) 
+		for (const rank of ranking) {
+			if (!rank.user) continue;
 			console.log(rank.rank,'\t', rank.score,'\t', rank.wins,'\t', rank.losses, '\t', rank.user.username);
-
-		pubSub.publish('rankingHasBeenUpdated', {
-			rankingHasBeenUpdated: ranking,
-		});
+		}
+		pubSub.publish('rankingHasBeenUpdated', { rankingHasBeenUpdated: ranking, });
 	}
 }

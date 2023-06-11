@@ -6,6 +6,7 @@ import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/auth/auth.service';
 import { RankingService } from './ranking/ranking.service';
+import { MatchService } from './match/match.service';
 
 @Injectable()
 export class PongService {
@@ -15,6 +16,7 @@ export class PongService {
 
 	constructor(
 		private readonly matchRepo: MatchRepository,
+		private readonly matchService: MatchService,
 		private readonly rankingService: RankingService,
 		private readonly gameLogicService: GameLogicService,
 	) {
@@ -68,6 +70,9 @@ export class PongService {
 			this.state.match.isFinished = true;
 			await this.matchRepo.saveMatch(this.state.match);
 			await this.rankingService.updateRanking(this.state.match, this.state.match.players[0], this.state.match.players[1]);
+			await this.matchService.updateMatchHistory();
+			// await this.matchService.updateMatchHistory(this.state.match.players[0]);
+			// await this.matchService.updateMatchHistory(this.state.match.players[1]);
 			this.state = this.initializeGameState();
 			this.state.match = await this.matchRepo.initNewMatch();
 		}

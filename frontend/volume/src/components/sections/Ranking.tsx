@@ -2,7 +2,7 @@ import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import * as i from "src/types/Interfaces";
 import { useState, useEffect } from "react";
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useQuery, useSubscription } from "@apollo/client";
 
 const RANKING_CHANGED = gql`
 	subscription rankingHasBeenUpdated {
@@ -21,48 +21,69 @@ const RANKING_CHANGED = gql`
 	}
 `;
 
+const GET_INITIAL_RANKING = gql`
+	query getInitialRanking {
+		getInitialRanking {
+			user {
+				id
+				intraId
+				username
+				avatar
+			}
+			rank
+			wins
+			losses
+			score
+		}
+	}
+`;
+
 function Ranking(propsModal: i.ModalProps) {
 	const [ranking, setRanking] = useState([]);
-	const { data, loading, error } = useSubscription(RANKING_CHANGED);
+	const { data: subscriptionData } = useSubscription(RANKING_CHANGED);
+	const {
+		data: queryData,
+		loading: queryLoading,
+		error: queryError,
+	} = useQuery(GET_INITIAL_RANKING);
 
 	useEffect(() => {
-		if (data) {
-			setRanking(data.rankingHasBeenUpdated);
-		}
-	}, [data]);
+		if (subscriptionData) setRanking(subscriptionData.rankingHasBeenUpdated);
+		if (queryData) setRanking(queryData.getInitialRanking);
+	}, [subscriptionData, queryData]);
 
-	if (loading) return <div> Updating ranking. Please wait </div>;
-	if (error) {
-		console.log(error);
-		return <div> Error </div>;
-	}
-	console.log(ranking);
+	if (queryLoading) return <div> Loading </div>;
+	if (queryError) return <div> Error </div>;
+
 	return (
 		<table>
-			{
-				<tbody>
-					//{" "}
-					{ranking.map(function (ranking: any) {
-						return (
-							<tr
-								key={ranking.user.username}
-								onClick={() =>
-									propsModal.toggleModal(
-										ranking.user,
-										<UserStats {...propsModal} />
-									)
-								}
-							>
-								<td>{ranking.rank}</td>
-								<td>{ranking.user.username}</td>
-								<td className="align_right">{ranking.wins} wins</td>
-								<td className="align_right">{ranking.losses} losses</td>
-								<td className="align_right">{ranking.score}</td>
-							</tr>
-						);
-					})}
-				</tbody>
-			}
+			<thead>
+				<tr>
+					<th>Rank</th>
+					<th>Username</th>
+					<th className="align_right">Wins</th>
+					<th className="align_right">Losses</th>
+					<th className="align_right">Score</th>
+				</tr>
+			</thead>
+			<tbody>
+				{ranking.map((ranking: any) => {
+					return (
+						<tr
+							key={ranking.user.username}
+							onClick={() =>
+								propsModal.toggleModal(ranking.user, <UserStats {...propsModal} />)
+							}
+						>
+							<td>{ranking.rank}</td>
+							<td>{ranking.user.username}</td>
+							<td className="align_right">{ranking.wins}</td>
+							<td className="align_right">{ranking.losses}</td>
+							<td className="align_right">{ranking.score}</td>
+						</tr>
+					);
+				})}
+			</tbody>
 		</table>
 	);
 }
