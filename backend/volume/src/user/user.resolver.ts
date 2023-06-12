@@ -16,6 +16,7 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
+import { UploadAvatarInput } from './dto/upload-avatar.input';
 
 @Resolver(of => User)
 export class UserResolver {
@@ -56,9 +57,9 @@ export class UserResolver {
 		@AuthUser() userInfo: UserInfo,
 		@Args('changeUserData') changeUserData: ChangeUserDataInput
 	) {
-		const user = await this.userService.getUserByIntraId(userInfo.intraId)
+		const user = await this.userService.getUserByIntraId(userInfo.intraId, {avatar: true})
 		if (changeUserData.avatar) {
-			user.avatar = await this.userAvatarService.create(changeUserData.avatar);
+			await this.userAvatarService.createOrUpdate(user.avatar.avatarId, changeUserData.avatar);
 		}
 		user.username = changeUserData.username;
 		return this.userService.save(user);

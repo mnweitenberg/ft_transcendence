@@ -17,6 +17,15 @@ export class UserAvatarService {
 		return this.avatarRepository.save(avatar);
 	}
 
+	async createOrUpdate(userRelationId: number, uploadAvatarInput: UploadAvatarInput) {
+		if (userRelationId) {
+			return this.avatarRepository.update(userRelationId, uploadAvatarInput);
+		}
+		else {
+			return this.create(uploadAvatarInput);
+		}
+	}
+
 	async getAvatar(avatarIdParam: number) {
 		return this.avatarRepository.findOne({
 			where: { avatarId: avatarIdParam },

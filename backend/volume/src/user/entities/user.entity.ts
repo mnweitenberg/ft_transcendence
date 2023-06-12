@@ -34,8 +34,7 @@ export class User {
 	username: string;
 
 	@OneToOne(
-		() => Avatar,
-		{ orphanedRowAction: 'delete' },
+		() => Avatar, {onDelete: "SET NULL", orphanedRowAction: "delete"}
 	)
 	@JoinColumn()
 	@Field()
