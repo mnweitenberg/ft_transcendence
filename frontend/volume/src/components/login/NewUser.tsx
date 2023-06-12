@@ -52,7 +52,8 @@ function NewUser(): JSX.Element {
 		const fileName = file.name;
 
 		fileReader.onloadend = (e: any) => {
-			const fileContent = e.result as string;
+			const fileContent = e.currentTarget.result as string;
+			console.log(fileContent);
 			const imgData = window.btoa(fileContent);
 			setPicture({ name: fileName, data: imgData });
 		};
