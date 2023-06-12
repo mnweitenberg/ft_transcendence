@@ -20,6 +20,7 @@ export class MatchResolver {
 
 	@Subscription(() => [Match], {
 		filter: ({ matchHistoryHasBeenUpdated }, _, { user }) => {
+			if (!matchHistoryHasBeenUpdated) return false;
 			return matchHistoryHasBeenUpdated.id === user.id;
 		},
 	})

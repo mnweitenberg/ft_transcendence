@@ -1,12 +1,6 @@
 import * as i from "../types/Interfaces";
 
-export function createChallengeAlert({
-	user,
-	propsModal,
-}: {
-	user: any;
-	propsModal: i.ModalProps;
-}) {
+export function createChallengeAlert(user: any, propsModal: i.ModalProps) {
 	return (
 		<div className="alert">
 			<h3>Challenge {user.username}? </h3>
@@ -15,13 +9,7 @@ export function createChallengeAlert({
 	);
 }
 
-export function createFriendRequesAlert({
-	user,
-	propsModal,
-}: {
-	user: any;
-	propsModal: i.ModalProps;
-}) {
+export function createFriendRequesAlert(user: any, propsModal: i.ModalProps) {
 	return (
 		<div className="alert">
 			<h3>Send friend request to {user}? </h3>
@@ -30,7 +18,7 @@ export function createFriendRequesAlert({
 	);
 }
 
-export function createBlockAlert({ user, propsModal }: { user: any; propsModal: i.ModalProps }) {
+export function createBlockAlert(user: any, propsModal: i.ModalProps) {
 	return (
 		<div className="alert">
 			<h3>Are you sure you want to block {user}? </h3>
@@ -39,13 +27,10 @@ export function createBlockAlert({ user, propsModal }: { user: any; propsModal: 
 	);
 }
 
-export function createLeaveGroupChatAlert({
-	// user,
-	propsModal,
-}: {
-	// user: any;
-	propsModal: i.ModalProps;
-}) {
+export function createLeaveGroupChatAlert(
+	// user: any,
+	propsModal: i.ModalProps
+) {
 	return (
 		<div className="alert">
 			<h3>Are you sure you want to leave the groupchat? </h3>
