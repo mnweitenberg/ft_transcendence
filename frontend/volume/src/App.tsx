@@ -7,7 +7,7 @@ import Home from "src/components/Home";
 import Lobby from "./components/Lobby";
 import Leaderboard from "./components/Leaderboard";
 import Settings from "./components/Settings";
-
+import Layout from "./components/common/Layout";
 import { AuthProvider } from "./utils/authLogic";
 
 function App() {
@@ -37,7 +37,9 @@ function App() {
 						path="/leaderboard"
 						element={
 							<ProtectedRoute>
-								<Leaderboard />
+								<Layout>
+									<Leaderboard />
+								</Layout>
 							</ProtectedRoute>
 						}
 					/>
