@@ -3,6 +3,7 @@ import Stats from "src/components/common/Stats";
 import MatchHistory from "src/components/common/MatchHistory";
 import * as i from "src/types/Interfaces";
 import { queryCurrentUser } from "src/utils/queryUser";
+import Friends from "src/components/common/Friends";
 
 export default function Profile(props: i.ModalProps) {
 	const userId = queryCurrentUser().id;
@@ -14,24 +15,9 @@ export default function Profile(props: i.ModalProps) {
 				<MatchHistory userId={userId} />
 			</div>
 
-			{/* <div className="friends">
-				<h2>Friends</h2>
-				<div className="friend_list">
-					{user.friends &&
-						user.friends.map(function (friend) {
-							return (
-								<img
-									className="friend_list--avatar"
-									onClick={() =>
-										props.toggleModal(friend, <UserStats {...props} />)
-									}
-									key={friend.username}
-									src={friend.avatar}
-								/>
-							);
-						})}
-				</div>
-			</div> */}
+			<div className="friends">
+				<Friends userId={userId} />
+			</div>
 
 			<div className="profile_section settings">
 				<h2>Settings</h2>

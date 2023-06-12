@@ -13,9 +13,7 @@ export class RankingService {
 		private readonly rankingRepo: RankingRepository,
 		private readonly matchRepo: MatchRepository,
 		private readonly userService: UserService,
-	) {
-		// this.recalculateTotalRanking();
-	}
+	) {}
 
 	async updateRanking(match: Match, p1: User, p2: User) {
 		const players = [p1, p2];

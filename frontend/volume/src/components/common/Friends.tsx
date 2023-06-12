@@ -2,11 +2,11 @@ import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import UserStats from "./UserStats";
 
-function Friends(props: i.ModalProps) {
+function Friends({ userId }: { userId: string }) {
 	return (
 		<div className="stat_block">
 			<h2>Friends</h2>
-			<div className="friend_list">
+			{/* <div className="friend_list">
 				{props.selectedUser.friends &&
 					props.selectedUser.friends.map(function (friend) {
 						return (
@@ -18,7 +18,7 @@ function Friends(props: i.ModalProps) {
 							/>
 						);
 					})}
-			</div>
+			</div> */}
 		</div>
 	);
 }
