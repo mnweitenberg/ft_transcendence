@@ -14,7 +14,6 @@ export class QueueResolver {
 	@UseGuards(JwtAuthGuard)
 	@Mutation(() => String)
 	async joinQueue(@AuthUser() user: UserInfo) {
-		console.log(user);
 		if (!user) return;
 		return await this.queueService.joinQueue(user.userUid);
 	}

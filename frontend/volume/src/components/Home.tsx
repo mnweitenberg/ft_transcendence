@@ -6,7 +6,7 @@ import Profile from "src/components/sections/Profile";
 import Queue from "src/components/sections/Queue";
 import Ranking from "src/components/sections/Ranking";
 import Modal, { createModalProps } from "src/components/common/Modal";
-import Game, { createPongProps, handleFinishGame } from "src/components/game/Game";
+import { Game, createPongProps, handleFinishGame } from "src/components/game/Game";
 import * as i from "src/types/Interfaces";
 import { useAuth } from "src/utils/authLogic";
 import { queryCurrentUser } from "src/utils/queryUser";

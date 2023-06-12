@@ -39,11 +39,10 @@ interface Stats {
 }
 
 export interface User {
-	intraId?: string;
+	id: string;
 	username: string;
 	avatar?: string;
-	stats?: Stats;
-	status?: "in game" | "online" | "offline" | "";
+	stats: Stats;
 	// chat?: Array<Chat>;
 	friends?: Array<User>;
 }
@@ -104,8 +103,6 @@ export interface ModalProps {
 export interface PongProps {
 	players: User[];
 	setPlayers: (players: User[]) => void;
-	bothPlayersReady: boolean;
-	setBothPlayersReady: (bothPlayersReady: boolean) => void;
 	playersAvailable: boolean;
 	setPlayersAvailable: (playersAvailable: boolean) => void;
 	score: number[];

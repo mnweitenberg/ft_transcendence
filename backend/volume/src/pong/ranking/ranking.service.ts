@@ -18,14 +18,12 @@ export class RankingService {
 	}
 
 	async updateRanking(match: Match, p1: User, p2: User) {
-		console.log('UPDATE RANKING');
 		const players = [p1, p2];
 		await this.updatePlayerStats(match, players);
 		await this.determineRankingOrder();
 	}
 
 	async recalculateTotalRanking() {
-		console.log('recalculateTotalRanking');
 		const users = await this.userService.getAllUsers();
 		for (const user of users) {
 			const ranking = await this.retrieveOrCreateRanking(user);
@@ -99,21 +97,6 @@ export class RankingService {
 		for (const rank in ranking) {
 			ranking[rank].rank = parseInt(rank) + 1;
 			await this.rankingRepo.saveRanking(ranking[rank]);
-		}
-		console.log('rank\tscore\twins\tlosses\tname:');
-		for (const rank of ranking) {
-			if (!rank.user) continue;
-			console.log(
-				rank.rank,
-				'\t',
-				rank.score,
-				'\t',
-				rank.wins,
-				'\t',
-				rank.losses,
-				'\t',
-				rank.user.username,
-			);
 		}
 		pubSub.publish('rankingHasBeenUpdated', {
 			rankingHasBeenUpdated: ranking,

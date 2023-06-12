@@ -1,5 +1,4 @@
 import "src/styles/style.css";
-import UserStats from "src/components/common/UserStats";
 import Stats from "src/components/common/Stats";
 import MatchHistory from "src/components/common/MatchHistory";
 import * as i from "src/types/Interfaces";
@@ -37,12 +36,8 @@ export default function Profile(props: i.ModalProps) {
 			<div className="profile_section settings">
 				<h2>Settings</h2>
 				<div className="flex_row_spacebetween">
-					<a onClick={() => props.toggleModal(null, createUsernameAlert())}>
-						change username
-					</a>
-					<a onClick={() => props.toggleModal(null, createAvatarAlert())}>
-						change avatar
-					</a>
+					<a onClick={() => props.toggleModal(createUsernameAlert())}>change username</a>
+					<a onClick={() => props.toggleModal(createAvatarAlert())}>change avatar</a>
 				</div>
 			</div>
 		</>

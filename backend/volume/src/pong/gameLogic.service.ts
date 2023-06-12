@@ -11,7 +11,6 @@ export class GameLogicService {
 		this.paddleWidth = C.PADDLE_WIDTH;
 		this.ballWidth = C.BALL_DIAMETER;
 		this.borderOffset = C.BORDER_OFFSET;
-		// console.log('GameLogicService constructed');
 	}
 	private width: number;
 	private height: number;

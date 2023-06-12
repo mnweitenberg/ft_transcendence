@@ -11,7 +11,6 @@ export class RankingResolver {
 
 	@Subscription(() => [Ranking])
 	rankingHasBeenUpdated() {
-		console.log('rankingHasBeenUpdated');
 		return pubSub.asyncIterator('rankingHasBeenUpdated');
 	}
 
@@ -24,8 +23,6 @@ export class RankingResolver {
 
 	@Query(() => Ranking)
 	async getStats(@Args('userId', { type: () => String }) userId: string) {
-		const ranking = await this.rankingRepo.getRankingByUser(userId);
-		console.log('ranking', ranking);
-		return ranking;
+		return await this.rankingRepo.getRankingByUser(userId);
 	}
 }

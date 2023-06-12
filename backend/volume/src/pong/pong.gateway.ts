@@ -83,5 +83,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.pongService.on('playerScored', (score) => {
 			this.server.emit('playerScored', score);
 		});
+
+		this.pongService.on('gameIsFinished', () => {
+			this.server.emit('gameIsFinished');
+		});
 	}
 }

@@ -27,7 +27,9 @@ export class UserResolver {
 	async userQuery(
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
-		return this.userService.getUser(usernameParam);
+		const user = await this.userService.getUser(usernameParam);
+		if (user) return user;
+		return null;
 	}
 
 	@UseGuards(JwtAuthGuard)

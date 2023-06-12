@@ -66,6 +66,7 @@ export class PongService {
 		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE) {
 			clearInterval(this.gameInterval);
 			this.state.match.isFinished = true;
+			this.emitter.emit('gameIsFinished');
 			await this.matchRepo.saveMatch(this.state.match);
 			await this.rankingService.updateRanking(
 				this.state.match,
