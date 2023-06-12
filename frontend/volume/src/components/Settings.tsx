@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { ConvertImg } from "src/utils/imageConversion";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import Layout from "./common/Layout";
 
 const AVATAR_QUERY = gql`
@@ -26,7 +26,7 @@ function Settings(): JSX.Element {
 		<Layout>
 			this is the settings page
 			<br />
-			<img src={ConvertImg(data.currentUserQuery.avatar)} alt="error no image" />
+			<img src={convertEncodedImage(data.currentUserQuery.avatar)} alt="error no image" />
 		</Layout>
 	);
 }
