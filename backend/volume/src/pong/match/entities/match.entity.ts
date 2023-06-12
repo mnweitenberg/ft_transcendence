@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/entities/user.entity';
 
@@ -7,13 +7,11 @@ import { User } from 'src/user/entities/user.entity';
 export class Match {
 	@PrimaryGeneratedColumn('uuid')
 	@Field()
-	gameId: string;
+	id: string;
 
 	@ManyToMany(() => User, (user) => user.match_history)
 	@Field(() => [User])
 	players: User[];
-
-
 
 	@Column()
 	@Field(() => Int)

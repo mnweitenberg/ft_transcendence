@@ -6,6 +6,7 @@ import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/auth/auth.service';
 import { RankingService } from './ranking/ranking.service';
+import { MatchService } from './match/match.service';
 
 @Injectable()
 export class PongService {
@@ -15,10 +16,11 @@ export class PongService {
 
 	constructor(
 		private readonly matchRepo: MatchRepository,
+		private readonly matchService: MatchService,
 		private readonly rankingService: RankingService,
 		private readonly gameLogicService: GameLogicService,
 	) {
-		this.rankingService.updateRanking();
+		// this.rankingService.updateRanking();
 		this.emitter = new EventEmitter();
 		this.state = this.initializeGameState();
 	}
@@ -34,7 +36,7 @@ export class PongService {
 	private async startNewGame() {
 		if (this.state.gameIsRunning) return;
 		if (!this.state.match)
-			this.state.match = await this.matchRepo.initNewMatch(false);
+			this.state.match = await this.matchRepo.initNewMatch();
 		if (!this.state.match) {
 			this.emitter.emit('noPlayers');
 			return;
@@ -65,12 +67,20 @@ export class PongService {
 	private async handleEndOfGame() {
 		const { p1Score, p2Score } = this.state.match;
 		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE) {
+			this.matchRepo.removeCurrentMatch();
 			clearInterval(this.gameInterval);
 			this.state.match.isFinished = true;
 			await this.matchRepo.saveMatch(this.state.match);
+			await this.rankingService.updateRanking(
+				this.state.match,
+				this.state.match.players[0],
+				this.state.match.players[1],
+			);
+			await this.matchService.updateMatchHistory();
+			// await this.matchService.updateMatchHistory(this.state.match.players[0]);
+			// await this.matchService.updateMatchHistory(this.state.match.players[1]);
 			this.state = this.initializeGameState();
-			await this.rankingService.updateRanking();
-			this.state.match = await this.matchRepo.initNewMatch(true);
+			// this.state.match = await this.matchRepo.initNewMatch();
 		}
 	}
 

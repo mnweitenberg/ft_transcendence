@@ -1,28 +1,20 @@
 import * as i from "../types/Interfaces";
 
-export function getChatsByUser(chats: Array<i.Chat>, user: i.User): Array<i.Chat> {
-	return chats.filter((chat) => chat.sender === user || chat.reciever === user);
-}
+// export function getWinsByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
+// 	return getMatchesByUser(matches, user).filter(
+// 		(match) =>
+// 			(match.p1 === user && match.score.p1 > match.score.p2) ||
+// 			(match.p2 === user && match.score.p2 > match.score.p1)
+// 	);
+// }
 
-export function getMatchesByUser(matches: Array<i.GameScore>, player: i.User): Array<i.GameScore> {
-	return matches.filter((match) => match.p1 === player || match.p2 === player);
-}
-
-export function getWinsByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
-	return getMatchesByUser(matches, user).filter(
-		(match) =>
-			(match.p1 === user && match.score.p1 > match.score.p2) ||
-			(match.p2 === user && match.score.p2 > match.score.p1)
-	);
-}
-
-export function getLossesByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
-	return getMatchesByUser(matches, user).filter(
-		(match) =>
-			(match.p1 === user && match.score.p1 < match.score.p2) ||
-			(match.p2 === user && match.score.p2 < match.score.p1)
-	);
-}
+// export function getLossesByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
+// 	return getMatchesByUser(matches, user).filter(
+// 		(match) =>
+// 			(match.p1 === user && match.score.p1 < match.score.p2) ||
+// 			(match.p2 === user && match.score.p2 < match.score.p1)
+// 	);
+// }
 
 // MESSAGES
 export function createChallengeAlert(props: i.ModalProps) {

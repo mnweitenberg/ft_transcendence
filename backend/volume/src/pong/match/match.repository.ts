@@ -16,20 +16,16 @@ export class MatchRepository {
 	) {}
 
 	public async findAll(): Promise<Match[]> {
-		return this.matchRepo.find();
+		return this.matchRepo.find({ relations: ['players'] });
 	}
 
-	// public async getMatchesByUserUid(userUid: string): Promise<Match[]> {
-	// 	const user = await this.userService.getUserById(userUid);
-	// 	if (!user) throw new Error('User not found');
-	// 	return user.match_history;
-	// }
 	async getPlayersInMatch(match: Match): Promise<Array<User>> {
 		const userMatchHistory = await this.matchRepo.findOne({
-			relations: { players: true },
-			where: { gameId: match.gameId },
+			relations: ['players'],
+			where: { id: match.id },
 		});
-		return userMatchHistory.players;
+		if (userMatchHistory) return userMatchHistory.players;
+		return null;
 	}
 
 	public async saveMatch(match: Match): Promise<Match> {
@@ -38,6 +34,7 @@ export class MatchRepository {
 		if (!players || !players[0] || !players[1]) return;
 		await this.addMatchToPlayerHistory(match, players[0].id);
 		await this.addMatchToPlayerHistory(match, players[1].id);
+		// if (!match.players || !match.players[0] || !match.players[1]) return;
 		return this.matchRepo.save(match);
 	}
 
@@ -51,12 +48,13 @@ export class MatchRepository {
 		await this.userService.save(user);
 	}
 
-	public async initNewMatch(remove_current_match: boolean): Promise<Match> {
-		if (remove_current_match) {
-			this.queueService.removeCurrentMatch();
-		}
+	public removeCurrentMatch() {
+		this.queueService.removeCurrentMatch();
+	}
+
+	public async initNewMatch(): Promise<Match> {
 		const queuedMatch = this.queueService.getQueuedMatch();
-		if (!queuedMatch) return;
+		if (!queuedMatch || !queuedMatch.p1 || !queuedMatch.p2) return null;
 		const match = new Match();
 		match.players = [queuedMatch.p1, queuedMatch.p2];
 		match.p1Score = 0;

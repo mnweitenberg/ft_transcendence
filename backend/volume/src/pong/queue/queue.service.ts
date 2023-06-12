@@ -31,16 +31,13 @@ export class QueueService {
 	private async checkPlayers(id1, id2): Promise<User[]> {
 		const p1 = await this.userService.getUserById(id1);
 		const p2 = await this.userService.getUserById(id2);
-		if (!p1 || !p2) {
-			return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat, 
-		}
+		if (!p1 || !p2) return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat
 		return [p1, p2];
 	}
 
 	async joinQueue(player_id: string): Promise<string> {
 		const ret = this.canPlayerLookForMatch(player_id);
 		if (ret !== 'yes') {
-			
 			return ret;
 		} 
 
@@ -56,9 +53,8 @@ export class QueueService {
 			}
 		}
 		this.users_looking_for_match.push(player_id);
-		return 'Joined the queue';
+		return 'has joined the queue';
 	}
-
 
 	removeCurrentMatch() {
 		this.current_match = null;
@@ -68,7 +64,6 @@ export class QueueService {
 		if (this.queued_matches.length == 0) return;
 		this.current_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
-		console.log("queue change");
 		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		return this.current_match;
 	}
@@ -80,18 +75,18 @@ export class QueueService {
 	canPlayerLookForMatch(playerId: string): string {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
-				return 'You are already in the queue';
+				return 'is waiting to be matched';
 			}
 		}
 		if (this.current_match && (this.current_match.p1.id === playerId || this.current_match.p2.id === playerId)) {
-			return 'You are playing a match';
+			return 'is already playing a match';
 		}
 		for (let i = 0; i < this.queued_matches.length; i++) {
 			if (
 				playerId === this.queued_matches[i].p1.id ||
 				playerId === this.queued_matches[i].p2.id
 			) {
-				return 'You are matched with another player';
+				return 'is already matched with another player';
 			}
 		}
 		return 'yes';
@@ -107,6 +102,7 @@ export class QueueService {
 
 	async createMatches() {
 		// this.createMatch('mweitenb');
+		this.createMatch('jbedaux');
 		
 		this.createMatch('Marius');
 		this.createMatch('Justin');
@@ -174,7 +170,7 @@ export class QueueService {
 			0,
 			this.users_looking_for_match.length,
 		);
-		pubSub.publish('queueChanged', { queueChanged: this.queued_matches});
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		return 3;
 	}
 }

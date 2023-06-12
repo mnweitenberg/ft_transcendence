@@ -85,7 +85,6 @@ export interface GameState {
 	p1: Player;
 	p2: Player;
 	ball: Ball;
-	// match?: Match;
 }
 
 ///////////

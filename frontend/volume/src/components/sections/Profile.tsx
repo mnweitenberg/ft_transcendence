@@ -1,20 +1,60 @@
 import "src/styles/style.css";
-import { user } from "src/utils/data";
 import UserStats from "src/components/common/UserStats";
 import Stats from "src/components/common/Stats";
 import MatchHistory from "src/components/common/MatchHistory";
 import * as i from "src/types/Interfaces";
+import { gql, useSubscription } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { useQuery } from "@apollo/client";
+import { queryUsername } from "src/utils/queryUser";
+
+// const USER = gql`
+// 	query currentUserQuery {
+// 		currentUserQuery {
+// 			username
+// 			avatar
+// 		}
+// 	}
+// `;
+
+interface User {
+	username: string;
+	avatar: string;
+	// ranking: {
+	// 	rank: number;
+	// 	wins: number;
+	// 	losses: number;
+	// 	score: number;
+	// };
+}
 
 export default function Profile(props: i.ModalProps) {
+	// const { loading, error, data } = useQuery(USER);
+	// const [user, setUser] = useState(null as User | null);
+	// const { data, loading, error } = useSubcription(USER);
+
+	// useEffect(() => {
+	// 	if (data) setUser(data.rankingHasBeenUpdated);
+	// }, [data]);
+
+	// if (loading) return <div> Loading </div>;
+	// if (error) return <div> Error </div>;
+	// if (!user) return <div> No user </div>;
+
+	// const user = data.currentUserQuery;
+	// console.log(user);
+	// const { rank, wins, losses, score } = user.ranking;
+
 	return (
 		<>
-			<Stats user={user} />
+			{/* <Stats rank={rank} wins={wins} losses={losses} score={score} /> */}
 
 			<div className="match_history">
-				<MatchHistory user={user} />
+				<MatchHistory />
+				{/* <MatchHistory user={user} /> */}
 			</div>
 
-			<div className="friends">
+			{/* <div className="friends">
 				<h2>Friends</h2>
 				<div className="friend_list">
 					{user.friends &&
@@ -31,7 +71,7 @@ export default function Profile(props: i.ModalProps) {
 							);
 						})}
 				</div>
-			</div>
+			</div> */}
 
 			<div className="profile_section settings">
 				<h2>Settings</h2>
@@ -61,6 +101,7 @@ function createUsernameAlert() {
 }
 
 function createAvatarAlert() {
+	const user = queryUsername();
 	return (
 		<div className="alert">
 			<h2>Change avatar</h2>
