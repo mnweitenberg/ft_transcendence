@@ -10,6 +10,7 @@ export class QueueService {
 	constructor(private readonly userService: UserService) {}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
+	current_match: QueuedMatch;
 
 	async addQueuedMatch(
 		player_one_id: string,
@@ -30,18 +31,23 @@ export class QueueService {
 	private async checkPlayers(id1, id2): Promise<User[]> {
 		const p1 = await this.userService.getUserById(id1);
 		const p2 = await this.userService.getUserById(id2);
-		if (!p1 || !p2)
-			return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat
+		if (!p1 || !p2) {
+			return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat, 
+		}
 		return [p1, p2];
 	}
 
 	async joinQueue(player_id: string): Promise<string> {
 		const ret = this.canPlayerLookForMatch(player_id);
-		if (ret !== 'yes') return ret;
+		if (ret !== 'yes') {
+			
+			return ret;
+		} 
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
-				const new_queued_match = await this.addQueuedMatch(
+				// const new_queued_match = await this.addQueuedMatch(
+				const new_queued_match = this.addQueuedMatch(
 					this.users_looking_for_match[i],
 					player_id,
 				);
@@ -53,11 +59,18 @@ export class QueueService {
 		return 'Joined the queue';
 	}
 
+
+	removeCurrentMatch() {
+		this.current_match = null;
+	}
+
 	getQueuedMatch(): QueuedMatch | null {
-		const top_match = this.queued_matches.at(0);
+		if (this.queued_matches.length == 0) return;
+		this.current_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
+		console.log("queue change");
 		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
-		return top_match;
+		return this.current_match;
 	}
 
 	getWholeQueue() {
@@ -69,6 +82,9 @@ export class QueueService {
 			if (playerId === this.users_looking_for_match[i]) {
 				return 'You are already in the queue';
 			}
+		}
+		if (this.current_match && (this.current_match.p1.id === playerId || this.current_match.p2.id === playerId)) {
+			return 'You are playing a match';
 		}
 		for (let i = 0; i < this.queued_matches.length; i++) {
 			if (
@@ -92,6 +108,10 @@ export class QueueService {
 	async createMatches() {
 		// this.createMatch('mweitenb');
 		
+		this.createMatch('Marius');
+		this.createMatch('Justin');
+		this.createMatch('Milan');
+		this.createMatch('Jonathan');
 		this.createMatch('Marius1');
 		this.createMatch('Justin1');
 		this.createMatch('Milan1');
@@ -114,6 +134,10 @@ export class QueueService {
 	}
 
 	async fillDbUser() {
+		await this.randomUser('Marius');
+		await this.randomUser('Justin');
+		await this.randomUser('Milan');
+		await this.randomUser('Jonathan');
 		await this.randomUser('Marius1');
 		await this.randomUser('Justin1');
 		await this.randomUser('Milan1');

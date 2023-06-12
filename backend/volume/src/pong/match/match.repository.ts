@@ -51,7 +51,10 @@ export class MatchRepository {
 		await this.userService.save(user);
 	}
 
-	public async initNewMatch(): Promise<Match> {
+	public async initNewMatch(remove_current_match: boolean): Promise<Match> {
+		if (remove_current_match) {
+			this.queueService.removeCurrentMatch();
+		}
 		const queuedMatch = this.queueService.getQueuedMatch();
 		if (!queuedMatch) return;
 		const match = new Match();

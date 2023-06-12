@@ -34,7 +34,7 @@ export class PongService {
 	private async startNewGame() {
 		if (this.state.gameIsRunning) return;
 		if (!this.state.match)
-			this.state.match = await this.matchRepo.initNewMatch();
+			this.state.match = await this.matchRepo.initNewMatch(false);
 		if (!this.state.match) {
 			this.emitter.emit('noPlayers');
 			return;
@@ -70,7 +70,7 @@ export class PongService {
 			await this.matchRepo.saveMatch(this.state.match);
 			this.state = this.initializeGameState();
 			await this.rankingService.updateRanking();
-			this.state.match = await this.matchRepo.initNewMatch();
+			this.state.match = await this.matchRepo.initNewMatch(true);
 		}
 	}
 
