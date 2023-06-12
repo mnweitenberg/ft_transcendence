@@ -21,12 +21,12 @@ function Settings(): JSX.Element {
 	}
 	if (loading) return <>loading</>;
 
-	console.log(data.currentUserQuery.avatar);
+	const avatarPic = "data:img/png;base64," + data.currentUserQuery.avatar.file;
 	return (
 		<Layout>
 			this is the settings page
 			<br />
-			<img src={data.currentUserQuery.avatar.file} alt="error no image" />
+			<img src={avatarPic} alt="error no image" />
 		</Layout>
 	);
 }
