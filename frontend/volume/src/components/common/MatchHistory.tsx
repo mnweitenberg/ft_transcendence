@@ -2,6 +2,7 @@ import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import { gql, useQuery, useSubscription } from "@apollo/client";
 import { useState, useEffect } from "react";
+import { useQueryWithSubscription } from "../../utils/useQueryWithSubscription";
 
 const GET_INITIAL_MATCH_HISTORY = gql`
 	query getInitialMatchHistory {
@@ -54,6 +55,15 @@ function MatchHistory() {
 
 	if (queryLoading) return <div> Loading </div>;
 	if (queryError) return <div> Error </div>;
+	// const {
+	// 	data: matchHistory,
+	// 	loading: queryLoading,
+	// 	error: queryError,
+	// } = useQueryWithSubscription(GET_INITIAL_MATCH_HISTORY, MATCH_HISTORY_CHANGED);
+
+	// if (queryLoading) return <div> Loading </div>;
+	// if (queryError) return <div> Error </div>;
+	// if (!matchHistory) return <div> No data </div>;
 	return (
 		<div className="stat_block">
 			<h2>Match history</h2>

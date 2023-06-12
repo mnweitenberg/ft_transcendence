@@ -1,15 +1,13 @@
 import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import * as i from "src/types/Interfaces";
-import { useState, useEffect } from "react";
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQueryWithSubscription } from "src/utils/useQueryWithSubscription";
 
-const RANKING_CHANGED = gql`
-	subscription rankingHasBeenUpdated {
-		rankingHasBeenUpdated {
+const GET_INITIAL_RANKING = gql`
+	query getInitialRanking {
+		getInitialRanking {
 			user {
-				id
-				intraId
 				username
 				avatar
 			}
@@ -21,12 +19,10 @@ const RANKING_CHANGED = gql`
 	}
 `;
 
-const GET_INITIAL_RANKING = gql`
-	query getInitialRanking {
-		getInitialRanking {
+const RANKING_CHANGED = gql`
+	subscription rankingHasBeenUpdated {
+		rankingHasBeenUpdated {
 			user {
-				id
-				intraId
 				username
 				avatar
 			}
@@ -39,21 +35,11 @@ const GET_INITIAL_RANKING = gql`
 `;
 
 function Ranking(propsModal: i.ModalProps) {
-	const [ranking, setRanking] = useState([]);
-	const { data: subscriptionData } = useSubscription(RANKING_CHANGED);
 	const {
-		data: queryData,
+		data: ranking,
 		loading: queryLoading,
 		error: queryError,
-	} = useQuery(GET_INITIAL_RANKING);
-
-	useEffect(() => {
-		if (queryData) setRanking(queryData.getInitialRanking);
-	}, [queryData]);
-
-	useEffect(() => {
-		if (subscriptionData) setRanking(subscriptionData.rankingHasBeenUpdated);
-	}, [subscriptionData]);
+	} = useQueryWithSubscription(GET_INITIAL_RANKING, RANKING_CHANGED);
 
 	if (queryLoading) return <div> Loading </div>;
 	if (queryError) return <div> Error </div>;

@@ -18,17 +18,13 @@ export class MatchRepository {
 	public async findAll(): Promise<Match[]> {
 		return this.matchRepo.find({ relations: ['players'] });
 	}
-	
 
 	async getPlayersInMatch(match: Match): Promise<Array<User>> {
-		// console.log(`Getting players for match with id: ${match.id}`);  // log the match id
 		const userMatchHistory = await this.matchRepo.findOne({
-			relations: { players: true },
+			relations: ['players'],
 			where: { id: match.id },
 		});
-		// console.log('Match fetched from database:', userMatchHistory);  // log the fetched match
 		if (userMatchHistory) return userMatchHistory.players;
-		// console.log(`Match with id: ${match.id} not found`);  // log if match is not found
 		return null;
 	}
 
@@ -38,6 +34,7 @@ export class MatchRepository {
 		if (!players || !players[0] || !players[1]) return;
 		await this.addMatchToPlayerHistory(match, players[0].id);
 		await this.addMatchToPlayerHistory(match, players[1].id);
+		// if (!match.players || !match.players[0] || !match.players[1]) return;
 		return this.matchRepo.save(match);
 	}
 
@@ -53,7 +50,7 @@ export class MatchRepository {
 
 	public async initNewMatch(): Promise<Match> {
 		const queuedMatch = this.queueService.getQueuedMatch();
-		if (!queuedMatch) return;
+		if (!queuedMatch || !queuedMatch.p1 || !queuedMatch.p2) return null;
 		const match = new Match();
 		match.players = [queuedMatch.p1, queuedMatch.p2];
 		match.p1Score = 0;

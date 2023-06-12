@@ -30,8 +30,7 @@ export class QueueService {
 	private async checkPlayers(id1, id2): Promise<User[]> {
 		const p1 = await this.userService.getUserById(id1);
 		const p2 = await this.userService.getUserById(id2);
-		if (!p1 || !p2)
-			return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat
+		if (!p1 || !p2) return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat
 		return [p1, p2];
 	}
 
@@ -141,7 +140,7 @@ export class QueueService {
 			0,
 			this.users_looking_for_match.length,
 		);
-		pubSub.publish('queueChanged', { queueChanged: this.queued_matches});
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		return 3;
 	}
 }

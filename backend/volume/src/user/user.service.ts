@@ -18,19 +18,19 @@ export class UserService {
 		return this.userRepository.find();
 	}
 
-	async getUser(usernameParam: string) {
+	async getUser(usernameParam: string): Promise<User> {
 		return this.userRepository.findOne({
 			where: { username: usernameParam },
 		});
 	}
 
-	async getUserById(id: string) {
+	async getUserById(id: string): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id: id },
 		});
 	}
 
-	async getUserByIntraId(intraId: string) {
+	async getUserByIntraId(intraId: string): Promise<User> {
 		return this.userRepository.findOne({
 			where: { intraId: intraId },
 		});
@@ -60,7 +60,7 @@ export class UserService {
 
 	async getMatchHistory(user: User): Promise<Array<Match>> {
 		const userMatchHistory = await this.userRepository.findOne({
-			relations: { match_history: true, },
+			relations: ['match_history', 'match_history.players'],
 			where: { id: user.id },
 		});
 		return userMatchHistory.match_history;

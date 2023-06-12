@@ -69,12 +69,16 @@ export class PongService {
 			clearInterval(this.gameInterval);
 			this.state.match.isFinished = true;
 			await this.matchRepo.saveMatch(this.state.match);
-			await this.rankingService.updateRanking(this.state.match, this.state.match.players[0], this.state.match.players[1]);
+			await this.rankingService.updateRanking(
+				this.state.match,
+				this.state.match.players[0],
+				this.state.match.players[1],
+			);
 			await this.matchService.updateMatchHistory();
 			// await this.matchService.updateMatchHistory(this.state.match.players[0]);
 			// await this.matchService.updateMatchHistory(this.state.match.players[1]);
 			this.state = this.initializeGameState();
-			this.state.match = await this.matchRepo.initNewMatch();
+			// this.state.match = await this.matchRepo.initNewMatch();
 		}
 	}
 
