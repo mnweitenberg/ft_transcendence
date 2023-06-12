@@ -1,22 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 import { Field, ObjectType } from "@nestjs/graphql";
 
 @Entity()
 @ObjectType()
 export class Avatar {
+	@PrimaryColumn()
+	@Field()
+	parentUserUid: string;
 
-  @PrimaryGeneratedColumn({
-    name: "avatarId"
-  })
-  @Field()
-  avatarId: number;
+	@Column()
+	@Field()
+	file: string;
 
-  @Column()
-  @Field()
-  file: string;
-
-  @Column()
-  @Field()
-  filename: string;
+	@Column()
+	@Field()
+	filename: string;
 }
 

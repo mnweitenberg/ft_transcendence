@@ -40,8 +40,7 @@ export class UserResolver {
 	@UseGuards(JwtAuthGuard)
 	@Query((returns) => User)
 	async currentUserQuery(@AuthUser() user: UserInfo) {
-		if (!user) return;
-		return this.userService.getUserByIntraId(user.intraId);
+		return this.userService.getUserById(user.userUid);
 	}
 
 	@Mutation((returns) => User)
@@ -57,9 +56,10 @@ export class UserResolver {
 		@AuthUser() userInfo: UserInfo,
 		@Args('changeUserData') changeUserData: ChangeUserDataInput
 	) {
-		const user = await this.userService.getUserByIntraId(userInfo.intraId, {avatar: true})
+		const user = await this.userService.getUserById(userInfo.userUid);
 		if (changeUserData.avatar) {
-			await this.userAvatarService.createOrUpdate(user.avatar.avatarId, changeUserData.avatar);
+			changeUserData.avatar.parentUserUid = userInfo.userUid;
+			user.avatar = await this.userAvatarService.createOrUpdate(changeUserData.avatar);
 		}
 		user.username = changeUserData.username;
 		return this.userService.save(user);
@@ -67,7 +67,7 @@ export class UserResolver {
 
 	@ResolveField('avatar', returns => Avatar)
 	async getAvatar(@Parent() user: User) {
-		return this.userAvatarService.getAvatar(user.avatar.avatarId);
+		return this.userAvatarService.getAvatar(user.id);
 	}
 
 	@ResolveField()

@@ -6,7 +6,6 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Buffer } from 'node:buffer';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GroupChat } from 'src/chat/group/chat/entities/group_chat.entity';
 import { Ranking } from 'src/pong/ranking/entities/ranking.entity';
@@ -30,7 +29,7 @@ export class User {
 	@Column({
 		unique: true,
 	})
-	@Field()
+	@Field() 
 	username: string;
 
 	@OneToOne(
