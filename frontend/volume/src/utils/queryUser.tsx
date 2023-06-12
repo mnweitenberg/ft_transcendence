@@ -4,15 +4,17 @@ const USER = gql`
 	query currentUserQuery {
 		currentUserQuery {
 			username
+			avatar
+			id
 		}
 	}
 `;
 
-export function queryUsername() {
+export function queryCurrentUser() {
 	const { loading, error, data } = useQuery(USER);
 
 	if (loading) return "loading";
 	if (error) return "error";
 
-	return data.currentUserQuery.username;
+	return data.currentUserQuery;
 }

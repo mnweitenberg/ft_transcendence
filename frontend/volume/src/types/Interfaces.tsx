@@ -92,12 +92,12 @@ export interface GameState {
 ///////////
 
 export interface ModalProps {
-	toggleModal: (user: User | null, content: JSX.Element) => void;
-	selectedUser: User;
-	setSelectedUser: (user: User) => void;
+	toggleModal: (content: JSX.Element) => void;
+	selectedUser: any;
+	setSelectedUser: (user: any) => void;
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
-	modalContent: JSX.Element;
+	modalContent: JSX.Element | null;
 	setContent: (content: JSX.Element) => void;
 }
 

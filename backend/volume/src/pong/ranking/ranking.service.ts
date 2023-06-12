@@ -28,7 +28,7 @@ export class RankingService {
 		console.log('recalculateTotalRanking');
 		const users = await this.userService.getAllUsers();
 		for (const user of users) {
-			let ranking = await this.retrieveOrCreateRanking(user);
+			const ranking = await this.retrieveOrCreateRanking(user);
 			ranking.rank = 0;
 			ranking.wins = 0;
 			ranking.losses = 0;
@@ -38,14 +38,16 @@ export class RankingService {
 
 		const matches = await this.matchRepo.findAll();
 		for (const match in matches) {
-			const players = await this.matchRepo.getPlayersInMatch(matches[match]);
+			const players = await this.matchRepo.getPlayersInMatch(
+				matches[match],
+			);
 			await this.updatePlayerStats(matches[match], players);
 		}
 		await this.determineRankingOrder();
 	}
 
 	async retrieveOrCreateRanking(user: User): Promise<Ranking> {
-		let ranking = await this.rankingRepo.getRankingByUser(user);
+		let ranking = await this.rankingRepo.getRankingByUser(user.id);
 		if (!ranking) {
 			ranking = new Ranking();
 			ranking.user = user;
@@ -58,15 +60,25 @@ export class RankingService {
 		if (!winner || !loser) return;
 		const winnerRanking = await this.retrieveOrCreateRanking(winner);
 		const loserRanking = await this.retrieveOrCreateRanking(loser);
-	
-		const winnerExpected = this.calculateExpectedScore(winnerRanking, loserRanking);
-		const loserExpected = this.calculateExpectedScore(loserRanking, winnerRanking);
+
+		const winnerExpected = this.calculateExpectedScore(
+			winnerRanking,
+			loserRanking,
+		);
+		const loserExpected = this.calculateExpectedScore(
+			loserRanking,
+			winnerRanking,
+		);
 
 		const K = 32;
 		winnerRanking.wins += 1;
-		winnerRanking.score = Math.round(winnerRanking.score + K * (1 - winnerExpected));
+		winnerRanking.score = Math.round(
+			winnerRanking.score + K * (1 - winnerExpected),
+		);
 		loserRanking.losses += 1;
-		loserRanking.score = Math.round(loserRanking.score + K * (0 - loserExpected));
+		loserRanking.score = Math.round(
+			loserRanking.score + K * (0 - loserExpected),
+		);
 
 		await this.rankingRepo.saveRanking(winnerRanking);
 		await this.rankingRepo.saveRanking(loserRanking);
@@ -76,7 +88,6 @@ export class RankingService {
 		if (match.p1Score > match.p2Score) return [players[0], players[1]];
 		return [players[1], players[0]];
 	}
-
 
 	calculateExpectedScore(ranking1: Ranking, ranking2: Ranking): number {
 		return 1 / (1 + 10 ** ((ranking2.score - ranking1.score) / 400));
@@ -89,11 +100,23 @@ export class RankingService {
 			ranking[rank].rank = parseInt(rank) + 1;
 			await this.rankingRepo.saveRanking(ranking[rank]);
 		}
-		console.log('rank\tscore\twins\tlosses\tname:');			
+		console.log('rank\tscore\twins\tlosses\tname:');
 		for (const rank of ranking) {
 			if (!rank.user) continue;
-			console.log(rank.rank,'\t', rank.score,'\t', rank.wins,'\t', rank.losses, '\t', rank.user.username);
+			console.log(
+				rank.rank,
+				'\t',
+				rank.score,
+				'\t',
+				rank.wins,
+				'\t',
+				rank.losses,
+				'\t',
+				rank.user.username,
+			);
 		}
-		pubSub.publish('rankingHasBeenUpdated', { rankingHasBeenUpdated: ranking, });
+		pubSub.publish('rankingHasBeenUpdated', {
+			rankingHasBeenUpdated: ranking,
+		});
 	}
 }

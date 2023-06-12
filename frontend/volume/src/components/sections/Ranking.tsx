@@ -8,6 +8,7 @@ const GET_INITIAL_RANKING = gql`
 	query getInitialRanking {
 		getInitialRanking {
 			user {
+				id
 				username
 				avatar
 			}
@@ -23,6 +24,7 @@ const RANKING_CHANGED = gql`
 	subscription rankingHasBeenUpdated {
 		rankingHasBeenUpdated {
 			user {
+				id
 				username
 				avatar
 			}
@@ -59,9 +61,11 @@ function Ranking(propsModal: i.ModalProps) {
 					return (
 						<tr
 							key={ranking.user.username}
-							onClick={() =>
-								propsModal.toggleModal(ranking.user, <UserStats {...propsModal} />)
-							}
+							onClick={() => {
+								propsModal.toggleModal(
+									<UserStats user={ranking.user} propsModal={propsModal} />
+								);
+							}}
 						>
 							<td>{ranking.rank}</td>
 							<td>{ranking.user.username}</td>

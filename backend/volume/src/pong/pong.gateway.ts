@@ -23,9 +23,7 @@ import { PongService } from './pong.service';
 })
 @UseGuards(JwtWsGuard)
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor(
-		private readonly pongService: PongService,
-	) {}
+	constructor(private readonly pongService: PongService) {}
 
 	@WebSocketServer()
 	server: Server;

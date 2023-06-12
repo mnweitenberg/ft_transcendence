@@ -13,7 +13,6 @@ import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MatchModule } from './match/match.module';
 import { RankingModule } from './ranking/ranking.module';
 import { RankingService } from './ranking/ranking.service';
-import { MatchService } from './match/match.service';
 
 @Module({
 	imports: [
@@ -24,7 +23,6 @@ import { MatchService } from './match/match.service';
 	],
 	providers: [
 		GameLogicService,
-		MatchService,
 		PongGateway,
 		UserResolver,
 		AuthService,

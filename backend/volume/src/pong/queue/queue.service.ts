@@ -40,7 +40,7 @@ export class QueueService {
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
-				const new_queued_match = await this.addQueuedMatch(
+				await this.addQueuedMatch(
 					this.users_looking_for_match[i],
 					player_id,
 				);

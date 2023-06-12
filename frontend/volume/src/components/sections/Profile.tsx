@@ -3,55 +3,16 @@ import UserStats from "src/components/common/UserStats";
 import Stats from "src/components/common/Stats";
 import MatchHistory from "src/components/common/MatchHistory";
 import * as i from "src/types/Interfaces";
-import { gql, useSubscription } from "@apollo/client";
-import { useState, useEffect } from "react";
-import { useQuery } from "@apollo/client";
-import { queryUsername } from "src/utils/queryUser";
-
-// const USER = gql`
-// 	query currentUserQuery {
-// 		currentUserQuery {
-// 			username
-// 			avatar
-// 		}
-// 	}
-// `;
-
-interface User {
-	username: string;
-	avatar: string;
-	// ranking: {
-	// 	rank: number;
-	// 	wins: number;
-	// 	losses: number;
-	// 	score: number;
-	// };
-}
+import { queryCurrentUser } from "src/utils/queryUser";
 
 export default function Profile(props: i.ModalProps) {
-	// const { loading, error, data } = useQuery(USER);
-	// const [user, setUser] = useState(null as User | null);
-	// const { data, loading, error } = useSubcription(USER);
-
-	// useEffect(() => {
-	// 	if (data) setUser(data.rankingHasBeenUpdated);
-	// }, [data]);
-
-	// if (loading) return <div> Loading </div>;
-	// if (error) return <div> Error </div>;
-	// if (!user) return <div> No user </div>;
-
-	// const user = data.currentUserQuery;
-	// console.log(user);
-	// const { rank, wins, losses, score } = user.ranking;
-
+	const userId = queryCurrentUser().id;
 	return (
 		<>
-			{/* <Stats rank={rank} wins={wins} losses={losses} score={score} /> */}
+			<Stats userId={userId} />
 
 			<div className="match_history">
-				<MatchHistory />
-				{/* <MatchHistory user={user} /> */}
+				<MatchHistory userId={userId} />
 			</div>
 
 			{/* <div className="friends">
@@ -101,7 +62,7 @@ function createUsernameAlert() {
 }
 
 function createAvatarAlert() {
-	const user = queryUsername();
+	const user = queryCurrentUser();
 	return (
 		<div className="alert">
 			<h2>Change avatar</h2>

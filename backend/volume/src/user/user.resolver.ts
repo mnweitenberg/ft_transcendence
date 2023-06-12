@@ -14,16 +14,16 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 
-@Resolver((of) => User)
+@Resolver(() => User)
 export class UserResolver {
 	constructor(private userService: UserService) {}
 
-	@Query((returns) => [User])
+	@Query(() => [User])
 	async allUsersQuery() {
 		return this.userService.getAllUsers();
 	}
 
-	@Query((returns) => User)
+	@Query(() => User)
 	async userQuery(
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
@@ -31,13 +31,22 @@ export class UserResolver {
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Query((returns) => User)
+	@Query(() => User)
 	async currentUserQuery(@AuthUser() user: UserInfo) {
 		if (!user) return;
 		return this.userService.getUserByIntraId(user.intraId);
 	}
 
-	@Mutation((returns) => User)
+	@Query(() => User)
+	async queryUserByName(
+		@Args('username', { type: () => String }) username: string,
+	) {
+		const user = await this.userService.getUser(username);
+		if (!user) throw new Error('User not found');
+		return user;
+	}
+
+	@Mutation(() => User)
 	async createUser(
 		@Args('createUserInput') createUserInput: CreateUserInput,
 	) {
