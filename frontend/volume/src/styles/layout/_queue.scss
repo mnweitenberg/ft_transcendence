@@ -2,7 +2,6 @@ section#queue {
 	grid-area: queue;
 
 	.flex_row_spacebetween:first-child {
-		opacity: 0.5;
 		transition: $transition-ultra_slow;
 	}
 
