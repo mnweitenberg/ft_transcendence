@@ -24,21 +24,22 @@ export class UserService {
 		});
 	}
 
-	async getUserById(id: string): Promise<User> {
+	async getUserById(id: string, relations = {}) {
 		return this.userRepository.findOne({
+			relations,
 			where: { id: id },
 		});
 	}
 
-	async getUserByIntraId(intraId: string): Promise<User> {
+	async getUserByIntraId(intraId: string, relations = {}) {
 		return this.userRepository.findOne({
+			relations,
 			where: { intraId: intraId },
 		});
 	}
 
 	async create(createUserInput: CreateUserInput): Promise<User> {
 		const user = this.userRepository.create(createUserInput);
-		user.avatar = ''; // FIXME: temp fix, untill avatar is default set
 		return await this.userRepository.save(user);
 	}
 

@@ -37,7 +37,7 @@ function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }
 	return (
 		<div className="userStats">
 			<div className="user">
-				<img className="avatar" src={user.avatar} />
+				<img className="avatar" src={user.avatar.file} />
 				{renderUserActions()}
 			</div>
 			<Stats userId={user.id} />

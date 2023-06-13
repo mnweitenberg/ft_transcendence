@@ -157,7 +157,6 @@ export class QueueService {
 	async randomUser(name: string) {
 		const newUser: CreateUserInput = {
 			username: name,
-			avatar: 'img/' + name.toLowerCase() + '.png',
 			intraId: name + '_intra_id',
 		};
 		return await this.userService.create(newUser);

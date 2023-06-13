@@ -110,3 +110,11 @@ export interface PongProps {
 	finished: boolean;
 	setFinished: (finished: boolean) => void;
 }
+
+///////////////
+//	Avatar	 //
+///////////////
+export interface Avatar {
+	file: string;
+	filename: string;
+}

@@ -8,22 +8,29 @@ import {
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
+import { Avatar } from './entities/avatar.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
+import { UserAvatarService } from './user-avatar.service';
+import { ChangeUserDataInput } from './dto/change-user-data-input';
+import { UploadAvatarInput } from './dto/upload-avatar.input';
 
 @Resolver(() => User)
 export class UserResolver {
-	constructor(private userService: UserService) {}
+	constructor(
+		private userService: UserService,
+		private userAvatarService: UserAvatarService
+	) {}
 
 	@Query(() => [User])
 	async allUsersQuery() {
 		return this.userService.getAllUsers();
 	}
 
-	@Query(() => User)
+	@Query(() => User, { name: 'user'})
 	async userQuery(
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
@@ -35,8 +42,7 @@ export class UserResolver {
 	@UseGuards(JwtAuthGuard)
 	@Query(() => User)
 	async currentUserQuery(@AuthUser() user: UserInfo) {
-		if (!user) return;
-		return this.userService.getUserByIntraId(user.intraId);
+		return this.userService.getUserById(user.userUid);
 	}
 
 	@Query(() => User)
@@ -53,6 +59,26 @@ export class UserResolver {
 		@Args('createUserInput') createUserInput: CreateUserInput,
 	) {
 		return this.userService.create(createUserInput);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(returns => User)
+	async changeUserData(
+		@AuthUser() userInfo: UserInfo,
+		@Args('changeUserData') changeUserData: ChangeUserDataInput
+	) {
+		const user = await this.userService.getUserById(userInfo.userUid);
+		if (changeUserData.avatar) {
+			changeUserData.avatar.parentUserUid = userInfo.userUid;
+			user.avatar = await this.userAvatarService.createOrUpdate(changeUserData.avatar);
+		}
+		user.username = changeUserData.username;
+		return this.userService.save(user);
+	}
+
+	@ResolveField('avatar', returns => Avatar)
+	async getAvatar(@Parent() user: User) {
+		return this.userAvatarService.getAvatar(user.id);
 	}
 
 	@ResolveField()

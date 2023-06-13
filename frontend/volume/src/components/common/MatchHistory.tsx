@@ -10,7 +10,9 @@ const GET_INITIAL_MATCH_HISTORY = gql`
 			players {
 				id
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			p1Score
 			p2Score
@@ -26,7 +28,9 @@ const MATCH_HISTORY_CHANGED = gql`
 			players {
 				id
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			p1Score
 			p2Score
@@ -55,7 +59,10 @@ function MatchHistory({ userId }: { userId: string }) {
 	}, [subData]);
 
 	if (queryLoading) return <div> Loading </div>;
-	if (queryError) return <div> Error </div>;
+	if (queryError) {
+		console.log(queryError);
+		return <div> Error </div>;
+	}
 	return (
 		<div className="stat_block">
 			<h2>Match history</h2>

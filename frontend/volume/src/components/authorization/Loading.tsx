@@ -1,4 +1,4 @@
-import "src/styles/welcome.css";
+import "src/styles/login-pages/welcome.css";
 
 function Loading(): JSX.Element {
 	return (

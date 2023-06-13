@@ -11,6 +11,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { GroupChat } from 'src/chat/group/chat/entities/group_chat.entity';
 import { Ranking } from 'src/pong/ranking/entities/ranking.entity';
 import { Match } from 'src/pong/match/entities/match.entity';
+import { Avatar } from 'src/user/entities/avatar.entity';
 import { PersonalChat } from 'src/chat/personal/chat/entities/personal_chat.entity';
 
 @Entity()
@@ -29,14 +30,15 @@ export class User {
 	@Column({
 		unique: true,
 	})
-	@Field()
+	@Field() 
 	username: string;
 
-	@Column({
-		nullable: true,
-	})
+	@OneToOne(
+		() => Avatar, {onDelete: "SET NULL", orphanedRowAction: "delete"}
+	)
+	@JoinColumn()
 	@Field()
-	avatar: string = ''; // FIXME: temp fix
+	avatar: Avatar;
 
 	@ManyToMany(() => GroupChat, (channel) => channel.members)
 	@Field(() => [GroupChat])

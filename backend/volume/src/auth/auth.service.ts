@@ -68,7 +68,7 @@ export class AuthService {
 		if (!user) {
 			user = await this.userService.create({
 				intraId: response.data.id,
-				username: response.data.login,
+				username: response.data.login
 			});
 		}
 		return { userUid: user.id, intraId: user.intraId };
