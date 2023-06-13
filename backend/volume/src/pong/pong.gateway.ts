@@ -23,9 +23,7 @@ import { PongService } from './pong.service';
 })
 @UseGuards(JwtWsGuard)
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor(
-		private readonly pongService: PongService,
-	) {}
+	constructor(private readonly pongService: PongService) {}
 
 	@WebSocketServer()
 	server: Server;
@@ -84,6 +82,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		this.pongService.on('playerScored', (score) => {
 			this.server.emit('playerScored', score);
+		});
+
+		this.pongService.on('gameIsFinished', () => {
+			this.server.emit('gameIsFinished');
 		});
 	}
 }

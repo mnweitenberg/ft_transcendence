@@ -1,12 +1,11 @@
 import "../../styles/style.css";
-import * as i from "../../types/Interfaces";
 import { gql, useQuery, useSubscription } from "@apollo/client";
 import { useState, useEffect } from "react";
-import { useQueryWithSubscription } from "../../utils/useQueryWithSubscription";
+// import { useQueryWithSubscription } from "../../utils/useQueryWithSubscription";
 
 const GET_INITIAL_MATCH_HISTORY = gql`
-	query getInitialMatchHistory {
-		getInitialMatchHistory {
+	query getInitialMatchHistory($userId: String!) {
+		getInitialMatchHistory(userId: $userId) {
 			id
 			players {
 				id
@@ -21,8 +20,8 @@ const GET_INITIAL_MATCH_HISTORY = gql`
 `;
 
 const MATCH_HISTORY_CHANGED = gql`
-	subscription matchHistoryHasBeenUpdated {
-		matchHistoryHasBeenUpdated {
+	subscription matchHistoryHasBeenUpdated($userId: String!) {
+		matchHistoryHasBeenUpdated(userId: $userId) {
 			id
 			players {
 				id
@@ -36,40 +35,33 @@ const MATCH_HISTORY_CHANGED = gql`
 	}
 `;
 
-function MatchHistory() {
-	const [matchHistory, setMatchHistory] = useState([]);
-	const { data: subscriptionData } = useSubscription(MATCH_HISTORY_CHANGED);
+function MatchHistory({ userId }: { userId: string }) {
+	const [matches, setMatches] = useState([]);
+	const { data: subData } = useSubscription(MATCH_HISTORY_CHANGED, {
+		variables: { userId },
+	});
 	const {
 		data: queryData,
 		loading: queryLoading,
 		error: queryError,
-	} = useQuery(GET_INITIAL_MATCH_HISTORY);
+	} = useQuery(GET_INITIAL_MATCH_HISTORY, { variables: { userId } });
 
-	// useEffect(() => {
-	// 	if (queryData) setMatchHistory(queryData.getInitialMatchHistory);
-	// }, [queryData]);
+	useEffect(() => {
+		if (queryData) setMatches(queryData.getInitialMatchHistory);
+	}, [queryData]);
 
-	// useEffect(() => {
-	// 	if (subscriptionData) setMatchHistory(subscriptionData.matchHistoryHasBeenUpdated);
-	// }, [subscriptionData]);
+	useEffect(() => {
+		if (subData) setMatches(subData.matchHistoryHasBeenUpdated);
+	}, [subData]);
 
 	if (queryLoading) return <div> Loading </div>;
 	if (queryError) return <div> Error </div>;
-	// const {
-	// 	data: matchHistory,
-	// 	loading: queryLoading,
-	// 	error: queryError,
-	// } = useQueryWithSubscription(GET_INITIAL_MATCH_HISTORY, MATCH_HISTORY_CHANGED);
-
-	// if (queryLoading) return <div> Loading </div>;
-	// if (queryError) return <div> Error </div>;
-	// if (!matchHistory) return <div> No data </div>;
 	return (
 		<div className="stat_block">
 			<h2>Match history</h2>
 			<table className="match_history">
 				<tbody>
-					{matchHistory.map((match: any) => (
+					{matches.map((match: any) => (
 						<tr key={match.id}>
 							<td className="td_ava">
 								<img className="match_avatar" src={match.players[0]?.avatar} />

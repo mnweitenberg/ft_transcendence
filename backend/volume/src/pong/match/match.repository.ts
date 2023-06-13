@@ -5,6 +5,7 @@ import { Match } from './entities/match.entity';
 import { UserService } from '../../user/user.service';
 import { User } from '../../user/entities/user.entity';
 import { QueueService } from '../queue/queue.service';
+import { pubSub } from 'src/app.module';
 
 @Injectable()
 export class MatchRepository {
@@ -34,7 +35,6 @@ export class MatchRepository {
 		if (!players || !players[0] || !players[1]) return;
 		await this.addMatchToPlayerHistory(match, players[0].id);
 		await this.addMatchToPlayerHistory(match, players[1].id);
-		// if (!match.players || !match.players[0] || !match.players[1]) return;
 		return this.matchRepo.save(match);
 	}
 
@@ -43,9 +43,14 @@ export class MatchRepository {
 		id: string,
 	): Promise<void> {
 		const user = await this.userService.getUserById(id);
-		if (user.match_history) user.match_history.push(match);
-		else user.match_history = [match];
+		let matchHistory = await this.userService.getMatchHistory(user);
+		if (matchHistory) matchHistory.push(match);
+		else matchHistory = [match];
+		user.match_history = matchHistory;
 		await this.userService.save(user);
+		pubSub.publish(`matchHistoryHasBeenUpdated:${user.id}`, {
+			[`matchHistoryHasBeenUpdated:${user.id}`]: user.match_history,
+		});
 	}
 
 	public removeCurrentMatch() {

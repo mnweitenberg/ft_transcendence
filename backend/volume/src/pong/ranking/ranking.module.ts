@@ -8,11 +8,7 @@ import { RankingRepository } from './ranking.repository';
 import { RankingResolver } from './ranking.resolver';
 
 @Module({
-	imports: [
-		TypeOrmModule.forFeature([Ranking]),
-		UserModule,
-		MatchModule,
-	],
+	imports: [TypeOrmModule.forFeature([Ranking]), UserModule, MatchModule],
 	providers: [RankingService, RankingRepository, RankingResolver],
 	exports: [RankingService, RankingRepository],
 })

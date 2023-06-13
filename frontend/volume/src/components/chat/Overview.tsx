@@ -4,7 +4,7 @@ import { allUsers } from "../../utils/data";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
 import { gql, useQuery } from "@apollo/client";
-import { queryUsername } from "src/utils/queryUser";
+import { queryCurrentUser } from "src/utils/queryUser";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
@@ -135,7 +135,7 @@ function CreateChannel() {
 }
 
 function CreateNewChat(user: i.User) {
-	const username = queryUsername();
+	const username = queryCurrentUser().username;
 	console.log(username);
 }
 

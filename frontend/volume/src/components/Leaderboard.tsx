@@ -1,3 +1,4 @@
+import Layout from "./common/Layout";
 import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import * as i from "src/types/Interfaces";
@@ -36,24 +37,7 @@ const RANKING_CHANGED = gql`
 	}
 `;
 
-const GET_RANKING = gql`
-	query getRanking {
-		getRanking {
-			user {
-				id
-				intraId
-				username
-				avatar
-			}
-			rank
-			wins
-			losses
-			score
-		}
-	}
-`;
-
-function Ranking(propsModal: i.ModalProps) {
+function Leaderboard(propsModal: i.ModalProps): JSX.Element {
 	const {
 		data: ranking,
 		loading: queryLoading,
@@ -97,4 +81,4 @@ function Ranking(propsModal: i.ModalProps) {
 	);
 }
 
-export default Ranking;
+export default Leaderboard;

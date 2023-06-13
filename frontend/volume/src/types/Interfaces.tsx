@@ -39,11 +39,10 @@ interface Stats {
 }
 
 export interface User {
-	intraId?: string;
+	id: string;
 	username: string;
 	avatar?: string;
-	stats?: Stats;
-	status?: "in game" | "online" | "offline" | "";
+	stats: Stats;
 	// chat?: Array<Chat>;
 	friends?: Array<User>;
 }
@@ -92,20 +91,18 @@ export interface GameState {
 ///////////
 
 export interface ModalProps {
-	toggleModal: (user: User | null, content: JSX.Element) => void;
-	selectedUser: User;
-	setSelectedUser: (user: User) => void;
+	toggleModal: (content: JSX.Element) => void;
+	selectedUser: any;
+	setSelectedUser: (user: any) => void;
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
-	modalContent: JSX.Element;
+	modalContent: JSX.Element | null;
 	setContent: (content: JSX.Element) => void;
 }
 
 export interface PongProps {
 	players: User[];
 	setPlayers: (players: User[]) => void;
-	bothPlayersReady: boolean;
-	setBothPlayersReady: (bothPlayersReady: boolean) => void;
 	playersAvailable: boolean;
 	setPlayersAvailable: (playersAvailable: boolean) => void;
 	score: number[];

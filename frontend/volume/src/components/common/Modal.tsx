@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "../../styles/style.css";
-import { user } from "../../utils/data";
 import * as i from "../../types/Interfaces";
 
 function Modal(props: i.ModalProps) {
@@ -24,18 +23,17 @@ export default Modal;
 
 export function createModalProps(): i.ModalProps {
 	const [showModal, setShowModal] = useState<boolean>(false);
-	const [selectedUser, setSelectedUser] = useState<i.User>(user);
+	const [selectedUser, setSelectedUser] = useState<any>();
 	const [modalContent, setContent] = useState(<></>);
 
-	function toggleModal(userChoice: i.User | null, content: JSX.Element) {
-		if (userChoice) setSelectedUser(userChoice);
+	function toggleModal(content: JSX.Element) {
 		setContent(content);
 		setShowModal(true);
 	}
 
 	const modalProps: i.ModalProps = {
-		toggleModal(userChoice: i.User | null, content: JSX.Element) {
-			toggleModal(userChoice, content);
+		toggleModal(content: JSX.Element) {
+			toggleModal(content);
 		},
 		selectedUser,
 		setSelectedUser,

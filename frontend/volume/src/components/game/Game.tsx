@@ -1,70 +1,53 @@
 import { useState } from "react";
 import Pong from "./Pong";
 import * as i from "../../types/Interfaces";
-import * as C from "../../utils/constants";
 import SocketSingleton from "../../utils/socketSingleton";
 
 function updateScore(props: i.PongProps) {
 	const socketSingleton = SocketSingleton.getInstance();
 
-	socketSingleton.socket.on("players", (users: i.User[]) => {
+	socketSingleton.socket.on("noPlayers", () => {
+		props.setPlayersAvailable(false);
+	});
+
+	socketSingleton.socket.on("players", (players: any) => {
 		props.setPlayersAvailable(true);
-		props.setPlayers(users);
+		props.setPlayers(players);
 	});
 
 	socketSingleton.socket.on("playerScored", (score: number[]) => {
 		props.setScore(score);
-		if (score[0] === C.MAX_SCORE || score[1] === C.MAX_SCORE) props.setFinished(true);
 	});
 
-	socketSingleton.socket.on("noPlayers", () => {
-		props.setPlayersAvailable(false);
+	socketSingleton.socket.on("gameIsFinished", () => {
+		props.setFinished(true);
 	});
 }
 
-function Game(props: i.PongProps) {
-	if (!props.players) return <h1 className="game_menu">No one wants to play</h1>;
-
+export function Game(props: i.PongProps) {
 	updateScore(props);
-
-	// if (props.bothPlayersReady) return <Pong />;
 	if (props.playersAvailable) return <Pong />;
-
-	// function startGame() {
-	// props.setBothPlayersReady(true);
-	// startNewGame();
-	// }
-
-	// if (!props.playersAvailable) return <h1 className="game_menu">No one wants to play</h1>;
 	return (
 		<div className="game_menu">
 			<h1>Waiting for game...</h1>
-			{/* <h1>
-				{props.players[0].username} vs {props.players[1].username}
-			</h1> */}
-			{/* <h2>start game</h2> */}
 		</div>
 	);
 }
 
-export default Game;
-
 export function createPongProps(): i.PongProps {
-	const [bothPlayersReady, setBothPlayersReady] = useState(false);
 	const [finished, setFinished] = useState(false);
-
-	const [p1, setp1] = useState<i.User>({ username: "", avatar: "" });
-	const [p2, setp2] = useState<i.User>({ username: "", avatar: "" });
-	const [scorep1, setScorep1] = useState(0);
-	const [scorep2, setScorep2] = useState(0);
 	const [playersAvailable, setPlayersAvailable] = useState(false);
 
+	const [p1, setp1] = useState<any>({});
+	const [p2, setp2] = useState<any>({});
 	const players = [p1, p2];
 	function setPlayers(players: i.User[]) {
 		setp1(players[0]);
 		setp2(players[1]);
 	}
 
+	const [scorep1, setScorep1] = useState(0);
+	const [scorep2, setScorep2] = useState(0);
 	const score = [scorep1, scorep2];
 	function setScore(score: number[]) {
 		setScorep1(score[0]);
@@ -76,8 +59,6 @@ export function createPongProps(): i.PongProps {
 		setPlayers,
 		playersAvailable,
 		setPlayersAvailable,
-		bothPlayersReady,
-		setBothPlayersReady,
 		finished,
 		score,
 		setScore,
@@ -88,6 +69,5 @@ export function createPongProps(): i.PongProps {
 }
 
 export function handleFinishGame(pongProps: i.PongProps) {
-	pongProps.setBothPlayersReady(false);
 	pongProps.setFinished(false);
 }
