@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { GroupChat } from 'src/chat/group/chat/entities/group_chat.entity';
 import { PersonalChat } from 'src/chat/personal/chat/entities/personal_chat.entity';
+import { Match } from 'src/pong/match/entities/match.entity';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,7 @@ export class UserService {
 		return this.userRepository.find();
 	}
 
-	async getUser(usernameParam: string) {
+	async getUser(usernameParam: string): Promise<User> {
 		return this.userRepository.findOne({
 			where: { username: usernameParam },
 		});
@@ -57,6 +58,31 @@ export class UserService {
 		});
 		return user_with_channels.personal_chats;
 	}
+
+	async getMatchHistory(user: User): Promise<Array<Match>> {
+		const userMatchHistory = await this.userRepository.findOne({
+			relations: ['match_history', 'match_history.players'],
+			where: { id: user.id },
+		});
+		return userMatchHistory.match_history;
+	}
+
+	// async getMatchHistory(user: User): Promise<Array<Match>> {
+	// 	const userMatchHistory = await this.userRepository.find({
+	// 		join: {
+	// 			alias: 'user',
+	// 			leftJoinAndSelect: {
+	// 				match_history: 'user.match_history',
+	// 				players: 'match_history.players',
+	// 			},
+	// 		},
+	// 		where: { id: user.id },
+	// 	});
+
+	// 	if (userMatchHistory.length > 0)
+	// 		return userMatchHistory[0].match_history;
+	// 	return [];
+	// }
 
 	async save(user: User): Promise<User> {
 		return await this.userRepository.save(user);

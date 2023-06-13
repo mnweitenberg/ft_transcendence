@@ -30,8 +30,7 @@ export class QueueService {
 	private async checkPlayers(id1, id2): Promise<User[]> {
 		const p1 = await this.userService.getUserById(id1);
 		const p2 = await this.userService.getUserById(id2);
-		if (!p1 || !p2)
-			throw new Error("One or more users don't exist in the database");
+		if (!p1 || !p2) return; // FIXME: deze return value moet gecheckt worden dat dat goed gaat
 		return [p1, p2];
 	}
 
@@ -41,7 +40,7 @@ export class QueueService {
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
-				const new_queued_match = await this.addQueuedMatch(
+				await this.addQueuedMatch(
 					this.users_looking_for_match[i],
 					player_id,
 				);
@@ -58,6 +57,10 @@ export class QueueService {
 		this.queued_matches.splice(0, 1);
 		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		return top_match;
+	}
+
+	getWholeQueue() {
+		return this.queued_matches;
 	}
 
 	canPlayerLookForMatch(playerId: string): string {
@@ -88,8 +91,9 @@ export class QueueService {
 	async createMatches() {
 		this.createMatch('mweitenb');
 		this.createMatch('Justin');
-		// this.createMatch('Milan');
+		this.createMatch('Milan');
 		this.createMatch('Jonathan');
+		this.createMatch('Marius');
 		return 4;
 	}
 
@@ -99,19 +103,19 @@ export class QueueService {
 		if (user) await this.joinQueue(user.id);
 	}
 
-	// async fillDbUser() {
-	// 	await this.randomUser('Marius');
-	// 	await this.randomUser('Justin');
-	// 	await this.randomUser('Milan');
-	// 	await this.randomUser('Jonathan');
-	// 	// await this.randomUser('Henk1');
-	// 	// await this.randomUser('Henk2');
-	// 	// await this.randomUser('Henk3');
-	// 	// await this.randomUser('Henk4');
-	// 	// await this.randomUser('Henk5');
-	// 	// await this.randomUser('Henk6');
-	// 	return 3;
-	// }
+	async fillDbUser() {
+		await this.randomUser('Marius');
+		await this.randomUser('Justin');
+		await this.randomUser('Milan');
+		await this.randomUser('Jonathan');
+		await this.randomUser('Henk1');
+		await this.randomUser('Henk2');
+		await this.randomUser('Henk3');
+		await this.randomUser('Henk4');
+		await this.randomUser('Henk5');
+		await this.randomUser('Henk6');
+		return 3;
+	}
 
 	queuePrint() {
 		console.log('\t\t\t USER queue op backend');
@@ -121,14 +125,13 @@ export class QueueService {
 		return 3;
 	}
 
-	// async randomUser(name: string) {
-	// 	const newUser: CreateUserInput = {
-	// 		username: name,
-	// 		avatar: 'img/' + name.toLowerCase() + '.png',
-	// 		intraId: name + '_intra_id',
-	// 	};
-	// 	return await this.userService.create(newUser);
-	// }
+	async randomUser(name: string) {
+		const newUser: CreateUserInput = {
+			username: name,
+			intraId: name + '_intra_id',
+		};
+		return await this.userService.create(newUser);
+	}
 
 	removeQueue() {
 		this.queued_matches.splice(0, this.queued_matches.length);
@@ -136,6 +139,7 @@ export class QueueService {
 			0,
 			this.users_looking_for_match.length,
 		);
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 		return 3;
 	}
 }

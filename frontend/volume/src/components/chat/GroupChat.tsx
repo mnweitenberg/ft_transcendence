@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
-import { user } from "../../utils/data";
 import { createLeaveGroupChatAlert } from "../../utils/utils";
 import GroupStats from "./GroupStats";
 import { gql, useMutation, useQuery } from "@apollo/client";

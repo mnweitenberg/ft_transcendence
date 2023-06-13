@@ -71,7 +71,6 @@ export class AuthService {
 				username: response.data.login
 			});
 		}
-		console.log(user);
 		return { userUid: user.id, intraId: user.intraId };
 	}
 

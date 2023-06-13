@@ -5,6 +5,7 @@ import { MatchRepository } from './match/match.repository';
 import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/auth/auth.service';
+import { RankingService } from './ranking/ranking.service';
 
 @Injectable()
 export class PongService {
@@ -14,6 +15,7 @@ export class PongService {
 
 	constructor(
 		private readonly matchRepo: MatchRepository,
+		private readonly rankingService: RankingService,
 		private readonly gameLogicService: GameLogicService,
 	) {
 		this.emitter = new EventEmitter();
@@ -64,9 +66,14 @@ export class PongService {
 		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE) {
 			clearInterval(this.gameInterval);
 			this.state.match.isFinished = true;
+			this.emitter.emit('gameIsFinished');
 			await this.matchRepo.saveMatch(this.state.match);
+			await this.rankingService.updateRanking(
+				this.state.match,
+				this.state.match.players[0],
+				this.state.match.players[1],
+			);
 			this.state = this.initializeGameState();
-			this.state.match = await this.matchRepo.initNewMatch();
 		}
 	}
 
