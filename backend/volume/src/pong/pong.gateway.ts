@@ -28,7 +28,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	handleConnection(client: Socket, ...args: any[]): void {
+	async handleConnection(client: Socket, ...args: any[]): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
 
 		this.pongService.startLoop();
@@ -82,6 +82,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		this.pongService.on('playerScored', (score) => {
 			this.server.emit('playerScored', score);
+		});
+
+		this.pongService.on('gameIsFinished', () => {
+			this.server.emit('gameIsFinished');
 		});
 	}
 }
