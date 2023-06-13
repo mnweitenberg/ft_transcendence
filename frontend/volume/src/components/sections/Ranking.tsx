@@ -10,7 +10,9 @@ const GET_INITIAL_RANKING = gql`
 			user {
 				id
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			rank
 			wins
@@ -26,7 +28,9 @@ const RANKING_CHANGED = gql`
 			user {
 				id
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			rank
 			wins
@@ -43,7 +47,9 @@ const GET_RANKING = gql`
 				id
 				intraId
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			rank
 			wins

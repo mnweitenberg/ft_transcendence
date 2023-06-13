@@ -8,11 +8,15 @@ const GET_WHOLE_QUEUE = gql`
 		getWholeQueue {
 			p1 {
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			p2 {
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 		}
 	}
@@ -22,7 +26,9 @@ const CURRENT_USER = gql`
 	query currentUserQuery {
 		currentUserQuery {
 			username
-			avatar
+			avatar {
+				file
+			}
 		}
 	}
 `;
@@ -38,11 +44,15 @@ const QUEUE_CHANGED = gql`
 		queueChanged {
 			p1 {
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 			p2 {
 				username
-				avatar
+				avatar {
+					file
+				}
 			}
 		}
 	}

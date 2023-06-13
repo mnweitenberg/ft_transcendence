@@ -4,11 +4,14 @@ import { Match } from './entities/match.entity';
 import { Query } from '@nestjs/graphql';
 import { UserService } from 'src/user/user.service';
 import { Args } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Resolver()
 export class MatchResolver {
 	constructor(private readonly userService: UserService) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Query(() => [Match])
 	async getInitialMatchHistory(
 		@Args('userId', { type: () => String }) userId: string,

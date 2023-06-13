@@ -5,7 +5,9 @@ const USER = gql`
 	query userQuery($userId: String!) {
 		userQuery(userId: $userId) {
 			username
-			avatar
+			avatar {
+				file
+			}
 			id
 			ranking {
 				rank
@@ -21,7 +23,9 @@ const CURRENT_USER = gql`
 	query currentUserQuery {
 		currentUserQuery {
 			username
-			avatar
+			avatar {
+				file
+			}
 			id
 		}
 	}
