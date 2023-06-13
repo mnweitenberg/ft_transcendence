@@ -1,11 +1,11 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
-import { useEffect } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { gql, useMutation, useSubscription, useQuery } from "@apollo/client";
 
-const GET_WHOLE_QUEUE = gql`
-	query getWholeQueue {
-		getWholeQueue {
+const QUEUE_CHANGED = gql`
+	subscription queueChanged {
+		queueChanged {
 			p1 {
 				username
 				avatar
@@ -24,50 +24,24 @@ const JOIN_QUEUE = gql`
 	}
 `;
 
-const QUEUE_CHANGED = gql`
-	subscription queueChanged {
-		queueChanged {
-			p1 {
-				username
-				avatar
-			}
-			p2 {
-				username
-				avatar
-			}
-		}
-	}
-`;
-
-// TODO: add waiting for queue met plaatje (zie begin code voor html)
-//	check of queue goed update nadat joinQueue is geklikt
-
 export default function Queue(props: i.ModalProps) {
-	const {
-		data: queue_data,
-		loading: queue_loading,
-		error: queue_error,
-		subscribeToMore,
-	} = useQuery(GET_WHOLE_QUEUE);
+	const [queue, setQueue] = useState([]);
+	const { data, loading, error } = useSubscription(QUEUE_CHANGED);
 
 	useEffect(() => {
-		return subscribeToMore({
-			document: QUEUE_CHANGED,
-			updateQuery: (prev, { subscriptionData }) => {
-				if (!subscriptionData.data) return prev;
-				const newQueue = subscriptionData.data.queueChanged;
-				return Object.assign({}, prev, {
-					getWholeQueue: newQueue,
-				});
-			},
-		});
-	}, []);
+		if (data) {
+			setQueue(data.queueChanged);
+		}
+	}, [data]);
 
-	if (!queue_data) return <div> No queue </div>;
+	if (loading) return <div> Queue is changing. Please wait </div>;
+	if (error) return <div> Error </div>;
+
 	return (
 		<>
-			{queue_data.getWholeQueue.map(function (game: any) {
+			{queue.map(function (game: any) {
 				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
+				if (!game.p1 || !game.p2) return;
 				return (
 					<div
 						className="flex_row_spacebetween"
@@ -77,7 +51,6 @@ export default function Queue(props: i.ModalProps) {
 							<h3 className="name">{game.p1.username}</h3>
 							<img className="avatar" src={game.p1.avatar} />
 						</div>
-
 						<div className="player player--two">
 							<img className="avatar" src={game.p2.avatar} />
 							<h3 className="name">{game.p2.username}</h3>
@@ -113,11 +86,10 @@ function JoinQueueElement() {
 		if (queue_error) {
 			return <>error joining queue</>;
 		}
-		// if (queue_data.joinQueue === null) {
-		// 	return null;
-		// 	// return <JoinedQueue user_id={user_id} />;
-		// } else
-		{
+		if (queue_data.joinQueue === null) {
+			return null;
+			// return <JoinedQueue user_id={user_id} />;
+		} else {
 			return <>{queue_data.joinQueue}</>;
 		}
 	} else {
@@ -130,22 +102,22 @@ function JoinQueueElement() {
 }
 
 // function JoinedQueue({ user_id }: { user_id: string }) {
-// const { data, loading, error } = useSubscription(MATCH_FOUND);
-// if (loading) {
-// 	return <div> Joined the queue! </div>;
-// }
-// if (error) console.log("in MATCH_FOUND subscription ", error);
-// if (data)
-// 	return (
-// 		<div>
-// 			Match found: {data.matchFound.playerOne.username} vs{" "}
-// 			{data.matchFound.playerTwo.username}
-// 		</div>
-// 	);
-// return (
-// 	<div>
-// 		Match found: {data.matchFound.p1.username} vs{" "}
-// 		{data.matchFound.p2.username}
-// 	</div>
-// );
+// 	// const { data, loading, error } = useSubscription(MATCH_FOUND);
+// 	// if (loading) {
+// 	// 	return <div> Joined the queue! </div>;
+// 	// }
+// 	// if (error) console.log("in MATCH_FOUND subscription ", error);
+// 	// if (data)
+// 	// 	return (
+// 	// 		<div>
+// 	// 			Match found: {data.matchFound.playerOne.username} vs{" "}
+// 	// 			{data.matchFound.playerTwo.username}
+// 	// 		</div>
+// 	// 	);
+// 	// return (
+// 	// 	<div>
+// 	// 		Match found: {data.matchFound.p1.username} vs{" "}
+// 	// 		{data.matchFound.p2.username}
+// 	// 	</div>
+// 	// );
 // }

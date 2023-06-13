@@ -1,40 +1,62 @@
 import * as i from "../types/Interfaces";
 
-export function createChallengeAlert(user: any, propsModal: i.ModalProps) {
+export function getChatsByUser(chats: Array<i.Chat>, user: i.User): Array<i.Chat> {
+	return chats.filter((chat) => chat.sender === user || chat.reciever === user);
+}
+
+export function getMatchesByUser(matches: Array<i.GameScore>, player: i.User): Array<i.GameScore> {
+	return matches.filter((match) => match.p1 === player || match.p2 === player);
+}
+
+export function getWinsByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
+	return getMatchesByUser(matches, user).filter(
+		(match) =>
+			(match.p1 === user && match.score.p1 > match.score.p2) ||
+			(match.p2 === user && match.score.p2 > match.score.p1)
+	);
+}
+
+export function getLossesByUser(matches: Array<i.GameScore>, user: i.User): Array<i.GameScore> {
+	return getMatchesByUser(matches, user).filter(
+		(match) =>
+			(match.p1 === user && match.score.p1 < match.score.p2) ||
+			(match.p2 === user && match.score.p2 < match.score.p1)
+	);
+}
+
+// MESSAGES
+export function createChallengeAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
-			<h3>Challenge {user.username}? </h3>
-			<button onClick={() => propsModal.setShowModal(false)}>Yes</button>
+			<h3>Challenge {props.selectedUser.username}? </h3>
+			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);
 }
 
-export function createFriendRequesAlert(user: any, propsModal: i.ModalProps) {
+export function createFriendRequesAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
-			<h3>Send friend request to {user.username}? </h3>
-			<button onClick={() => propsModal.setShowModal(false)}>Yes</button>
+			<h3>Send friend request to {props.selectedUser.username}? </h3>
+			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);
 }
 
-export function createBlockAlert(user: any, propsModal: i.ModalProps) {
+export function createBlockAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
-			<h3>Are you sure you want to block {user.username}? </h3>
-			<button onClick={() => propsModal.setShowModal(false)}>Yes</button>
+			<h3>Are you sure you want to block {props.selectedUser.username}? </h3>
+			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);
 }
 
-export function createLeaveGroupChatAlert(
-	// user: any,
-	propsModal: i.ModalProps
-) {
+export function createLeaveGroupChatAlert(props: i.ModalProps) {
 	return (
 		<div className="alert">
 			<h3>Are you sure you want to leave the groupchat? </h3>
-			<button onClick={() => propsModal.setShowModal(false)}>Yes</button>
+			<button onClick={() => props.setShowModal(false)}>Yes</button>
 		</div>
 	);
 }

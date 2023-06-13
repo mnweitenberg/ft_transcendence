@@ -14,41 +14,30 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 
-@Resolver(() => User)
+@Resolver((of) => User)
 export class UserResolver {
 	constructor(private userService: UserService) {}
 
-	@Query(() => [User])
+	@Query((returns) => [User])
 	async allUsersQuery() {
 		return this.userService.getAllUsers();
 	}
 
-	@Query(() => User)
+	@Query((returns) => User)
 	async userQuery(
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
-		const user = await this.userService.getUser(usernameParam);
-		if (user) return user;
-		return null;
+		return this.userService.getUser(usernameParam);
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Query(() => User)
+	@Query((returns) => User)
 	async currentUserQuery(@AuthUser() user: UserInfo) {
 		if (!user) return;
 		return this.userService.getUserByIntraId(user.intraId);
 	}
 
-	@Query(() => User)
-	async queryUserByName(
-		@Args('username', { type: () => String }) username: string,
-	) {
-		const user = await this.userService.getUser(username);
-		if (!user) throw new Error('User not found');
-		return user;
-	}
-
-	@Mutation(() => User)
+	@Mutation((returns) => User)
 	async createUser(
 		@Args('createUserInput') createUserInput: CreateUserInput,
 	) {

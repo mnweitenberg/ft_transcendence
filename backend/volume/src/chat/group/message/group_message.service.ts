@@ -17,11 +17,10 @@ export class GroupMessageService {
 		private readonly channelService: GroupChatService,
 	) {}
 
-	async create(
-		createMessageInput: CreateGroupMessageInput,
-		author_: User,
-	): Promise<GroupMessage> {
-		const author = await this.userService.getUserById(author_.id);
+	async create(createMessageInput: CreateGroupMessageInput, author_: User): Promise<GroupMessage> {
+		const author = await this.userService.getUserById(
+			author_.id,
+		);
 		const channel = await this.channelService.getChannelById(
 			createMessageInput.channel_id,
 		);

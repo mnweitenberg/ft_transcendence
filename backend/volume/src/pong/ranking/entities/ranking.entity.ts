@@ -14,7 +14,7 @@ export class Ranking {
 
 	@Column()
 	@Field()
-	rank: number = 0;
+	rank: number;
 
 	@Column()
 	@Field()
@@ -26,5 +26,5 @@ export class Ranking {
 
 	@Column()
 	@Field()
-	score: number = 1200;
+	score: number = 0;
 }

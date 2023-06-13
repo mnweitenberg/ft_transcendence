@@ -6,10 +6,10 @@ import Profile from "src/components/sections/Profile";
 import Queue from "src/components/sections/Queue";
 import Ranking from "src/components/sections/Ranking";
 import Modal, { createModalProps } from "src/components/common/Modal";
-import { Game, createPongProps, handleFinishGame } from "src/components/game/Game";
+import Game, { createPongProps, handleFinishGame } from "src/components/game/Game";
+import { user } from "src/utils/data";
 import * as i from "src/types/Interfaces";
 import { useAuth } from "src/utils/authLogic";
-import { queryCurrentUser } from "src/utils/queryUser";
 
 function Home(): JSX.Element {
 	const modalProps: i.ModalProps = createModalProps();
@@ -21,8 +21,6 @@ function Home(): JSX.Element {
 			handleFinishGame(pongProps);
 		}
 	}, [pongProps.finished]);
-
-	const username = queryCurrentUser().username;
 
 	return (
 		<div className="grid-container">
@@ -53,7 +51,7 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">{username}</h1>
+				<h1 className="section_header chat_profile_header">{user.username}</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>

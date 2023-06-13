@@ -4,8 +4,6 @@ import {
 	ManyToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
-	JoinColumn,
-	JoinTable,
 } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GroupChat } from 'src/chat/group/chat/entities/group_chat.entity';
@@ -36,7 +34,7 @@ export class User {
 		nullable: true,
 	})
 	@Field()
-	avatar: string = ''; // FIXME: temp fix
+	avatar: string = ""; // FIXME: temp fix
 
 	@ManyToMany(() => GroupChat, (channel) => channel.members)
 	@Field(() => [GroupChat])
@@ -47,12 +45,10 @@ export class User {
 	personal_chats: PersonalChat[];
 
 	@OneToOne(() => Ranking, (ranking) => ranking.user)
-	@JoinColumn()
 	@Field(() => Ranking)
 	ranking: Ranking;
 
 	@ManyToMany(() => Match, (match) => match.players)
-	@JoinTable()
 	@Field(() => [Match])
 	match_history: Match[];
 }

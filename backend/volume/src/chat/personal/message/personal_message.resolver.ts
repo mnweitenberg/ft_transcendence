@@ -18,30 +18,18 @@ export class PersonalMessageResolver {
 	@Mutation((returns) => PersonalMessage, { nullable: true })
 	async createMessage(@Args() message_input: CreatePersonalMessageInput) {
 		const message = this.message_service.create(message_input);
-		pubSub.publish('personal_message_sent', {
-			personal_message_sent: message,
-		});
+		pubSub.publish('personal_message_sent', { personal_message_sent: message });
 		return message;
 	}
 
 	@Subscription((returns) => PersonalMessage, {
 		filter: async (payload, variables) => {
-			console.log({
-				payload: {
-					personal_message_sent: await payload.personal_message_sent,
-				},
-				variables,
-			});
+			console.log({payload: {personal_message_sent: await payload.personal_message_sent}, variables})
 			if (variables.channel_id === null) return true;
-			return (
-				(await payload.personal_message_sent).channel.id ===
-				variables.channel_id
-			);
-		},
+			return (await payload.personal_message_sent).channel.id === variables.channel_id;
+		}
 	})
-	async personal_message_sent(
-		@Args('channel_id', { nullable: true }) channel_id: string,
-	) {
+	async personal_message_sent(@Args('channel_id', {nullable: true}) channel_id: string) {
 		return pubSub.asyncIterator('personal_message_sent');
 	}
 

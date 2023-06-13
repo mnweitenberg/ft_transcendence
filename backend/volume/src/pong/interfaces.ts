@@ -1,4 +1,4 @@
-import { Match } from './match/entities/match.entity';
+import { Match } from '../pong/match/entities/match.entity';
 
 ///////////////
 //  CANVAS   //

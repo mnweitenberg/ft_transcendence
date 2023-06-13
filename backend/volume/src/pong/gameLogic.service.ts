@@ -11,6 +11,7 @@ export class GameLogicService {
 		this.paddleWidth = C.PADDLE_WIDTH;
 		this.ballWidth = C.BALL_DIAMETER;
 		this.borderOffset = C.BORDER_OFFSET;
+		console.log('GameLogicService constructed');
 	}
 	private width: number;
 	private height: number;
@@ -43,6 +44,7 @@ export class GameLogicService {
 		}
 
 		if (ballIsBehindLeftPaddle || ballIsBehindRightPaddle) {
+			console.log(state.match.p1Score, state.match.p2Score);
 			state.ballIsInPlay = false;
 			this.moveBallDuringServe(state);
 		}
@@ -143,5 +145,6 @@ export class GameLogicService {
 			return;
 		player.isServing = false;
 		state.ballIsInPlay = true;
+		console.log('Ball is in play');
 	}
 }

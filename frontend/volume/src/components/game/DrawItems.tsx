@@ -1,4 +1,5 @@
 import p5Types from "p5";
+import * as C from "../../utils/constants";
 import * as i from "../../types/Interfaces";
 
 enum color {
@@ -6,7 +7,6 @@ enum color {
 	main,
 	accent,
 }
-export const MIDDLE_LINE_WIDTH = 16;
 
 export function drawItems(canvas: i.Canvas, p5: p5Types, state: i.GameState) {
 	p5.background(keyPressed(p5, color.background));
@@ -38,7 +38,7 @@ function drawPaddle(canvas: i.Canvas, p5: p5Types, paddle: i.Paddle): void {
 function drawMiddleLine(canvas: i.Canvas, p5: p5Types): void {
 	p5.fill(keyPressed(p5, color.accent));
 	p5.noStroke();
-	p5.rect((canvas.width - MIDDLE_LINE_WIDTH) / 2, 0, MIDDLE_LINE_WIDTH / 2, canvas.height);
+	p5.rect((canvas.width - C.MIDDLE_LINE_WIDTH) / 2, 0, C.MIDDLE_LINE_WIDTH / 2, canvas.height);
 }
 
 function drawBall(p5: p5Types, canvas: i.Canvas, state: i.GameState): void {

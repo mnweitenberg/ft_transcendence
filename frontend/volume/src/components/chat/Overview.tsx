@@ -1,10 +1,10 @@
 import "../../styles/style.css";
 import NewChat from "./JoinChannel";
-import { allUsers } from "../../utils/data";
+import { user, chats, allUsers } from "../../utils/data";
 import * as i from "../../types/Interfaces";
+import { getChatsByUser } from "../../utils/utils";
 import { ChatState } from "../../utils/constants";
 import { gql, useQuery } from "@apollo/client";
-import { queryCurrentUser } from "src/utils/queryUser";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
@@ -135,8 +135,7 @@ function CreateChannel() {
 }
 
 function CreateNewChat(user: i.User) {
-	const username = queryCurrentUser().username;
-	console.log(username);
+	console.log(user.name);
 }
 
 export default Overview;
