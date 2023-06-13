@@ -18,6 +18,15 @@ const GET_WHOLE_QUEUE = gql`
 	}
 `;
 
+const CURRENT_USER = gql`
+	query currentUserQuery {
+		currentUserQuery {
+			username
+			avatar
+		}
+	}
+`;
+
 const JOIN_QUEUE = gql`
 	mutation joinQueue {
 		joinQueue
@@ -66,6 +75,7 @@ export default function Queue(props: i.ModalProps) {
 	if (!queue_data) return <div> No queue </div>;
 	return (
 		<>
+			<JoinQueueElement />
 			{queue_data.getWholeQueue.map(function (game: any) {
 				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
 				return (
@@ -85,7 +95,6 @@ export default function Queue(props: i.ModalProps) {
 					</div>
 				);
 			})}
-			<JoinQueueElement />
 		</>
 	);
 }
@@ -100,6 +109,7 @@ function JoinQueueElement() {
 			called: tried_joining_queue,
 		},
 	] = useMutation(JOIN_QUEUE);
+	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
@@ -113,13 +123,17 @@ function JoinQueueElement() {
 		if (queue_error) {
 			return <>error joining queue</>;
 		}
-		// if (queue_data.joinQueue === null) {
-		// 	return null;
-		// 	// return <JoinedQueue user_id={user_id} />;
-		// } else
-		{
-			return <>{queue_data.joinQueue}</>;
-		}
+
+		return (
+			<>
+				<div className="player player--one">
+					<h3 className="name">{user_data.currentUserQuery.username}</h3>
+					<img className="avatar" src={user_data.currentUserQuery.avatar} />
+					<h3> {queue_data.joinQueue} </h3>
+				</div>
+				{/* <button disabled={true}>Join queue </button> */}
+			</>
+		);
 	} else {
 		return (
 			<form onSubmit={handleClick}>
@@ -128,24 +142,3 @@ function JoinQueueElement() {
 		);
 	}
 }
-
-// function JoinedQueue({ user_id }: { user_id: string }) {
-// const { data, loading, error } = useSubscription(MATCH_FOUND);
-// if (loading) {
-// 	return <div> Joined the queue! </div>;
-// }
-// if (error) console.log("in MATCH_FOUND subscription ", error);
-// if (data)
-// 	return (
-// 		<div>
-// 			Match found: {data.matchFound.playerOne.username} vs{" "}
-// 			{data.matchFound.playerTwo.username}
-// 		</div>
-// 	);
-// return (
-// 	<div>
-// 		Match found: {data.matchFound.p1.username} vs{" "}
-// 		{data.matchFound.p2.username}
-// 	</div>
-// );
-// }

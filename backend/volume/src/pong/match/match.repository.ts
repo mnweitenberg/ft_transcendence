@@ -53,6 +53,10 @@ export class MatchRepository {
 		});
 	}
 
+	public removeCurrentMatch() {
+		this.queueService.removeCurrentMatch();
+	}
+
 	public async initNewMatch(): Promise<Match> {
 		const queuedMatch = this.queueService.getQueuedMatch();
 		if (!queuedMatch || !queuedMatch.p1 || !queuedMatch.p2) return null;
