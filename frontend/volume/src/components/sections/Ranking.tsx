@@ -36,23 +36,6 @@ const RANKING_CHANGED = gql`
 	}
 `;
 
-const GET_RANKING = gql`
-	query getRanking {
-		getRanking {
-			user {
-				id
-				intraId
-				username
-				avatar
-			}
-			rank
-			wins
-			losses
-			score
-		}
-	}
-`;
-
 function Ranking(propsModal: i.ModalProps) {
 	const {
 		data: ranking,

@@ -18,7 +18,6 @@ export class PongService {
 		private readonly rankingService: RankingService,
 		private readonly gameLogicService: GameLogicService,
 	) {
-		// this.rankingService.updateRanking();
 		this.emitter = new EventEmitter();
 		this.state = this.initializeGameState();
 	}
@@ -65,7 +64,6 @@ export class PongService {
 	private async handleEndOfGame() {
 		const { p1Score, p2Score } = this.state.match;
 		if (p1Score >= C.MAX_SCORE || p2Score >= C.MAX_SCORE) {
-			this.matchRepo.removeCurrentMatch();
 			clearInterval(this.gameInterval);
 			this.state.match.isFinished = true;
 			this.emitter.emit('gameIsFinished');

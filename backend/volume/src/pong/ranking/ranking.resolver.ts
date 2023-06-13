@@ -1,7 +1,9 @@
-import { Resolver, Subscription, Query, Args } from '@nestjs/graphql';
+import { Resolver, Subscription } from '@nestjs/graphql';
 import { pubSub } from 'src/app.module';
 import { Ranking } from './entities/ranking.entity';
 import { RankingRepository } from './ranking.repository';
+import { Query } from '@nestjs/graphql';
+import { Args } from '@nestjs/graphql';
 
 @Resolver()
 export class RankingResolver {
