@@ -36,6 +36,14 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 	}
 }
 
+async function downloadIntraAvatar(url: string, axiosConfig: any): Promise<any> {
+	const file = await axios.get(url, {
+			responseType: 'arraybuffer'
+		})
+		.then(response => Buffer.from(response.data, 'binary').toString('base64'));
+	return { file: file, filename: "intraPic" };
+}
+
 @Injectable()
 export class AuthService {
 	constructor(
@@ -66,9 +74,12 @@ export class AuthService {
 			response.data.id,
 		);
 		if (!user) {
+			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.micro, axiosConfig);
+			console.log(response.data.image.versions.micro);
 			user = await this.userService.create({
 				intraId: response.data.id,
-				username: response.data.login
+				username: response.data.login,
+				avatar: intraAvatar,
 			});
 		}
 		return { userUid: user.id, intraId: user.intraId };
