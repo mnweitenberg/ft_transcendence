@@ -171,6 +171,12 @@ export class QueueService {
 		this.changeUserAvatar(newUser);
 	}
 
+	async addAvatarToUser(username: string) {
+		const user = await this.userService.getUser(username);
+		this.changeUserAvatar(user);
+		return 3;
+	}
+
 	private async changeUserAvatar(user: User) 
 	 {
 		let avatar = new Avatar;

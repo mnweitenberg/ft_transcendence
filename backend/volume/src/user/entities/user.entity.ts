@@ -57,4 +57,9 @@ export class User {
 	@JoinTable()
 	@Field(() => [Match])
 	match_history: Match[];
+
+	@ManyToMany(() => User, (friend) => friend) // FIXME: werkt dit?
+	@JoinTable()
+	@Field(() => [User])
+	friend?: User[];
 }
