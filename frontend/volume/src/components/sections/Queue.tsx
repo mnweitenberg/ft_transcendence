@@ -82,7 +82,11 @@ export default function Queue(props: i.ModalProps) {
 		});
 	}, []);
 
-	if (!queue_data) return <div> No queue </div>;
+	if (queue_loading) return <div> Loading queue </div>;
+	if (queue_error) {
+		console.log(queue_error);
+		return <div> Queue error </div>;
+	}
 	return (
 		<>
 			<JoinQueueElement />
