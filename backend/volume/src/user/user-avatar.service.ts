@@ -19,12 +19,6 @@ export class UserAvatarService {
 
 	async createOrUpdate(uploadAvatarInput: UploadAvatarInput) {
 		return this.avatarRepository.save(uploadAvatarInput); 
-		// if (userUid) {
-		// 	return this.avatarRepository.update(userUid, uploadAvatarInput);
-		// }
-		// else {
-		// 	return this.create(uploadAvatarInput);
-		// }
 	}
 
 	async getAvatar(userUid: string) {

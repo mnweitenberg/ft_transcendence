@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { UserAvatarService } from 'src/user/user-avatar.service';
+import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
 const axios = require('axios').default;
 
 export interface IntraToken {
@@ -36,12 +38,12 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 	}
 }
 
-async function downloadIntraAvatar(url: string, axiosConfig: any): Promise<any> {
+async function downloadIntraAvatar(url: string, axiosConfig: any): Promise<UploadAvatarInput> {
 	const file = await axios.get(url, {
 			responseType: 'arraybuffer'
 		})
 		.then(response => Buffer.from(response.data, 'binary').toString('base64'));
-	return { file: file, filename: "intraPic" };
+	return { parentUserUid: "", file: file, filename: "intraPic" };
 }
 
 @Injectable()
@@ -49,6 +51,7 @@ export class AuthService {
 	constructor(
 		private readonly jwtService: JwtService,
 		private readonly userService: UserService,
+		private readonly userAvatarService: UserAvatarService,
 	) {}
 
 	async exchangeCodeForToken(intraCode: string): Promise<IntraToken> {
@@ -74,13 +77,15 @@ export class AuthService {
 			response.data.id,
 		);
 		if (!user) {
-			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.micro, axiosConfig);
+			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.small, axiosConfig);
 			console.log(response.data.image.versions.micro);
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,
-				avatar: intraAvatar,
 			});
+			intraAvatar.parentUserUid = user.id;
+			user.avatar = await this.userAvatarService.create(intraAvatar);
+			await this.userService.save(user);
 		}
 		return { userUid: user.id, intraId: user.intraId };
 	}

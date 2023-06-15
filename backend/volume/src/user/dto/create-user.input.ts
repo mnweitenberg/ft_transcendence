@@ -11,7 +11,4 @@ export class CreateUserInput {
 
 	@Field()
 	username: string;
-
-	@Field({ nullable: true })
-	avatar?: UploadAvatarInput;
 }
