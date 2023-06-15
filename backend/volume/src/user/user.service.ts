@@ -82,9 +82,49 @@ export class UserService {
 	// 	if (userMatchHistory.length > 0)
 	// 		return userMatchHistory[0].match_history;
 	// 	return [];
-	// }
+// }
 
 	async save(user: User): Promise<User> {
 		return await this.userRepository.save(user);
 	}
+
+	async acceptFriend(user_uid: string, friend_id: string) {
+		const user = await this.userRepository.findOne({
+			relations: { friend: true, friends: true },
+			where: { id: user_uid },
+		});
+		const friend = await this.userRepository.findOne({
+			relations: { friend: true, friends: true },
+			where : { id: friend_id },
+		});
+		friend.friend.push(user);
+		user.friend.push(friend);
+
+		this.userRepository.save(user);
+		this.userRepository.save(friend);
+
+		return true;
+	}
+	
+	async removeFriend(user_uid: string, friend_id: string) {
+		const user = await this.userRepository.findOne({
+			relations: { friend : true },
+			where: { id: user_uid },
+		});
+		for (let i = 0; user.friend[i]; i++){
+			if (user.friend[i].id === friend_id ) {
+
+			}
+		}
+		return true;
+	}
+
+	async getFriends(user_uid: string) : Promise <User[]> {
+		const user = await this.userRepository.findOne({
+			relations: { friend : true },
+			where: { id: user_uid },
+		});
+		return user.friend;
+	}
+
 }

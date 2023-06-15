@@ -2,6 +2,10 @@ import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import UserStats from "./UserStats";
 
+/*
+	
+
+*/
 function Friends({ userId }: { userId: string }) {
 	return (
 		<div className="stat_block">

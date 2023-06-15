@@ -61,6 +61,8 @@ const QUEUE_CHANGED = gql`
 // TODO: add waiting for queue met plaatje (zie begin code voor html)
 //	check of queue goed update nadat joinQueue is geklikt
 
+// TODO: joinQueue knop moet terug komen nadat user niet meer in queue of match zit
+
 export default function Queue(props: i.ModalProps) {
 	const {
 		data: queue_data,
@@ -145,7 +147,6 @@ function JoinQueueElement() {
 					<img className="avatar" src={user_data.currentUserQuery.avatar} />
 					<h3> {queue_data.joinQueue} </h3>
 				</div>
-				{/* <button disabled={true}>Join queue </button> */}
 			</>
 		);
 	} else {
