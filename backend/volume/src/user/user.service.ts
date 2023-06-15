@@ -88,32 +88,37 @@ export class UserService {
 		return await this.userRepository.save(user);
 	}
 
+
+
+
+	// TODO: tests all friend functions for empty friend lists
 	async acceptFriend(user_uid: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
-			relations: { friend: true, friends: true },
+			relations: { friends: true },
 			where: { id: user_uid },
 		});
 		const friend = await this.userRepository.findOne({
-			relations: { friend: true, friends: true },
+			relations: { friends: true },
 			where : { id: friend_id },
 		});
-		friend.friend.push(user);
-		user.friend.push(friend);
+		friend.friends.push(user);
+		user.friends.push(friend);
 
-		this.userRepository.save(user);
-		this.userRepository.save(friend);
+		await this.userRepository.save(user);
+		await this.userRepository.save(friend);
 
 		return true;
 	}
 	
 	async removeFriend(user_uid: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
-			relations: { friend : true },
+			relations: { friends : true },
 			where: { id: user_uid },
 		});
-		for (let i = 0; user.friend[i]; i++){
-			if (user.friend[i].id === friend_id ) {
-
+		for (let i = 0; i < user.friends.length; i++){
+			if (user.friends[i].id === friend_id ) {
+				console.log("removing friendo")
+				user.friends.splice(i, 1);
 			}
 		}
 		return true;
@@ -121,10 +126,51 @@ export class UserService {
 
 	async getFriends(user_uid: string) : Promise <User[]> {
 		const user = await this.userRepository.findOne({
-			relations: { friend : true },
+			relations: { friends : true },
 			where: { id: user_uid },
 		});
-		return user.friend;
+		return user.friends;
+	}
+
+
+
+	// TESTING
+
+	async createFriends (user_name: string) : Promise<Number> {
+		const user = await this.userRepository.findOne({
+			where: { username: user_name },
+		});
+		const friend = await this.userRepository.findOne({
+			where : { username: 'Marius' },
+		});
+		const friend1 = await this.userRepository.findOne({
+			where : { username: 'Milan' },
+		});
+		const friend2 = await this.userRepository.findOne({
+			where : { username: 'Justin' },
+		});
+		const friend3 = await this.userRepository.findOne({
+			where : { username: 'Henk4' },
+		});
+		const friend4 = await this.userRepository.findOne({
+			where : { username: 'Henk1' },
+		});
+		const friend5 = await this.userRepository.findOne({
+			where : { username: 'Henk2' },
+		});
+		const friend6 = await this.userRepository.findOne({
+			where : { username: 'Henk3' },
+		});
+		
+		this.acceptFriend(user.id, friend.id);
+		this.acceptFriend(user.id, friend1.id);
+		this.acceptFriend(user.id, friend2.id);
+		this.acceptFriend(user.id, friend3.id);
+		this.acceptFriend(user.id, friend4.id);
+		this.acceptFriend(user.id, friend5.id);
+		this.acceptFriend(user.id, friend6.id);
+
+		return 3;
 	}
 
 }

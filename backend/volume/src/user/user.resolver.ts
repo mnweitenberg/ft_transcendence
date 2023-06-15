@@ -110,10 +110,26 @@ export class UserResolver {
 	}
 
 
+
+	// TESTING
 	
 	@Mutation (() => Boolean)
 	async acceptFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
 		return this.userService.acceptFriend(user_id, friend_id);
 	}
 
+	@Mutation(() => Boolean)
+	async removeFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
+		return this.userService.removeFriend(user_id, friend_id);	
+	}
+
+	@Query(() => [User])
+	async getFriends1(@Args ('user_id') user_id: string) {
+		return this.userService.getFriends(user_id);
+	}
+
+	@Query(() => Number)
+	createFriends(@Args('user_name') user_name: string) {
+		return this.userService.createFriends(user_name);
+	}
 }

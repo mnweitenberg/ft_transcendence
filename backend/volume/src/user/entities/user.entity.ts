@@ -60,46 +60,10 @@ export class User {
 	@Field(() => [Match])
 	match_history: Match[];
 
-
 	@ManyToMany(type => User, user => user.friend)
 	@JoinTable()
 	friends: User[];
 
 	@ManyToMany(type => User, user => user.friends)
 	friend: User[];
-
-    
-
-	// @ManyToMany(type => User, user => user.friendsInverse, {
-	// 	cascadeInsert: false,
-	// 	cascadeUpdate: false,
-	// })
-	// @JoinTable()
-	// friends : User[];
-
-	// @ManyToMany(type => User, user => user.friends, {
-	// 	cascadeInsert: true,
-	// 	cascadeUpdate: true,
-	// 	cascadeRemove: false,
-	// })
-	// friendsInverse : User[];
-
-
-
-
-
-	// @ManyToOne(type => User, user => user.friends)
-	// public friend: User;
-
-  	// @OneToMany(type=> User, user => user.friend)
-	// public friends: User[];
-
-
-
-
-// 	@ManyToMany(() => User, (friend) => friend) 
-// 	@JoinTable()
-// 	@Field(() => [User])
-// 	friend?: User[];
-// }
 }
