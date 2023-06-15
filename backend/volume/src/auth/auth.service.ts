@@ -29,7 +29,7 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 				client_id: process.env.CLIENT_UID,
 				client_secret: process.env.CLIENT_SECRET,
 				code: JSON.parse(intraCode).code,
-				redirect_uri: 'http://localhost:4242/callback',
+				redirect_uri: `https://${process.env["DOMAIN"]}:4242/callback`,
 			},
 		);
 		return JSON.stringify(response.data);

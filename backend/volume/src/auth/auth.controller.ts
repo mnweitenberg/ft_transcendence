@@ -20,8 +20,8 @@ export class AuthController {
 		const jwtCookie = await this.authService.getJwtCookie(userInfo);
 		response.setHeader(
 			'Set-Cookie',
-			'session_cookie=' + jwtCookie + '; HttpOnly; Secure; SameSite=Lax',
+			'session_cookie=' + jwtCookie + '; HttpOnly; Secure; SameSite=Strict',
 		);
-		response.status(200).redirect('http://localhost:5574/home');
+		response.status(200).redirect(`https://${process.env["DOMAIN"]}:5574/home`);
 	}
 }

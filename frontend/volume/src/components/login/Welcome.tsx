@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
-import Loading from "../authorization/Loading";
 import "src/styles/login-pages/welcome.css";
 
 function Welcome(): JSX.Element {
