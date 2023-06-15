@@ -5,7 +5,7 @@ class SocketSingleton {
 	public socket: any;
 
 	private constructor() {
-		this.socket = io(`http://${import.meta.env["VITE_DOMAIN"]}:4242`, {
+		this.socket = io(`https://${import.meta.env["VITE_DOMAIN"]}:4242`, {
 			withCredentials: true,
 		});
 

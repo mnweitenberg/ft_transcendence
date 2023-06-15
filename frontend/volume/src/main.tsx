@@ -9,7 +9,7 @@ import "./styles/style.css";
 import { getMainDefinition } from "@apollo/client/utilities";
 
 const httpLink = new HttpLink({
-	uri: `http://${import.meta.env["VITE_DOMAIN"]}:4242/graphql`,
+	uri: `https://${import.meta.env["VITE_DOMAIN"]}:4242/graphql`,
 	credentials: "include",
 	fetchOptions: {
 		mode: "cors",
@@ -17,7 +17,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new GraphQLWsLink(
-	createClient({ url: `ws://${import.meta.env["VITE_DOMAIN"]}:4242/graphql` })
+	createClient({ url: `wss://${import.meta.env["VITE_DOMAIN"]}:4242/graphql` })
 );
 
 const splitLink = split(

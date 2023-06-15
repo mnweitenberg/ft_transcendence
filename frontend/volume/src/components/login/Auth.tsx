@@ -16,7 +16,7 @@ function Auth() {
 		"?client_id=" +
 		import.meta.env.VITE_CLIENT_UID +
 		"&redirect_uri=" +
-		encodeURIComponent(`http://${import.meta.env["VITE_DOMAIN"]}:4242/callback`) +
+		encodeURIComponent(`https://${import.meta.env["VITE_DOMAIN"]}:4242/callback`) +
 		"&state=" +
 		generateState() +
 		"&response_type=code";

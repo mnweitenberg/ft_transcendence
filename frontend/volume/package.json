@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.11",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "graphql-ws": "^5.12.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
