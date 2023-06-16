@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { UserAvatarService } from 'src/user/user-avatar.service';
+import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
 const axios = require('axios').default;
 
 export interface IntraToken {
@@ -27,7 +29,7 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 				client_id: process.env.CLIENT_UID,
 				client_secret: process.env.CLIENT_SECRET,
 				code: JSON.parse(intraCode).code,
-				redirect_uri: 'http://localhost:4242/callback',
+				redirect_uri: `https://${process.env["DOMAIN"]}:4242/callback`,
 			},
 		);
 		return JSON.stringify(response.data);
@@ -36,11 +38,20 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 	}
 }
 
+async function downloadIntraAvatar(url: string, axiosConfig: any): Promise<UploadAvatarInput> {
+	const file = await axios.get(url, {
+			responseType: 'arraybuffer'
+		})
+		.then(response => Buffer.from(response.data, 'binary').toString('base64'));
+	return { parentUserUid: "", file: file, filename: "intraPic" };
+}
+
 @Injectable()
 export class AuthService {
 	constructor(
 		private readonly jwtService: JwtService,
 		private readonly userService: UserService,
+		private readonly userAvatarService: UserAvatarService,
 	) {}
 
 	async exchangeCodeForToken(intraCode: string): Promise<IntraToken> {
@@ -66,10 +77,15 @@ export class AuthService {
 			response.data.id,
 		);
 		if (!user) {
+			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.small, axiosConfig);
+			console.log(response.data.image.versions.micro);
 			user = await this.userService.create({
 				intraId: response.data.id,
-				username: response.data.login
+				username: response.data.login,
 			});
+			intraAvatar.parentUserUid = user.id;
+			user.avatar = await this.userAvatarService.create(intraAvatar);
+			await this.userService.save(user);
 		}
 		return { userUid: user.id, intraId: user.intraId };
 	}
