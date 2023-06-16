@@ -1,10 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
-import Layout from "./common/Layout";
+import Layout from "src/components/common/Layout";
+import UserProfileSettings from "./settings/UserProfileSettings";
 
-const AVATAR_QUERY = gql`
+const USER_QUERY = gql`
 	query currentUserQuery {
 		currentUserQuery {
+			username
 			avatar {
 				file
 				filename
@@ -14,7 +16,7 @@ const AVATAR_QUERY = gql`
 `;
 
 function Settings(): JSX.Element {
-	const { loading, error, data } = useQuery(AVATAR_QUERY);
+	const { loading, error, data } = useQuery(USER_QUERY);
 
 	if (error) {
 		console.log(error);
@@ -24,9 +26,7 @@ function Settings(): JSX.Element {
 
 	return (
 		<Layout>
-			this is the settings page
-			<br />
-			<img src={convertEncodedImage(data.currentUserQuery.avatar)} alt="error no image" />
+			<UserProfileSettings userdata={data.currentUserQuery} />
 		</Layout>
 	);
 }
