@@ -113,6 +113,12 @@ export class UserResolver {
 
 	// TESTING
 	
+	/*
+	 	How to create some friends in 3 easy steps:
+			1. go to backend/graphql
+			2. query { fillDbUser }
+			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
+	 */
 	@Mutation (() => Boolean)
 	async acceptFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
 		return this.userService.acceptFriend(user_id, friend_id);

@@ -92,6 +92,7 @@ export class UserService {
 
 
 	// TODO: tests all friend functions for empty friend lists
+	// FIXME: friends don't always register in both directions
 	async acceptFriend(user_uid: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
 			relations: { friends: true },
@@ -101,6 +102,11 @@ export class UserService {
 			relations: { friends: true },
 			where : { id: friend_id },
 		});
+		for (let i = 0; i < user.friends.length; i++) {
+			if (user.friends[i].username === friend.username) {
+				return false;
+			}
+		}
 		friend.friends.push(user);
 		user.friends.push(friend);
 
@@ -117,7 +123,6 @@ export class UserService {
 		});
 		for (let i = 0; i < user.friends.length; i++){
 			if (user.friends[i].id === friend_id ) {
-				console.log("removing friendo")
 				user.friends.splice(i, 1);
 			}
 		}
@@ -136,6 +141,12 @@ export class UserService {
 
 	// TESTING
 
+	/*
+	 	To create some friends in 3 easy steps:
+			1. go to backend/graphql
+			2. query { fillDbUser }
+			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
+	 */
 	async createFriends (user_name: string) : Promise<Number> {
 		const user = await this.userRepository.findOne({
 			where: { username: user_name },
