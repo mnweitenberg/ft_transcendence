@@ -694,7 +694,6 @@ section#queue {
   grid-area: queue;
 }
 section#queue .flex_row_spacebetween:first-child {
-  opacity: 0.5;
   transition: 5s;
 }
 section#queue .section_content {
@@ -861,6 +860,11 @@ div.content-block .header .row a div {
 }
 div.content-block .content {
   grid-area: content;
+}
+
+img.profile-settings {
+  width: 10em;
+  height: 10em;
 }
 
 /*# sourceMappingURL=style.css.map */

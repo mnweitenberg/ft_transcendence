@@ -4,6 +4,7 @@ import Friends from "./Friends";
 import MatchHistory from "./MatchHistory";
 import * as i from "../../types/Interfaces";
 import { createChallengeAlert, createFriendRequesAlert, createBlockAlert } from "../../utils/utils";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }) {
 	const renderUserActions = () => {
@@ -37,7 +38,7 @@ function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }
 	return (
 		<div className="userStats">
 			<div className="user">
-				<img className="avatar" src={user.avatar.file} />
+				<img className="avatar" src={convertEncodedImage(user.avatar.file)} />
 				{renderUserActions()}
 			</div>
 			<Stats userId={user.id} />
