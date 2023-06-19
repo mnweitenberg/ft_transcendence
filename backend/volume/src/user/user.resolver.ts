@@ -96,6 +96,24 @@ export class UserResolver {
 	async getFriends(@AuthUser() userInfo: UserInfo) {
 		return this.userService.getFriends(userInfo.userUid);
 	}
+	
+	@UseGuards(JwtAuthGuard)
+	@Query (() => [User])
+	async getIncomingFriendRequest(@AuthUser() userInfo: UserInfo) {
+		return this.userService.getIncomingFriendRequest(userInfo.userUid);
+	}
+	
+	@UseGuards(JwtAuthGuard)
+	@Query (() => [User])
+	async getOutgoingFriendRequest(@AuthUser() userInfo: UserInfo) {
+		return this.userService.getOutgoingFriendRequest(userInfo.userUid);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation (() => Boolean)
+	async inviteFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
+		return this.userService.inviteFriend(userInfo.userUid, friend_id);
+	}
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation (() => Boolean)
@@ -109,7 +127,7 @@ export class UserResolver {
 		return this.userService.removeFriend(userInfo.userUid, friend_id);
 	}
 
-
+	
 
 	// TESTING
 	
@@ -119,6 +137,16 @@ export class UserResolver {
 			2. query { fillDbUser }
 			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
 	 */
+	@Query (() => [User])
+	async getIncomingFriendRequest1(@Args('user_id') user_id: string) {
+		return this.userService.getIncomingFriendRequest(user_id);
+	}
+
+	@Mutation (() => Boolean)
+	async inviteFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
+		return this.userService.inviteFriend(user_id, friend_id);
+	}
+
 	@Mutation (() => Boolean)
 	async acceptFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
 		return this.userService.acceptFriend(user_id, friend_id);

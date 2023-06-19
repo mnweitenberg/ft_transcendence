@@ -3,7 +3,11 @@ import Stats from "./Stats";
 import Friends from "./Friends";
 import MatchHistory from "./MatchHistory";
 import * as i from "../../types/Interfaces";
-import { createChallengeAlert, createFriendRequesAlert, createBlockAlert } from "../../utils/utils";
+import {
+	createChallengeAlert,
+	createFriendRequestAlert,
+	createBlockAlert,
+} from "../../utils/utils";
 
 function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }) {
 	const renderUserActions = () => {
@@ -19,7 +23,7 @@ function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }
 				<a
 					className="link"
 					onClick={() =>
-						propsModal.toggleModal(createFriendRequesAlert(user, propsModal))
+						propsModal.toggleModal(createFriendRequestAlert(user, propsModal))
 					}
 				>
 					send friend request

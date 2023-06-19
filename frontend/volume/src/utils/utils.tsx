@@ -9,7 +9,7 @@ export function createChallengeAlert(user: any, propsModal: i.ModalProps) {
 	);
 }
 
-export function createFriendRequesAlert(user: any, propsModal: i.ModalProps) {
+export function createFriendRequestAlert(user: any, propsModal: i.ModalProps) {
 	return (
 		<div className="alert">
 			<h3>Send friend request to {user.username}? </h3>

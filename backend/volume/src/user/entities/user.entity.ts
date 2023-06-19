@@ -1,6 +1,7 @@
 import {
 	Column,
 	Entity,
+	OneToMany,
 	ManyToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -61,4 +62,14 @@ export class User {
 	@ManyToMany(type => User, user => user.friends)
 	@JoinTable()
 	friends: User[];
+
+	@ManyToMany(type => User, (user) => user.incoming_friend_requests)
+	@JoinTable()
+	// @Field(() => [User])
+	incoming_friend_requests: User[];
+
+	@ManyToMany(type => User, (user) => user.outgoing_friend_requests)
+	@JoinTable()
+	// @Field(() => [User])
+	outgoing_friend_requests: User[];
 }

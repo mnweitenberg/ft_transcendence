@@ -145,6 +145,39 @@ export class UserService {
 		return user.friends;
 	}
 
+	async inviteFriend(user_id: string, friend_id: string) {
+		const user = await this.userRepository.findOne({
+			relations: { friends : true, outgoing_friend_requests : true,  },
+			where: { id: user_id },
+		});
+		const friend = await this.userRepository.findOne({
+			relations: { friends : true, incoming_friend_requests : true },
+			where: { id: friend_id },
+		});
+		user.outgoing_friend_requests.push(friend);
+		friend.incoming_friend_requests.push(user);
+		this.userRepository.save(friend);
+		this.userRepository.save(user);
+
+		return true;
+	}
+
+	async getOutgoingFriendRequest(user_id: string) : Promise <User[]> {
+		const user = await this.userRepository.findOne({
+			relations: { outgoing_friend_requests : true },
+			where: { id: user_id },
+		});
+		return user.outgoing_friend_requests;
+	}
+	
+	async getIncomingFriendRequest(user_id: string) : Promise <User[]> {
+		const user = await this.userRepository.findOne({
+			relations: { incoming_friend_requests : true },
+			where: { id: user_id },
+		});
+		return user.incoming_friend_requests;
+	}
+
 
 
 	// TESTING
