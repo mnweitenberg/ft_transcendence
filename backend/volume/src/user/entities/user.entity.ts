@@ -3,8 +3,6 @@ import {
 	Entity,
 	ManyToMany,
 	OneToOne,
-	OneToMany,
-	ManyToOne,
 	PrimaryGeneratedColumn,
 	JoinColumn,
 	JoinTable,
@@ -60,10 +58,7 @@ export class User {
 	@Field(() => [Match])
 	match_history: Match[];
 
-	@ManyToMany(type => User, user => user.friend)
+	@ManyToMany(type => User, user => user.friends)
 	@JoinTable()
 	friends: User[];
-
-	@ManyToMany(type => User, user => user.friends)
-	friend: User[];
 }
