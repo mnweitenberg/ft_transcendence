@@ -27,6 +27,8 @@ const GET_OUTGOING_FRIEND_REQUEST = gql`
 	}
 `;
 
+// const ACCEPT_DENY_FRIEND = gql``;
+
 /*
 	
 
@@ -79,6 +81,7 @@ function IncomingFriendRequests() {
 		loading: incoming_friend_loading,
 		error: incoming_friend_error,
 	} = useQuery(GET_INCOMING_FRIEND_REQUEST);
+	// const { data: accept_data, loading: accept_loading, error: accept_error } = useMutation();
 
 	if (incoming_friend_loading) {
 		return <div> Loading incoming friend requests </div>;
@@ -86,6 +89,16 @@ function IncomingFriendRequests() {
 	if (incoming_friend_error) {
 		return <div> Incoming friend requests error </div>;
 	}
+
+	const acceptFriend = (event: any) => {
+		event.preventDefault();
+		// mutation acceptFriend
+	};
+
+	const denyFriend = (event: any) => {
+		event.preventDefault();
+		// mutation denyFriend
+	};
 
 	if (!incoming_friend_data) {
 		return <div> No incoming friend requests </div>;
@@ -96,7 +109,17 @@ function IncomingFriendRequests() {
 					incoming_friend_req: any
 				) {
 					return (
-						<div key={incoming_friend_req.username}>{incoming_friend_req.username}</div>
+						<>
+							<div key={incoming_friend_req.username}>
+								{incoming_friend_req.username}
+								<form onSubmit={acceptFriend}>
+									<button type="submit">Accept</button>
+								</form>
+								<form onSubmit={denyFriend}>
+									<button type="submit">Deny</button>
+								</form>
+							</div>
+						</>
 					);
 				})}
 			</div>

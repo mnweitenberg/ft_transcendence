@@ -5,6 +5,7 @@ import {
 	Query,
 	ResolveField,
 	Resolver,
+	Subscription,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -17,6 +18,7 @@ import { UserInfo } from 'src/auth/auth.service';
 import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
 import { UploadAvatarInput } from './dto/upload-avatar.input';
+import { pubSub } from 'src/app.module';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -127,6 +129,21 @@ export class UserResolver {
 		return this.userService.removeFriend(userInfo.userUid, friend_id);
 	}
 
+
+	// TODO: 
+	// subscription die wordt gecalld als een request wordt 
+	// geaccepteerd, deny (of verstuurd?)
+	// 	- in variabelen de user id
+	@Subscription(() => User, {
+		filter: async(payload, variables) => {
+			if (variables.id === null ) return true;
+			return (false)
+		}
+	}) 
+	async friendRequestChanged(@Args('user_id') user_id: string)
+	{
+		return pubSub.asyncIterator('friend_request_changed')
+	}
 	
 
 	// TESTING
