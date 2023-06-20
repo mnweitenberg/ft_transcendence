@@ -65,11 +65,11 @@ export class User {
 
 	@ManyToMany(type => User, (user) => user.incoming_friend_requests)
 	@JoinTable()
-	// @Field(() => [User])
+	@Field(() => [User])
 	incoming_friend_requests: User[];
 
 	@ManyToMany(type => User, (user) => user.outgoing_friend_requests)
 	@JoinTable()
-	// @Field(() => [User])
+	@Field(() => [User])
 	outgoing_friend_requests: User[];
 }

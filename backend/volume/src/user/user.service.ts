@@ -93,9 +93,10 @@ export class UserService {
 	// TODO:
 	// deny friend request()
 	// 	- remove req from outgoing incoming request in db
-	//		user needs to remove incoming
+	//		X user needs to remove incoming
 	//		friend needs to remove outgoing			
-	// 	- subscription call friendRequestChange
+	// 	- subscription call friendRequestChange for friend
+	//	- mutation returns new user info to user
 	async denyFriend(user_id: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
 			relations: { incoming_friend_requests: true },
@@ -104,26 +105,22 @@ export class UserService {
 		for (let i = 0; i < user.incoming_friend_requests.length; i++) {
 			if (user.incoming_friend_requests[i].id === friend_id) {
 				user.incoming_friend_requests.splice(i, 1);
-				pubSub.publish('friend_request_changed', 
-					{ friend_request_changed: user.incoming_friend_requests });
 				break;	
 			}
 		}
 		const friend = await this.userRepository.findOne({
-			relations: { outgoing_friend_requests: true },
-			where : { id: friend_id },
-		});
-		for (let i = 0; i < user.friends.length; i++) {
-			if (user.friends[i].username === friend.username) {
-				return false;
+				relations: { outgoing_friend_requests: true },
+				where : { id: friend_id },
+			});
+		for (let i = 0; i < friend.outgoing_friend_requests.length; i++) {
+			if (friend.outgoing_friend_requests[i].id === user_id) {
+					friend.outgoing_friend_requests.splice(i, 1);
+					break;
 			}
 		}
-		friend.friends.push(user);
-		user.friends.push(friend);
-
 		await this.userRepository.save([ user, friend ]);
-
-		return true;
+		pubSub.publish('friend_request_changed', { friend_request_changed: friend });
+		return user;
 	}
 
 

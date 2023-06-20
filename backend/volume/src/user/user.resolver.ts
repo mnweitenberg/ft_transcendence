@@ -129,15 +129,19 @@ export class UserResolver {
 		return this.userService.removeFriend(userInfo.userUid, friend_id);
 	}
 
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => User)
+	async denyFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
+		return this.userService.denyFriend(userInfo.userUid, friend_id);
+	}
 
-	// TODO: 
-	// subscription die wordt gecalld als een request wordt 
-	// geaccepteerd, deny (of verstuurd?)
-	// 	- in variabelen de user id
 	@Subscription(() => User, {
 		filter: async(payload, variables) => {
-			if (variables.id === null ) return true;
-			return (false)
+			// if (variables.id === null ) return true;
+			console.log("variables = ", variables);
+			console.log("payload = ", payload);
+
+			return (await variables.userUid === payload.id);
 		}
 	}) 
 	async friendRequestChanged(@Args('user_id') user_id: string)
@@ -177,6 +181,11 @@ export class UserResolver {
 	@Query(() => [User])
 	async getFriends1(@Args ('user_id') user_id: string) {
 		return this.userService.getFriends(user_id);
+	}
+
+	@Mutation(() => User)
+	async denyFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
+		return this.userService.denyFriend(user_id, friend_id);
 	}
 
 	@Query(() => Number)

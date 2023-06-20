@@ -2,6 +2,7 @@ import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import UserStats from "./UserStats";
 import { gql, useQuery } from "@apollo/client";
+import { useEffect } from "react";
 
 const GET_FRIENDS = gql`
 	query {
@@ -27,20 +28,29 @@ const GET_OUTGOING_FRIEND_REQUEST = gql`
 	}
 `;
 
-// const ACCEPT_DENY_FRIEND = gql``;
+const FRIEND_REQUEST_CHANGED = gql`
+	subscription friendRequestChanged($user_id: String!) {
+		friendRequestChanged(user_id: $user_id) {
+			incoming_friend_requests {
+				username
+			}
+			outgoing_friend_requests {
+				username
+			}
+		}
+	}
+`;
 
-/*
-	
+const CURRENT_USER_QUERY = gql`
+	query currentUserQuery {
+		currentUserQuery {
+			id
+		}
+	}
+`;
 
-*/
 function Friends({ userId }: { userId: string }) {
 	const { data, loading, error } = useQuery(GET_FRIENDS);
-
-	// const {
-	// 	data: outgoing_friend_data,
-	// 	loading: outgoing_friend_loading,
-	// 	error: outgoing_friend_error,
-	// } = useQuery(GET_OUTGOING_FRIEND_REQUEST);
 
 	if (loading) {
 		return <div>Loading friends</div>;
@@ -71,6 +81,7 @@ function Friends({ userId }: { userId: string }) {
 				<IncomingFriendRequests />
 			</div>
 			Outgoing
+			<OutgoingFriendRequests />
 		</div>
 	);
 }
@@ -100,6 +111,20 @@ function IncomingFriendRequests() {
 		// mutation denyFriend
 	};
 
+	/* 
+var lists = this.state.lists.map(function(list, index) {
+        return(
+            <div key={index}>
+                <div key={list.name} id={list.name}>
+                    <h2 key={"header"+list.name}>{list.name}</h2>
+                    <ListForm update={lst.updateSaved} name={list.name}/>
+                </div>
+            </div>
+        )
+    });
+
+*/
+
 	if (!incoming_friend_data) {
 		return <div> No incoming friend requests </div>;
 	} else {
@@ -109,15 +134,75 @@ function IncomingFriendRequests() {
 					incoming_friend_req: any
 				) {
 					return (
+						<div key={incoming_friend_req.username}>
+							{incoming_friend_req.username}
+							<form onSubmit={acceptFriend}>
+								<button type="submit">Accept</button>
+							</form>
+							<form onSubmit={denyFriend}>
+								<button type="submit">Deny</button>
+							</form>
+						</div>
+					);
+				})}
+			</div>
+		);
+	}
+}
+
+function OutgoingFriendRequests() {
+	const {
+		data: outgoing_friend_data,
+		loading: outgoing_friend_loading,
+		error: outgoing_friend_error,
+		subscribeToMore,
+	} = useQuery(GET_OUTGOING_FRIEND_REQUEST);
+
+	const {
+		data: user_data,
+		loading: user_loading,
+		error: user_error,
+	} = useQuery(CURRENT_USER_QUERY);
+
+	if (user_loading) console.log("");
+	if (user_error) console.log(user_error);
+
+	const user_id = user_data.currentUserQuery.id;
+
+	useEffect(() => {
+		return subscribeToMore({
+			document: FRIEND_REQUEST_CHANGED,
+			variables: { user_id: user_id }, // FIXME: subscriptions werkend krijgen met authguards, dan kan dit weg
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newRequests =
+					subscriptionData.data.friendRequestChanged.outgoing_friend.requests;
+				return Object.assign({}, prev, {
+					getOutgoingFriendRequest: newRequests,
+				});
+			},
+		});
+	}, []);
+
+	if (outgoing_friend_loading) {
+		return <div> Loading outgoing friend requests </div>;
+	}
+	if (outgoing_friend_error) {
+		return <div> Outgoing friend requests error </div>;
+	}
+
+	if (!outgoing_friend_data) {
+		return <div> No incoming friend requests </div>;
+	} else {
+		return (
+			<div className="friend_list">
+				{outgoing_friend_data.getOutgoingFriendRequest.map(function (
+					outgoing_friend_req: any
+				) {
+					return (
 						<>
-							<div key={incoming_friend_req.username}>
-								{incoming_friend_req.username}
-								<form onSubmit={acceptFriend}>
-									<button type="submit">Accept</button>
-								</form>
-								<form onSubmit={denyFriend}>
-									<button type="submit">Deny</button>
-								</form>
+							<div key={outgoing_friend_req.username}>
+								{outgoing_friend_req.username}
 							</div>
 						</>
 					);
