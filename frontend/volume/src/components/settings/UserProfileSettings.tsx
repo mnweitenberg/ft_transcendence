@@ -24,24 +24,37 @@ function UserProfileSettings({ userdata }): JSX.Element {
 	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION);
 	const [picture, setPicture] = useState<PictureForm>({ name: "", data: "" });
 	const [usernameInput, setUsernameInput] = useState("");
+	const [isEmptyForm, setIsEmptyForm] = useState(false);
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const username = event.currentTarget.username.value;
-		const formData = {
-			username: usernameInput,
-			avatar: {
+		const formData = {};
+
+		if (usernameInput.trim() !== "") {
+			formData["username"] = usernameInput;
+		}
+
+		if (picture.data !== "") {
+			formData["avatar"] = {
 				file: picture.data,
 				filename: picture.name,
-			},
-		};
+			};
+		}
+
+		if (Object.keys(formData).length === 0) {
+			setIsEmptyForm(true);
+			return;
+		}
+
+		console.log(formData);
+		setIsEmptyForm(false);
 		formMutation({
 			variables: {
 				input: formData,
 			},
 		});
 	};
-
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsernameInput(event.currentTarget.value);
 	};
@@ -54,7 +67,6 @@ function UserProfileSettings({ userdata }): JSX.Element {
 
 		fileReader.onloadend = (e: any) => {
 			const fileContent = e.currentTarget.result as string;
-			console.log(fileContent);
 			const imgData = window.btoa(fileContent);
 			setPicture({ name: fileName, data: imgData });
 		};
@@ -67,12 +79,15 @@ function UserProfileSettings({ userdata }): JSX.Element {
 			</header>
 			<div>
 				<form method="post" onSubmit={handleSubmit}>
+					{isEmptyForm && (
+						<p className="empty-form-message">Please fill in at least one field</p>
+					)}
 					<label htmlFor="name">
 						Username
 						<input type="text" name="username" onChange={handleChange} />
 					</label>
 					<img
-						className="profile-settings"
+						className="avatar"
 						src={convertEncodedImage(userdata.avatar.file)}
 						alt="error no image"
 					/>{" "}

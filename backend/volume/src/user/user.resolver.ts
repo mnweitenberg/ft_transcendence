@@ -73,7 +73,8 @@ export class UserResolver {
 			user.avatar = await this.userAvatarService.createOrUpdate(changeUserData.avatar);
 		}
 		user.username = changeUserData.username;
-		return this.userService.save(user);
+		await this.userService.save(user);
+		return await this.userService.getUserById(userInfo.userUid);
 	}
 
 	@ResolveField('avatar', returns => Avatar)
