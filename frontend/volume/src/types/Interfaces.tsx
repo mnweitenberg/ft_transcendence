@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 //////////
 // CHAT //
 //////////
@@ -111,6 +112,9 @@ export interface PongProps {
 	setFinished: (finished: boolean) => void;
 }
 
+export interface CompProps {
+	children: ReactNode;
+}
 ///////////////
 //	Avatar	 //
 ///////////////
