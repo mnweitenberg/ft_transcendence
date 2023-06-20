@@ -7,6 +7,8 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+      - VITE_CLIENT_UID=${CLIENT_UID}
     ports:
       - 5574:5574
     networks:

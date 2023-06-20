@@ -55,7 +55,7 @@ function createAvatarAlert() {
 			<h2>Change avatar</h2>
 			<form>
 				<div className="flex_row_spacebetween">
-					<img src={user.avatar} />
+					<img src={user.avatar.file} />
 					<input className="fileupload" type="file" />
 				</div>
 				<button> submit </button>

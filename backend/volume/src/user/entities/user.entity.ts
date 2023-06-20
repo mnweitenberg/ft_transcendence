@@ -57,4 +57,8 @@ export class User {
 	@JoinTable()
 	@Field(() => [Match])
 	match_history: Match[];
+
+	@ManyToMany(type => User, user => user.friends)
+	@JoinTable()
+	friends: User[];
 }

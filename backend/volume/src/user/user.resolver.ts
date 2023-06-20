@@ -90,4 +90,52 @@ export class UserResolver {
 	async personal_chats(@Parent() user: User) {
 		return this.userService.getPersonalChats(user);
 	}
+
+	@UseGuards(JwtAuthGuard)
+	@Query (() => [User])
+	async getFriends(@AuthUser() userInfo: UserInfo) {
+		return this.userService.getFriends(userInfo.userUid);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation (() => Boolean)
+	async acceptFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
+		return this.userService.acceptFriend(userInfo.userUid, friend_id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation (() => Boolean)
+	async removeFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
+		return this.userService.removeFriend(userInfo.userUid, friend_id);
+	}
+
+
+
+	// TESTING
+	
+	/*
+	 	How to create some friends in 3 easy steps:
+			1. go to backend/graphql
+			2. query { fillDbUser }
+			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
+	 */
+	@Mutation (() => Boolean)
+	async acceptFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
+		return this.userService.acceptFriend(user_id, friend_id);
+	}
+
+	@Mutation(() => Boolean)
+	async removeFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
+		return this.userService.removeFriend(user_id, friend_id);	
+	}
+
+	@Query(() => [User])
+	async getFriends1(@Args ('user_id') user_id: string) {
+		return this.userService.getFriends(user_id);
+	}
+
+	@Query(() => Number)
+	createFriends(@Args('user_name') user_name: string) {
+		return this.userService.createFriends(user_name);
+	}
 }

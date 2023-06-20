@@ -5,9 +5,16 @@ import { UserService } from 'src/user/user.service';
 import { CreateUserInput } from 'src/user/dto/create-user.input';
 import { User } from 'src/user/entities/user.entity';
 
+import { ChangeUserDataInput } from 'src/user/dto/change-user-data-input';
+import { UserAvatarService } from 'src/user/user-avatar.service';
+import { Avatar } from 'src/user/entities/avatar.entity';
+
 @Injectable()
 export class QueueService {
-	constructor(private readonly userService: UserService) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly userAvatarService: UserAvatarService,
+		) {}
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 	current_match: QueuedMatch;
@@ -101,7 +108,7 @@ export class QueueService {
 
 	async createMatches() {
 		// this.createMatch('mweitenb');
-		this.createMatch('jbedaux');
+		// this.createMatch('jbedaux');
 		
 		this.createMatch('Marius');
 		this.createMatch('Justin');
@@ -155,11 +162,29 @@ export class QueueService {
 	}
 
 	async randomUser(name: string) {
-		const newUser: CreateUserInput = {
+		const newUserInput: CreateUserInput = {
 			username: name,
 			intraId: name + '_intra_id',
 		};
-		return await this.userService.create(newUser);
+		
+		const newUser = await this.userService.create(newUserInput);
+		this.changeUserAvatar(newUser);
+	}
+
+	async addAvatarToUser(username: string) {
+		const user = await this.userService.getUser(username);
+		this.changeUserAvatar(user);
+		return 3;
+	}
+
+	private async changeUserAvatar(user: User) 
+	 {
+		let avatar = new Avatar;
+		avatar.parentUserUid = user.id;
+		avatar.file = "d";
+		avatar.filename = "d";
+		user.avatar = await this.userAvatarService.createOrUpdate(avatar);
+		this.userService.save(user);
 	}
 
 	removeQueue() {

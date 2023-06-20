@@ -6,6 +6,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Resolver()
 export class QueueResolver {
@@ -44,6 +45,12 @@ export class QueueResolver {
 	@Query(() => Number)
 	fillDbUser() {
 		return this.queueService.fillDbUser();
+	}
+
+
+	@Query(() => Number)
+	addAvatarToUser(@Args('username') username: string) {
+		return this.queueService.addAvatarToUser(username);
 	}
 
 	@Query(() => Number)

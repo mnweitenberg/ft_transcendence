@@ -82,9 +82,114 @@ export class UserService {
 	// 	if (userMatchHistory.length > 0)
 	// 		return userMatchHistory[0].match_history;
 	// 	return [];
-	// }
+// }
 
 	async save(user: User): Promise<User> {
 		return await this.userRepository.save(user);
 	}
+
+
+
+
+	// TODO: tests all friend functions for empty friend lists
+	async acceptFriend(user_uid: string, friend_id: string) {
+		const user = await this.userRepository.findOne({
+			relations: { friends: true },
+			where: { id: user_uid },
+		});
+		const friend = await this.userRepository.findOne({
+			relations: { friends: true },
+			where : { id: friend_id },
+		});
+		for (let i = 0; i < user.friends.length; i++) {
+			if (user.friends[i].username === friend.username) {
+				return false;
+			}
+		}
+		friend.friends.push(user);
+		user.friends.push(friend);
+
+		await this.userRepository.save([ user, friend ]);
+
+		return true;
+	}
+	
+	async removeFriend(user_id: string, friend_id: string) {
+		const user = await this.userRepository.findOne({
+			relations: { friends : true },
+			where: { id: user_id },
+		});
+		for (let i = 0; i < user.friends.length; i++){
+			if (user.friends[i].id === friend_id ) {
+				user.friends.splice(i, 1);
+			}
+		}
+		const friend = await this.userRepository.findOne({
+			relations: { friends : true },
+			where: { id: friend_id },
+		});
+		for (let i = 0; i < friend.friends.length; i++){
+			if (friend.friends[i].id === user_id ) {
+				friend.friends.splice(i, 1);
+			}
+		}
+		await this.userRepository.save([user, friend]);
+		return true;
+	}
+
+	async getFriends(user_id: string) : Promise <User[]> {
+		const user = await this.userRepository.findOne({
+			relations: { friends : true },
+			where: { id: user_id },
+		});
+		return user.friends;
+	}
+
+
+
+	// TESTING
+
+	/*
+	 	To create some friends in 3 easy steps:
+			1. go to backend/graphql
+			2. query { fillDbUser }
+			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
+	 */
+	async createFriends (user_name: string) : Promise<Number> {
+		const user = await this.userRepository.findOne({
+			where: { username: user_name },
+		});
+		const friend = await this.userRepository.findOne({
+			where : { username: 'Marius' },
+		});
+		const friend1 = await this.userRepository.findOne({
+			where : { username: 'Milan' },
+		});
+		const friend2 = await this.userRepository.findOne({
+			where : { username: 'Justin' },
+		});
+		const friend3 = await this.userRepository.findOne({
+			where : { username: 'Henk4' },
+		});
+		const friend4 = await this.userRepository.findOne({
+			where : { username: 'Henk1' },
+		});
+		const friend5 = await this.userRepository.findOne({
+			where : { username: 'Henk2' },
+		});
+		const friend6 = await this.userRepository.findOne({
+			where : { username: 'Henk3' },
+		});
+		
+		await this.acceptFriend(user.id, friend.id);
+		await this.acceptFriend(user.id, friend1.id);
+		await this.acceptFriend(user.id, friend2.id);
+		await this.acceptFriend(user.id, friend3.id);
+		await this.acceptFriend(user.id, friend4.id);
+		await this.acceptFriend(user.id, friend5.id);
+		await this.acceptFriend(user.id, friend6.id);
+
+		return 3;
+	}
+
 }
