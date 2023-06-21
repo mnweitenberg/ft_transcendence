@@ -1,5 +1,5 @@
 import "../../styles/style.css";
-import { publicChannels, privateChannels } from "../../utils/data";
+// import { publicChannels, privateChannels } from "../../utils/data";
 
 export default function JoinChannel() {
 	return (
@@ -44,7 +44,7 @@ function showDiv(div: string) {
 function PrivateChannel() {
 	return (
 		<div id="privateChannel">
-			{privateChannels.map(function (channel: any) {
+			{/* {privateChannels.map(function (channel: any) {
 				return (
 					<div key={channel.name} className="selectUser">
 						<img className="avatar" src={channel.avatar} />
@@ -56,7 +56,7 @@ function PrivateChannel() {
 						</button>
 					</div>
 				);
-			})}
+			})} */}
 		</div>
 	);
 }
@@ -64,7 +64,7 @@ function PrivateChannel() {
 function PublicChannel() {
 	return (
 		<div id="publicChannel">
-			{publicChannels.map(function (channel: any) {
+			{/* {publicChannels.map(function (channel: any) {
 				return (
 					<div key={channel.name} className="selectUser">
 						<img className="avatar" src={channel.avatar} />
@@ -76,7 +76,7 @@ function PublicChannel() {
 						</button>
 					</div>
 				);
-			})}
+			})} */}
 		</div>
 	);
 }

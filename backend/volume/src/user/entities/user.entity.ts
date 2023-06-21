@@ -30,12 +30,13 @@ export class User {
 	@Column({
 		unique: true,
 	})
-	@Field() 
+	@Field()
 	username: string;
 
-	@OneToOne(
-		() => Avatar, {onDelete: "SET NULL", orphanedRowAction: "delete"}
-	)
+	@OneToOne(() => Avatar, {
+		onDelete: 'SET NULL',
+		orphanedRowAction: 'delete',
+	})
 	@JoinColumn()
 	@Field()
 	avatar: Avatar;
@@ -58,7 +59,7 @@ export class User {
 	@Field(() => [Match])
 	match_history: Match[];
 
-	@ManyToMany(type => User, user => user.friends)
+	@ManyToMany((type) => User, (user) => user.friends)
 	@JoinTable()
 	friends: User[];
 }

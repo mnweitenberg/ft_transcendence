@@ -1,10 +1,10 @@
 import "../../styles/style.css";
 import NewChat from "./JoinChannel";
-import { allUsers } from "../../utils/data";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
 import { gql, useQuery } from "@apollo/client";
 import { queryCurrentUser } from "src/utils/queryUser";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
@@ -99,19 +99,46 @@ function Overview({
 					</div>
 				);
 			})}
+			<div className="new_chat flex_row_spacebetween">
+				<a onClick={() => props.toggleModal(<PersonalChat />)}>new chat</a>
+				<a onClick={() => props.toggleModal(<NewChat />)}>join channel</a>
+				<a onClick={() => props.toggleModal(<CreateChannel />)}>create channel</a>
+			</div>
 		</>
 	);
 }
 
+const GET_ALL_USERS = gql`
+	query {
+		allUsersQuery {
+			username
+		}
+	}
+`;
+
+// const GET_ALL_USERS = gql`
+// 	query {
+// 		allUsersQuery {
+// 			username
+// 			avater {
+// 				file
+// 			}
+// 		}
+// 	}
+// `;
+
 function PersonalChat() {
+	const { loading, data, error } = useQuery(GET_ALL_USERS);
+	if (error) return <p>Error</p>;
+	if (loading) return <p>Loading...</p>;
 	return (
 		<div className="new_chat">
-			{allUsers.map(function (user: any) {
+			{data.allUsersQuery.map(function (user: any) {
 				return (
-					<div key={user.name} className="selectUser">
-						<img className="avatar" src={user.avatar} />
+					<div key={user.username} className="selectUser">
+						{/* <img className="avatar" src={convertEncodedImage(user?.avatar.file)} /> */}
 						<button onClick={() => CreateNewChat(user)}>
-							Send message to {user.name}
+							Send message to {user.username}
 						</button>
 					</div>
 				);
