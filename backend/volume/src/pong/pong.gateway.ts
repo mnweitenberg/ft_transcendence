@@ -18,7 +18,7 @@ import { PongService } from './pong.service';
 @WebSocketGateway({
 	cors: {
 		credentials: true,
-		origin: `https://${process.env["DOMAIN"]}:5574`,
+		origin: `https://${process.env["DOMAIN"]}/`,
 	},
 })
 @UseGuards(JwtWsGuard)

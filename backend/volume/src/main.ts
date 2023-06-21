@@ -16,7 +16,7 @@ async function bootstrap() {
 	});
 	app.use(cookieParser());
 	app.enableCors({
-		origin: `https://${process.env["DOMAIN"]}:5574`,
+		origin: `https://${process.env["DOMAIN"]}/`,
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
 		credentials: true,
 	});
