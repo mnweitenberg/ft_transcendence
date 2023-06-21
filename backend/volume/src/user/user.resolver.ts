@@ -118,7 +118,7 @@ export class UserResolver {
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation (() => Boolean)
+	@Mutation (() => User)
 	async acceptFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
 		return this.userService.acceptFriend(userInfo.userUid, friend_id);
 	}

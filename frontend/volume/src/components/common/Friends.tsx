@@ -1,8 +1,18 @@
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import UserStats from "./UserStats";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { useEffect } from "react";
+
+const ACCEPT_FRIEND = gql`
+	mutation acceptFriend($friendId: String!) {
+		acceptFriend(friend_id: $friendId) {
+			incoming_friend_requests {
+				username
+			}
+		}
+	}
+`;
 
 const GET_FRIENDS = gql`
 	query {
@@ -92,7 +102,8 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 		error: incoming_friend_error,
 		subscribeToMore,
 	} = useQuery(GET_INCOMING_FRIEND_REQUEST);
-	// const { data: accept_data, loading: accept_loading, error: accept_error } = useMutation();
+	const [accept_friend, { data: accept_data, loading: accept_loading, error: accept_error }] =
+		useMutation(ACCEPT_FRIEND);
 
 	useEffect(() => {
 		return subscribeToMore({
@@ -109,10 +120,15 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 		});
 	}, []);
 
-	const acceptFriend = (event: any) => {
+	// function denyFriend(event, argument) {
+	// 	event.preventDefault();  // Prevents the form from submitting and refreshing the page
+	// 	// Rest of your code handling the denial with the provided argument
+	//   }
+
+	function acceptFriend(event: any) {
 		event.preventDefault();
-		// mutation acceptFriend
-	};
+		accept_friend({});
+	}
 
 	const denyFriend = (event: any) => {
 		event.preventDefault();
@@ -130,7 +146,7 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 					return (
 						<div key={incoming_friend_req.username}>
 							{incoming_friend_req.username}
-							<form onSubmit={acceptFriend}>
+							<form onSubmit={() => acceptFriend(incoming_friend_req.username)}>
 								<button type="submit">Accept</button>
 							</form>
 							<form onSubmit={denyFriend}>

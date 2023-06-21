@@ -130,17 +130,12 @@ export class UserService {
 			relations: { friends: true },
 			where : { id: friend_id },
 		});
-		for (let i = 0; i < user.friends.length; i++) {
-			if (user.friends[i].username === friend.username) {
-				return false;
-			}
-		}
 		friend.friends.push(user);
 		user.friends.push(friend);
 
 		await this.userRepository.save([ user, friend ]);
 
-		return true;
+		return user;
 	}
 	
 	async removeFriend(user_id: string, friend_id: string) {
