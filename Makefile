@@ -13,7 +13,7 @@ endif
 $(NAME): all
 
 all:
-	$(DK_CMP) up -d
+	$(DK_CMP) up -d --build
 
 build:
 	$(DK_CMP) build --no-cache
