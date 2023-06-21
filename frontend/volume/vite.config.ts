@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import eslintPlugin from "vite-plugin-eslint";
-import basicSsl from "@vitejs/plugin-basic-ssl";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,7 +12,6 @@ export default defineConfig({
 			include: "**/*.+(vue|js|jsx|ts|tsx|scss)",
 			exclude: ["node_modules", ".git", "dist"],
 		}),
-		basicSsl(),
 	],
 	resolve: {
 		alias: {

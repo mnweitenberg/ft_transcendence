@@ -9,8 +9,7 @@ services:
       - .env
     environment:
       - VITE_CLIENT_UID=${CLIENT_UID}
-    ports:
-      - 5574:5574
+      - VITE_DOMAIN=${DOMAIN}
     networks:
       - pong-network
     volumes:
@@ -21,8 +20,6 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - 4242:4242
     networks:
       - pong-network
     volumes:
@@ -52,7 +49,18 @@ services:
       - 8080:8080
     networks:
       - pong-network
-networks:
+  nginx:
+    container_name: pong-nginx
+    build: ./nginx/
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - pong-network
+networks: # TODO: remove?
     pong-network:
         driver: bridge
 volumes:
