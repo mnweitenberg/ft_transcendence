@@ -1,0 +1,40 @@
+server {
+	listen 80;
+	listen [::]:80;
+	# server_name f1r4s10.codam.nl;
+	server_name ${DOMAIN};
+
+	return      301 https://${DOMAIN}$request_uri;
+}
+
+server {
+	listen 443 ssl;
+	listen [::]:443 ssl;
+	server_name ${DOMAIN};
+
+	ssl_protocols TLSv1.2 TLSv1.3;
+
+	ssl_certificate /etc/nginx/ssl/ft_transcendence.crt;
+	ssl_certificate_key /etc/nginx/ssl/ft_transcendence.key;
+
+	# https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/
+	location / {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $host;
+
+		proxy_pass http://pong-frontend:5574;
+
+		proxy_set_header Upgrade $http_upgrade;
+   		proxy_set_header Connection "upgrade";
+	}
+
+	location /api/ {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $host;
+
+		proxy_pass http://pong-backend:4242/;
+
+		proxy_set_header Upgrade $http_upgrade;
+   		proxy_set_header Connection "upgrade";
+	}
+}

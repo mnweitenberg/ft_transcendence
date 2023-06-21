@@ -23,5 +23,6 @@ clean:
 
 fclean: clean
 	docker system prune -af --volumes ; \
-	docker compose down --rmi all --volumes
+	$(DK_CMP) down --rmi all --volumes
+
 re: fclean all
