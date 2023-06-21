@@ -119,7 +119,7 @@ export class UserService {
 			}
 		}
 		await this.userRepository.save([ user, friend ]);
-		pubSub.publish('friend_request_changed', { friend_request_changed: friend });
+		pubSub.publish('outgoingFriendRequestChanged', { outgoingFriendRequestChanged: friend });
 		return user;
 	}
 

@@ -135,18 +135,14 @@ export class UserResolver {
 		return this.userService.denyFriend(userInfo.userUid, friend_id);
 	}
 
-	@Subscription(() => User, {
+	@Subscription(() => User , {
 		filter: async(payload, variables) => {
-			// if (variables.id === null ) return true;
-			console.log("variables = ", variables);
-			console.log("payload = ", payload);
-
-			return (await variables.userUid === payload.id);
+			return (await variables.user_id === payload.outgoingFriendRequestChanged.id);
 		}
 	}) 
-	async friendRequestChanged(@Args('user_id') user_id: string)
+	async outgoingFriendRequestChanged(@Args('user_id') user_id: string)
 	{
-		return pubSub.asyncIterator('friend_request_changed')
+		return pubSub.asyncIterator('outgoingFriendRequestChanged');
 	}
 	
 

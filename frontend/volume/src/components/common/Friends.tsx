@@ -28,23 +28,12 @@ const GET_OUTGOING_FRIEND_REQUEST = gql`
 	}
 `;
 
-const FRIEND_REQUEST_CHANGED = gql`
-	subscription friendRequestChanged($user_id: String!) {
-		friendRequestChanged(user_id: $user_id) {
-			incoming_friend_requests {
-				username
-			}
+const OUT_FRIEND_REQUEST_CHANGED = gql`
+	subscription outgoingFriendRequestChanged($user_id: String!) {
+		outgoingFriendRequestChanged(user_id: $user_id) {
 			outgoing_friend_requests {
 				username
 			}
-		}
-	}
-`;
-
-const CURRENT_USER_QUERY = gql`
-	query currentUserQuery {
-		currentUserQuery {
-			id
 		}
 	}
 `;
@@ -81,7 +70,7 @@ function Friends({ userId }: { userId: string }) {
 				<IncomingFriendRequests />
 			</div>
 			Outgoing
-			<OutgoingFriendRequests />
+			<OutgoingFriendRequests userId={userId} />
 		</div>
 	);
 }
@@ -150,7 +139,7 @@ var lists = this.state.lists.map(function(list, index) {
 	}
 }
 
-function OutgoingFriendRequests() {
+function OutgoingFriendRequests({ userId }: { userId: string }) {
 	const {
 		data: outgoing_friend_data,
 		loading: outgoing_friend_loading,
@@ -158,25 +147,14 @@ function OutgoingFriendRequests() {
 		subscribeToMore,
 	} = useQuery(GET_OUTGOING_FRIEND_REQUEST);
 
-	const {
-		data: user_data,
-		loading: user_loading,
-		error: user_error,
-	} = useQuery(CURRENT_USER_QUERY);
-
-	if (user_loading) console.log("");
-	if (user_error) console.log(user_error);
-
-	const user_id = user_data.currentUserQuery.id;
-
 	useEffect(() => {
 		return subscribeToMore({
-			document: FRIEND_REQUEST_CHANGED,
-			variables: { user_id: user_id }, // FIXME: subscriptions werkend krijgen met authguards, dan kan dit weg
+			document: OUT_FRIEND_REQUEST_CHANGED,
+			variables: { user_id: userId },
 			updateQuery: (prev, { subscriptionData }) => {
 				if (!subscriptionData.data) return prev;
 				const newRequests =
-					subscriptionData.data.friendRequestChanged.outgoing_friend.requests;
+					subscriptionData.data.outgoingFriendRequestChanged.outgoing_friend_requests;
 				return Object.assign({}, prev, {
 					getOutgoingFriendRequest: newRequests,
 				});
@@ -190,9 +168,8 @@ function OutgoingFriendRequests() {
 	if (outgoing_friend_error) {
 		return <div> Outgoing friend requests error </div>;
 	}
-
 	if (!outgoing_friend_data) {
-		return <div> No incoming friend requests </div>;
+		return <div> No outgoing friend requests </div>;
 	} else {
 		return (
 			<div className="friend_list">
@@ -200,11 +177,9 @@ function OutgoingFriendRequests() {
 					outgoing_friend_req: any
 				) {
 					return (
-						<>
-							<div key={outgoing_friend_req.username}>
+						<div key={outgoing_friend_req.username + userId}>
 								{outgoing_friend_req.username}
 							</div>
-						</>
 					);
 				})}
 			</div>
