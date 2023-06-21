@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/passport": "^9.0.3",
-    "sass": "^1.62.1",
-    "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1"
-  }
-}
