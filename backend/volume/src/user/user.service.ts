@@ -191,7 +191,7 @@ export class UserService {
 		friend.incoming_friend_requests.push(user);
 		this.userRepository.save(friend);
 		this.userRepository.save(user);
-
+		pubSub.publish('outgoingFriendRequestChanged', { outgoingFriendRequestChanged : user });
 		return true;
 	}
 
