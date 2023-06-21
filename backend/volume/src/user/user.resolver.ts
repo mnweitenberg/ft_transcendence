@@ -145,6 +145,16 @@ export class UserResolver {
 		return pubSub.asyncIterator('outgoingFriendRequestChanged');
 	}
 	
+	@Subscription(() => User , {
+		filter: async(payload, variables) => {
+			return (await variables.user_id === payload.incomingFriendRequestChanged.id);
+		}
+	}) 
+	async incomingFriendRequestChanged(@Args('user_id') user_id: string)
+	{
+		return pubSub.asyncIterator('incomingFriendRequestChanged');
+	}
+	
 
 	// TESTING
 	

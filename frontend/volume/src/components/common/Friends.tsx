@@ -28,6 +28,16 @@ const GET_OUTGOING_FRIEND_REQUEST = gql`
 	}
 `;
 
+const IN_FRIEND_REQUEST_CHANGED = gql`
+	subscription incomingFriendRequestChanged($user_id: String!) {
+		incomingFriendRequestChanged(user_id: $user_id) {
+			incoming_friend_requests {
+				username
+			}
+		}
+	}
+`;
+
 const OUT_FRIEND_REQUEST_CHANGED = gql`
 	subscription outgoingFriendRequestChanged($user_id: String!) {
 		outgoingFriendRequestChanged(user_id: $user_id) {
@@ -65,30 +75,39 @@ function Friends({ userId }: { userId: string }) {
 				})}
 			</div>
 			<div>
-				<h3>Friend requests</h3>
-				Incoming
-				<IncomingFriendRequests />
+				<h3>Incoming friend requests</h3>
+				<IncomingFriendRequests userId={userId} />
+
+				<h3>Outgoing friend requests</h3>
+				<OutgoingFriendRequests userId={userId} />
 			</div>
-			Outgoing
-			<OutgoingFriendRequests userId={userId} />
 		</div>
 	);
 }
 
-function IncomingFriendRequests() {
+function IncomingFriendRequests({ userId }: { userId: string }) {
 	const {
 		data: incoming_friend_data,
 		loading: incoming_friend_loading,
 		error: incoming_friend_error,
+		subscribeToMore,
 	} = useQuery(GET_INCOMING_FRIEND_REQUEST);
 	// const { data: accept_data, loading: accept_loading, error: accept_error } = useMutation();
 
-	if (incoming_friend_loading) {
-		return <div> Loading incoming friend requests </div>;
-	}
-	if (incoming_friend_error) {
-		return <div> Incoming friend requests error </div>;
-	}
+	useEffect(() => {
+		return subscribeToMore({
+			document: IN_FRIEND_REQUEST_CHANGED,
+			variables: { user_id: userId },
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newRequests =
+					subscriptionData.data.incomingFriendRequestChanged.incoming_friend_requests;
+				return Object.assign({}, prev, {
+					getIncomingFriendRequest: newRequests,
+				});
+			},
+		});
+	}, []);
 
 	const acceptFriend = (event: any) => {
 		event.preventDefault();
@@ -99,20 +118,6 @@ function IncomingFriendRequests() {
 		event.preventDefault();
 		// mutation denyFriend
 	};
-
-	/* 
-var lists = this.state.lists.map(function(list, index) {
-        return(
-            <div key={index}>
-                <div key={list.name} id={list.name}>
-                    <h2 key={"header"+list.name}>{list.name}</h2>
-                    <ListForm update={lst.updateSaved} name={list.name}/>
-                </div>
-            </div>
-        )
-    });
-
-*/
 
 	if (!incoming_friend_data) {
 		return <div> No incoming friend requests </div>;
@@ -178,8 +183,8 @@ function OutgoingFriendRequests({ userId }: { userId: string }) {
 				) {
 					return (
 						<div key={outgoing_friend_req.username + userId}>
-								{outgoing_friend_req.username}
-							</div>
+							{outgoing_friend_req.username}
+						</div>
 					);
 				})}
 			</div>
