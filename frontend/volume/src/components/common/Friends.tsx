@@ -5,11 +5,9 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { useEffect } from "react";
 
 const ACCEPT_FRIEND = gql`
-	mutation acceptFriend($friendId: String!) {
+	mutation AcceptFriend($friendId: String!) {
 		acceptFriend(friend_id: $friendId) {
-			incoming_friend_requests {
-				username
-			}
+			id
 		}
 	}
 `;
@@ -26,6 +24,7 @@ const GET_INCOMING_FRIEND_REQUEST = gql`
 	query {
 		getIncomingFriendRequest {
 			username
+			id
 		}
 	}
 `;
@@ -43,6 +42,7 @@ const IN_FRIEND_REQUEST_CHANGED = gql`
 		incomingFriendRequestChanged(user_id: $user_id) {
 			incoming_friend_requests {
 				username
+				id
 			}
 		}
 	}
@@ -102,8 +102,6 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 		error: incoming_friend_error,
 		subscribeToMore,
 	} = useQuery(GET_INCOMING_FRIEND_REQUEST);
-	const [accept_friend, { data: accept_data, loading: accept_loading, error: accept_error }] =
-		useMutation(ACCEPT_FRIEND);
 
 	useEffect(() => {
 		return subscribeToMore({
@@ -120,16 +118,6 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 		});
 	}, []);
 
-	// function denyFriend(event, argument) {
-	// 	event.preventDefault();  // Prevents the form from submitting and refreshing the page
-	// 	// Rest of your code handling the denial with the provided argument
-	//   }
-
-	function acceptFriend(event: any) {
-		event.preventDefault();
-		accept_friend({});
-	}
-
 	const denyFriend = (event: any) => {
 		event.preventDefault();
 		// mutation denyFriend
@@ -139,25 +127,53 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 		return <div> No incoming friend requests </div>;
 	} else {
 		return (
-			<div className="friend_list">
-				{incoming_friend_data.getIncomingFriendRequest.map(function (
-					incoming_friend_req: any
-				) {
-					return (
-						<div key={incoming_friend_req.username}>
-							{incoming_friend_req.username}
-							<form onSubmit={() => acceptFriend(incoming_friend_req.username)}>
-								<button type="submit">Accept</button>
-							</form>
-							<form onSubmit={denyFriend}>
-								<button type="submit">Deny</button>
-							</form>
-						</div>
-					);
-				})}
-			</div>
+			<>
+				<div className="friend_list">
+					{incoming_friend_data.getIncomingFriendRequest.map(function (
+						incoming_friend_req: any
+					) {
+						return (
+							<div key={incoming_friend_req.username}>
+								{incoming_friend_req.username}
+								<FriendAccept friend_id={incoming_friend_req.id} />
+								<form onSubmit={denyFriend}>
+									<button type="submit">Deny</button>
+								</form>
+							</div>
+						);
+					})}
+				</div>
+			</>
 		);
 	}
+}
+
+function FriendAccept({ friend_id }: { friend_id: string }) {
+	const [
+		accept_friend,
+		{ data: accept_data, loading: accept_loading, error: accept_error, called: accept_called },
+	] = useMutation(ACCEPT_FRIEND);
+
+	if (accept_loading) {
+		return <>Loading accept</>;
+	}
+	if (accept_error) {
+		return <>Error accept</>;
+	}
+	if (accept_data) console.log(accept_data);
+
+	return (
+		<div>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					accept_friend({ variables: { friendId: friend_id } });
+				}}
+			>
+				<button type="submit">Accept</button>
+			</form>
+		</div>
+	);
 }
 
 function OutgoingFriendRequests({ userId }: { userId: string }) {
