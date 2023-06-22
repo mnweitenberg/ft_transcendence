@@ -66,8 +66,30 @@ const OUT_FRIEND_REQUEST_CHANGED = gql`
 	}
 `;
 
+const FRIENDS_CHANGED = gql`
+	subscription FriendsChanged($userId: String!) {
+		friendsChanged(user_id: $userId) {
+			username
+		}
+	}
+`;
+
 function Friends({ userId }: { userId: string }) {
-	const { data, loading, error } = useQuery(GET_FRIENDS);
+	const { data, loading, error, subscribeToMore } = useQuery(GET_FRIENDS);
+
+	useEffect(() => {
+		return subscribeToMore({
+			document: FRIENDS_CHANGED,
+			variables: { userId: userId },
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const newFriends = subscriptionData.data.friendsChanged;
+				return Object.assign({}, prev, {
+					getFriends: newFriends,
+				});
+			},
+		});
+	}, []);
 
 	if (loading) {
 		return <div>Loading friends</div>;

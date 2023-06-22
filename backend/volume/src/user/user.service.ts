@@ -145,6 +145,7 @@ export class UserService {
 		await this.userRepository.save([ user, friend ]);
 		pubSub.publish('outgoingFriendRequestChanged', { outgoingFriendRequestChanged: friend } )
 		pubSub.publish('incomingFriendRequestChanged', { incomingFriendRequestChanged: user });
+		pubSub.publish('friendsChanged', { friendsChanged: user.friends, id: user.id })
 		return user;
 	}
 	
