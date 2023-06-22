@@ -15,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
 import { PongModule } from './pong/pong.module';
 import { RankingModule } from './pong/ranking/ranking.module';
 import { MatchModule } from './pong/match/match.module';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 
 export const pubSub = new PubSub();
 
@@ -30,6 +31,8 @@ export const pubSub = new PubSub();
 				'subscriptions-transport-ws': false,
 			},
 			// sortSchema: true, // Sort lexicographically
+			playground: false,
+			plugins: [ ApolloServerPluginLandingPageLocalDefault() ],
 		}),
 		// Other modules
 		ConfigModule.forRoot({ isGlobal: true }),
