@@ -12,6 +12,7 @@ const CREATE_CHANNEL = gql`
 `;
 
 // TO DO: add checks for existing channel
+// TO DO: let user upload image for channel logo
 export default function CreateChannel(props: i.ModalProps & { refetchChannels: () => void }) {
 	const [createChannel, { data }] = useMutation(CREATE_CHANNEL);
 
