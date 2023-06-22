@@ -116,25 +116,35 @@ export class UserService {
 		}
 		await this.userRepository.save([ user, friend ]);
 		pubSub.publish('outgoingFriendRequestChanged', { outgoingFriendRequestChanged: friend });
+		pubSub.publish('incomingFriendRequestChanged', { incomingFriendRequestChanged: user });
 		return user;
 	}
-
 
 	// TODO: tests all friend functions for empty friend lists
 	async acceptFriend(user_id: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
-			relations: { friends: true },
+			relations: { friends: true, incoming_friend_requests: true },
 			where: { id: user_id },
 		});
 		const friend = await this.userRepository.findOne({
-			relations: { friends: true },
+			relations: { friends: true, outgoing_friend_requests: true },
 			where : { id: friend_id },
 		});
 		friend.friends.push(user);
 		user.friends.push(friend);
-
+		for (let i = 0; i < user.incoming_friend_requests.length; i++){
+			if (user.incoming_friend_requests[i].id === friend_id ) {
+				user.incoming_friend_requests.splice(i, 1);
+			}
+		}
+		for (let i = 0; i < friend.outgoing_friend_requests.length; i++){
+			if (friend.outgoing_friend_requests[i].id === user_id ) {
+				friend.outgoing_friend_requests.splice(i, 1);
+			}
+		}
 		await this.userRepository.save([ user, friend ]);
-
+		pubSub.publish('outgoingFriendRequestChanged', { outgoingFriendRequestChanged: friend } )
+		pubSub.publish('incomingFriendRequestChanged', { incomingFriendRequestChanged: user });
 		return user;
 	}
 	
