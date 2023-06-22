@@ -1,10 +1,11 @@
 import "../../styles/style.css";
-import NewChat from "./JoinChannel";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
 import { gql, useQuery } from "@apollo/client";
 import { queryCurrentUser } from "src/utils/queryUser";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
+import JoinChannel from "./JoinChannel";
+import CreateChannel from "./CreateChannel";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
@@ -38,9 +39,12 @@ function Overview({
 	setSelectedChannel: (channel_id: string) => void;
 	setChatState: (state: ChatState) => void;
 }) {
-	const { loading, data, error } = useQuery(GET_CHANNELS, {
-		fetchPolicy: "network-only", // TODO: Is this the best way to do this?
-	});
+	const { loading, error, data, refetch } = useQuery(GET_CHANNELS);
+
+	const refetchChannels = () => {
+		refetch();
+	};
+
 	if (error) return <p>Error</p>;
 	if (loading) return <p>Loading...</p>;
 
@@ -101,8 +105,24 @@ function Overview({
 			})}
 			<div className="new_chat flex_row_spacebetween">
 				<a onClick={() => props.toggleModal(<PersonalChat />)}>new chat</a>
-				<a onClick={() => props.toggleModal(<NewChat />)}>join channel</a>
-				<a onClick={() => props.toggleModal(<CreateChannel />)}>create channel</a>
+				<a
+					onClick={() =>
+						props.toggleModal(
+							<JoinChannel {...props} refetchChannels={refetchChannels} />
+						)
+					}
+				>
+					join channel
+				</a>
+				<a
+					onClick={() =>
+						props.toggleModal(
+							<CreateChannel {...props} refetchChannels={refetchChannels} />
+						)
+					}
+				>
+					create channel
+				</a>
 			</div>
 		</>
 	);
@@ -127,6 +147,7 @@ const GET_ALL_USERS = gql`
 // 	}
 // `;
 
+// TODO: Make avatars work
 function PersonalChat() {
 	const { loading, data, error } = useQuery(GET_ALL_USERS);
 	if (error) return <p>Error</p>;
@@ -137,7 +158,7 @@ function PersonalChat() {
 				return (
 					<div key={user.username} className="selectUser">
 						{/* <img className="avatar" src={convertEncodedImage(user?.avatar.file)} /> */}
-						<button onClick={() => CreateNewChat(user)}>
+						<button onClick={() => CreateNewPersonalChannel(user)}>
 							Send message to {user.username}
 						</button>
 					</div>
@@ -147,23 +168,8 @@ function PersonalChat() {
 	);
 }
 
-function CreateChannel() {
-	return (
-		<div className="new_chat">
-			<form>
-				<h3>Name</h3>
-				<input type="text" placeholder=""></input>
-				<h3>Password</h3>
-				<input type="text" placeholder="leave blank to create public channel"></input>
-				<button>Create channel</button>
-			</form>
-		</div>
-	);
-}
-
-function CreateNewChat(user: i.User) {
-	const username = queryCurrentUser().username;
-	console.log(username);
+function CreateNewPersonalChannel(user: i.User) {
+	console.log(user.username);
 }
 
 export default Overview;

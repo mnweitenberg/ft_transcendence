@@ -5,13 +5,10 @@ import {
 	Query,
 	ResolveField,
 	Resolver,
-	Subscription,
 } from '@nestjs/graphql';
 import { GroupChat } from './entities/group_chat.entity';
 import { CreateGroupChannelInput } from './dto/create_group_chat.input';
 import { GroupChatService } from './group_chat.service';
-import { GroupMessage } from '../message/entities/group_message.entity';
-import { pubSub } from 'src/app.module';
 
 @Resolver((of) => GroupChat)
 export class GroupChatResolver {
@@ -30,6 +27,11 @@ export class GroupChatResolver {
 	@Mutation((returns) => GroupChat, { nullable: true })
 	async createGroupChat(@Args() channel_input: CreateGroupChannelInput) {
 		return this.group_chat_service.create(channel_input);
+	}
+
+	@Mutation((returns) => GroupChat, { nullable: true })
+	async joinGroupChat(@Args('userId') userId: string, @Args('channelId') channelId: string) {
+    	return this.group_chat_service.join(userId, channelId);
 	}
 
 	@ResolveField()

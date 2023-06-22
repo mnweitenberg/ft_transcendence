@@ -1,49 +1,44 @@
 import "../../styles/style.css";
-// import { publicChannels, privateChannels } from "../../utils/data";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
+import * as i from "../../types/Interfaces";
 
-export default function JoinChannel() {
+export default function JoinChannel(props: i.ModalProps & { refetchChannels: () => void }) {
+	const [toggleChannel, setToggleChannel] = useState(false);
+
 	return (
 		<div className="new_chat">
 			<div className="flex_row_spacebetween">
-				<a id="publicLink" onClick={() => showDiv("publicChannel")}>
-					public channel
+				<a
+					style={toggleChannel ? {} : { fontWeight: "bold" }}
+					onClick={() => setToggleChannel(false)}
+				>
+					public channels
 				</a>
-				<a id="privateLink" onClick={() => showDiv("privateChannel")}>
-					private channel
+				<a
+					style={toggleChannel ? { fontWeight: "bold" } : {}}
+					onClick={() => setToggleChannel(true)}
+				>
+					private channels
 				</a>
 			</div>
-
-			<PrivateChannel />
-			<PublicChannel />
+			{toggleChannel ? (
+				<PrivateChannel />
+			) : (
+				<PublicChannel
+					userId={props.userId}
+					setShowModal={props.setShowModal}
+					refetchChannels={props.refetchChannels}
+				/>
+			)}
 		</div>
 	);
 }
 
-function showDiv(div: string) {
-	const privateChannel = document.getElementById("privateChannel");
-	const publicChannel = document.getElementById("publicChannel");
-	const privateLink = document.getElementById("privateLink");
-	const publicLink = document.getElementById("publicLink");
-
-	if (!privateChannel || !publicChannel || !privateLink || !publicLink) return;
-
-	if (div === "privateChannel") {
-		privateChannel.style.display = "block";
-		publicChannel.style.display = "none";
-		privateLink.style.fontWeight = "bold";
-		publicLink.style.fontWeight = "normal";
-	}
-	if (div === "publicChannel") {
-		privateChannel.style.display = "none";
-		publicChannel.style.display = "block";
-		privateLink.style.fontWeight = "normal";
-		publicLink.style.fontWeight = "bold";
-	}
-}
-
 function PrivateChannel() {
 	return (
-		<div id="privateChannel">
+		<div id="new_chat">
+			<h2>TO DO: list of public channels</h2>
 			{/* {privateChannels.map(function (channel: any) {
 				return (
 					<div key={channel.name} className="selectUser">
@@ -61,26 +56,77 @@ function PrivateChannel() {
 	);
 }
 
-function PublicChannel() {
+const GET_ALL_PUBLIC_CHANNELS = gql`
+	query {
+		all_group_chats {
+			id
+			name
+			logo
+			members {
+				username
+			}
+		}
+	}
+`;
+
+const JOIN_GROUP_CHAT = gql`
+	mutation JoinGroupChat($userId: String!, $channelId: String!) {
+		joinGroupChat(userId: $userId, channelId: $channelId) {
+			id
+			name
+			logo
+			members {
+				username
+			}
+		}
+	}
+`;
+// TO DO:
+// Should only show channels that the user is not already a member of
+// Should show a message if there are no channels to join
+function PublicChannel({
+	userId,
+	setShowModal,
+	refetchChannels,
+}: {
+	userId: string;
+	setShowModal: (showModal: boolean) => void;
+	refetchChannels: () => void;
+}) {
+	const { loading, data, error } = useQuery(GET_ALL_PUBLIC_CHANNELS);
+	const [joinGroupChat, { loading: joinLoading, error: joinError }] =
+		useMutation(JOIN_GROUP_CHAT);
+
+	async function Join(channelId: string, channelName: string, userId: string) {
+		try {
+			await joinGroupChat({
+				variables: { userId: userId, channelId: channelId },
+			});
+			refetchChannels();
+			setShowModal(false);
+		} catch (error) {
+			console.log("Error joining ", error);
+		}
+	}
+
+	if (joinError) return <p>Error: {joinError.message}</p>;
+	if (joinLoading) return <p>Joining...</p>;
+
+	if (error) return <p>Error</p>;
+	if (loading) return <p>Loading...</p>;
+
 	return (
-		<div id="publicChannel">
-			{/* {publicChannels.map(function (channel: any) {
+		<div className="new_chat">
+			{data.all_group_chats.map(function (chat: any) {
 				return (
-					<div key={channel.name} className="selectUser">
-						<img className="avatar" src={channel.avatar} />
-						<button onClick={() => Join(channel.name)}>
-							{channel.name}
-							<h5>
-								created by {channel.creator.name}, {channel.members.length} members
-							</h5>
+					<div key={chat.id} className="selectUser">
+						<img className="avatar" src={chat.logo} />
+						<button onClick={() => Join(chat.id, chat.name, userId)}>
+							Join {chat.name}
 						</button>
 					</div>
 				);
-			})} */}
+			})}
 		</div>
 	);
-}
-
-function Join(channel: string) {
-	console.log(channel);
 }
