@@ -69,30 +69,10 @@ export class UserService {
 		return userMatchHistory.match_history;
 	}
 
-	// async getMatchHistory(user: User): Promise<Array<Match>> {
-	// 	const userMatchHistory = await this.userRepository.find({
-	// 		join: {
-	// 			alias: 'user',
-	// 			leftJoinAndSelect: {
-	// 				match_history: 'user.match_history',
-	// 				players: 'match_history.players',
-	// 			},
-	// 		},
-	// 		where: { id: user.id },
-	// 	});
-
-	// 	if (userMatchHistory.length > 0)
-	// 		return userMatchHistory[0].match_history;
-	// 	return [];
-// }
-
 	async save(user: User): Promise<User> {
 		return await this.userRepository.save(user);
 	}
 
-	// TODO:
-	// deny friend request()
-	//	- mutation returns new user info to user
 	async denyFriend(user_id: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
 			relations: { incoming_friend_requests: true },
@@ -120,8 +100,7 @@ export class UserService {
 		return user;
 	}
 
-	// TODO: tests all friend functions for empty friend lists
-	async acceptFriend(user_id: string, friend_id: string) {
+	async acceptFriend(user_id: string, friend_id: string) : Promise<User> {
 		const user = await this.userRepository.findOne({
 			relations: { friends: true, incoming_friend_requests: true },
 			where: { id: user_id },
@@ -169,6 +148,8 @@ export class UserService {
 			}
 		}
 		await this.userRepository.save([user, friend]);
+		pubSub.publish('friendsChanged', { friendsChanged: user.friends, id: user.id} );
+		pubSub.publish('friendsChanged', { friendsChanged: friend.friends, id: friend.id} );
 		return true;
 	}
 
@@ -199,7 +180,7 @@ export class UserService {
 		return false;
 	}
 
-	async inviteFriend(user_id: string, friend_id: string) {
+	async inviteFriend(user_id: string, friend_id: string) : Promise<Boolean> {
 		const user = await this.userRepository.findOne({
 			relations: { friends : true, outgoing_friend_requests : true, incoming_friend_requests: true },
 			where: { id: user_id },
@@ -213,8 +194,7 @@ export class UserService {
 		}
 		user.outgoing_friend_requests.push(friend);
 		friend.incoming_friend_requests.push(user);
-		this.userRepository.save(friend);
-		this.userRepository.save(user);
+		await this.userRepository.save( [friend, user] );
 		pubSub.publish('outgoingFriendRequestChanged', { outgoingFriendRequestChanged : user });
 		pubSub.publish('incomingFriendRequestChanged', { incomingFriendRequestChanged: friend });
 		return true;
@@ -240,12 +220,6 @@ export class UserService {
 
 	// TESTING
 
-	/*
-	 	To create some friends in 3 easy steps:
-			1. go to backend/graphql
-			2. query { fillDbUser }
-			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
-	 */
 	async createFriends (user_name: string) : Promise<Number> {
 		const user = await this.userRepository.findOne({
 			where: { username: user_name },
@@ -283,4 +257,77 @@ export class UserService {
 		return 3;
 	}
 
+	async inviteFromMultiFriends(username: string) {
+		const user = await this.userRepository.findOne({
+			where: { username: username },
+		});
+		const friend = await this.userRepository.findOne({
+			where : { username: 'Marius' },
+		});
+		const friend1 = await this.userRepository.findOne({
+			where : { username: 'Milan' },
+		});
+		const friend2 = await this.userRepository.findOne({
+			where : { username: 'Justin' },
+		});
+		const friend3 = await this.userRepository.findOne({
+			where : { username: 'Henk4' },
+		});
+		const friend4 = await this.userRepository.findOne({
+			where : { username: 'Henk1' },
+		});
+		const friend5 = await this.userRepository.findOne({
+			where : { username: 'Henk2' },
+		});
+		const friend6 = await this.userRepository.findOne({
+			where : { username: 'Henk3' },
+		});
+		
+		await this.inviteFriend(friend.id, user.id);
+		await this.inviteFriend(friend1.id, user.id);
+		await this.inviteFriend(friend2.id, user.id);
+		await this.inviteFriend(friend3.id, user.id);
+		await this.inviteFriend(friend4.id, user.id);
+		await this.inviteFriend(friend5.id, user.id);
+		await this.inviteFriend(friend6.id, user.id);
+
+		return 3;
+	}
+	
+	async inviteToMultiFriends(username: string) {
+		const user = await this.userRepository.findOne({
+			where: { username: username },
+		});
+		const friend = await this.userRepository.findOne({
+			where : { username: 'Marius' },
+		});
+		const friend1 = await this.userRepository.findOne({
+			where : { username: 'Milan' },
+		});
+		const friend2 = await this.userRepository.findOne({
+			where : { username: 'Justin' },
+		});
+		const friend3 = await this.userRepository.findOne({
+			where : { username: 'Henk4' },
+		});
+		const friend4 = await this.userRepository.findOne({
+			where : { username: 'Henk1' },
+		});
+		const friend5 = await this.userRepository.findOne({
+			where : { username: 'Henk2' },
+		});
+		const friend6 = await this.userRepository.findOne({
+			where : { username: 'Henk3' },
+		});
+		
+		await this.inviteFriend(user.id,  friend.id);
+		await this.inviteFriend(user.id, friend1.id);
+		await this.inviteFriend(user.id, friend2.id);
+		await this.inviteFriend(user.id, friend3.id);
+		await this.inviteFriend(user.id, friend4.id);
+		await this.inviteFriend(user.id, friend5.id);
+		await this.inviteFriend(user.id, friend6.id);
+
+		return 3;
+	}
 }

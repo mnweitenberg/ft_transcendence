@@ -103,13 +103,14 @@ function Friends({ userId }: { userId: string }) {
 			<div className="friend_list">
 				{data.getFriends.map(function (friend: any) {
 					return (
-						<div key={friend.username}>
-							<h4 className="name">{friend.username} </h4>
-							{/* <img
-								className="friend_list--avatar"
-								onClick={() => props.toggleModal(friend, <UserStats {...props} />)}
-								src={friend.avatar}
-							/> */}
+						<div
+							key={friend.username}
+							// onClick={() =>
+							// 	props.toggleModal(<UserStats user={friend} propsModal={props} />)
+							// }
+						>
+							<h4 className="name">{friend.username}</h4>
+							<img className="friend_list--avatar" src={friend.avatar} />
 						</div>
 					);
 				})}

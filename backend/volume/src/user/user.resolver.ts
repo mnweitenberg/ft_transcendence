@@ -207,4 +207,17 @@ export class UserResolver {
 	createFriends(@Args('user_name') user_name: string) {
 		return this.userService.createFriends(user_name);
 	}
+
+	@Mutation (() => Number) 
+	inviteFromMultiFriends(@Args('username') username: string)
+	{
+		return this.userService.inviteFromMultiFriends(username);
+	}
+
+	@Mutation (() => Number) 
+	inviteToMultiFriends(@Args('username') username: string)
+	{
+		return this.userService.inviteToMultiFriends(username);
+	}
 }
+
