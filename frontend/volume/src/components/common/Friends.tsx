@@ -24,6 +24,7 @@ const GET_FRIENDS = gql`
 	query {
 		getFriends {
 			username
+			id
 		}
 	}
 `;
@@ -42,6 +43,12 @@ const GET_OUTGOING_FRIEND_REQUEST = gql`
 		getOutgoingFriendRequest {
 			username
 		}
+	}
+`;
+
+const REMOVE_FRIEND = gql`
+	mutation RemoveFriend($friendId: String!) {
+		removeFriend(friend_id: $friendId)
 	}
 `;
 
@@ -70,6 +77,7 @@ const FRIENDS_CHANGED = gql`
 	subscription FriendsChanged($userId: String!) {
 		friendsChanged(user_id: $userId) {
 			username
+			id
 		}
 	}
 `;
@@ -110,7 +118,7 @@ function Friends({ userId }: { userId: string }) {
 							// }
 						>
 							<h4 className="name">{friend.username}</h4>
-							<img className="friend_list--avatar" src={friend.avatar} />
+							<FriendRemove friend_id={friend.id} />
 						</div>
 					);
 				})}
@@ -219,6 +227,29 @@ function FriendDeny({ friend_id }: { friend_id: string }) {
 				}}
 			>
 				<button type="submit">Deny</button>
+			</form>
+		</div>
+	);
+}
+
+function FriendRemove({ friend_id }: { friend_id: string }) {
+	const [remove_friend, { data, loading, error }] = useMutation(REMOVE_FRIEND);
+
+	if (loading) {
+		return <>Loading removal</>;
+	}
+	if (error) {
+		return <>Remove error</>;
+	}
+	return (
+		<div>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					remove_friend({ variables: { friendId: friend_id } });
+				}}
+			>
+				<button type="submit">Remove friend</button>
 			</form>
 		</div>
 	);
