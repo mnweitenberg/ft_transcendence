@@ -8,6 +8,7 @@ import {
 	createFriendRequestAlert,
 	createBlockAlert,
 } from "../../utils/utils";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }) {
 	const renderUserActions = () => {
@@ -41,7 +42,7 @@ function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }
 	return (
 		<div className="userStats">
 			<div className="user">
-				<img className="avatar" src={user.avatar.file} />
+				<img className="avatar" src={convertEncodedImage(user.avatar.file)} />
 				{renderUserActions()}
 			</div>
 			<Stats userId={user.id} />

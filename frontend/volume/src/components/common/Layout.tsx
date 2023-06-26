@@ -1,12 +1,8 @@
-import { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { CompProps } from "src/types/Interfaces";
 import "src/styles/style.css";
 
-interface ComponentProps {
-	children: ReactNode;
-}
-
-function Layout({ children }: ComponentProps): JSX.Element {
+function Layout({ children }: CompProps): JSX.Element {
 	return (
 		<div className="background">
 			<div className="content-block">

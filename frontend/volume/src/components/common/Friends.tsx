@@ -1,6 +1,4 @@
 import "../../styles/style.css";
-import * as i from "../../types/Interfaces";
-import UserStats from "./UserStats";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useEffect } from "react";
 
@@ -99,12 +97,8 @@ function Friends({ userId }: { userId: string }) {
 		});
 	}, []);
 
-	if (loading) {
-		return <div>Loading friends</div>;
-	}
-	if (error) {
-		return <div>Error friends</div>;
-	}
+	if (loading) return <div>Loading friends</div>;
+	if (error) return <div>Error friends</div>;
 	return (
 		<div className="stat_block">
 			<h2>Friends</h2>
@@ -157,27 +151,20 @@ function IncomingFriendRequests({ userId }: { userId: string }) {
 		});
 	}, []);
 
-	if (!incoming_friend_data) {
-		return <div> No incoming friend requests </div>;
-	} else {
-		return (
-			<>
-				<div className="friend_list">
-					{incoming_friend_data.getIncomingFriendRequest.map(function (
-						incoming_friend_req: any
-					) {
-						return (
-							<div key={incoming_friend_req.username}>
-								{incoming_friend_req.username}
-								<FriendAccept friend_id={incoming_friend_req.id} />
-								<FriendDeny friend_id={incoming_friend_req.id} />
-							</div>
-						);
-					})}
-				</div>
-			</>
-		);
-	}
+	if (!incoming_friend_data) return <div> No incoming friend requests </div>;
+	return (
+		<div className="friend_list">
+			{incoming_friend_data.getIncomingFriendRequest.map(function (incoming_friend_req: any) {
+				return (
+					<div key={incoming_friend_req.username}>
+						{incoming_friend_req.username}
+						<FriendAccept friend_id={incoming_friend_req.id} />
+						<FriendDeny friend_id={incoming_friend_req.id} />
+					</div>
+				);
+			})}
+		</div>
+	);
 }
 
 function FriendAccept({ friend_id }: { friend_id: string }) {
@@ -186,12 +173,8 @@ function FriendAccept({ friend_id }: { friend_id: string }) {
 		{ data: accept_data, loading: accept_loading, error: accept_error, called: accept_called },
 	] = useMutation(ACCEPT_FRIEND);
 
-	if (accept_loading) {
-		return <>Loading accept</>;
-	}
-	if (accept_error) {
-		return <>Error accept</>;
-	}
+	if (accept_loading) return <>Loading accept</>;
+	if (accept_error) return <>Error accept</>;
 	return (
 		<div>
 			<form
@@ -212,12 +195,8 @@ function FriendDeny({ friend_id }: { friend_id: string }) {
 		{ data: accept_data, loading: accept_loading, error: accept_error, called: accept_called },
 	] = useMutation(DENY_FRIEND);
 
-	if (accept_loading) {
-		return <>Loading accept</>;
-	}
-	if (accept_error) {
-		return <>Error accept</>;
-	}
+	if (accept_loading) return <>Loading accept</>;
+	if (accept_error) return <>Error accept</>;
 	return (
 		<div>
 			<form
@@ -235,12 +214,8 @@ function FriendDeny({ friend_id }: { friend_id: string }) {
 function FriendRemove({ friend_id }: { friend_id: string }) {
 	const [remove_friend, { data, loading, error }] = useMutation(REMOVE_FRIEND);
 
-	if (loading) {
-		return <>Loading removal</>;
-	}
-	if (error) {
-		return <>Remove error</>;
-	}
+	if (loading) return <>Loading removal</>;
+	if (error) return <>Remove error</>;
 	return (
 		<div>
 			<form
@@ -278,29 +253,20 @@ function OutgoingFriendRequests({ userId }: { userId: string }) {
 		});
 	}, []);
 
-	if (outgoing_friend_loading) {
-		return <div> Loading outgoing friend requests </div>;
-	}
-	if (outgoing_friend_error) {
-		return <div> Outgoing friend requests error </div>;
-	}
-	if (!outgoing_friend_data) {
-		return <div> No outgoing friend requests </div>;
-	} else {
-		return (
-			<div className="friend_list">
-				{outgoing_friend_data.getOutgoingFriendRequest.map(function (
-					outgoing_friend_req: any
-				) {
-					return (
-						<div key={outgoing_friend_req.username + userId}>
-							{outgoing_friend_req.username}
-						</div>
-					);
-				})}
-			</div>
-		);
-	}
+	if (outgoing_friend_loading) return <div> Loading outgoing friend requests </div>;
+	if (outgoing_friend_error) return <div> Outgoing friend requests error </div>;
+	if (!outgoing_friend_data) return <div> No outgoing friend requests </div>;
+	return (
+		<div className="friend_list">
+			{outgoing_friend_data.getOutgoingFriendRequest.map(function (outgoing_friend_req: any) {
+				return (
+					<div key={outgoing_friend_req.username + userId}>
+						{outgoing_friend_req.username}
+					</div>
+				);
+			})}
+		</div>
+	);
 }
 
 export default Friends;

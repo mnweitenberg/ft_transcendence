@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 //////////
 // CHAT //
 //////////
@@ -91,6 +92,9 @@ export interface GameState {
 ///////////
 
 export interface ModalProps {
+	userId: string;
+	username: string;
+	avatarfile: string;
 	toggleModal: (content: JSX.Element) => void;
 	selectedUser: any;
 	setSelectedUser: (user: any) => void;
@@ -111,6 +115,9 @@ export interface PongProps {
 	setFinished: (finished: boolean) => void;
 }
 
+export interface CompProps {
+	children: ReactNode;
+}
 ///////////////
 //	Avatar	 //
 ///////////////
