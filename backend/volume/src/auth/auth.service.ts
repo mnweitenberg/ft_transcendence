@@ -4,6 +4,8 @@ import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
+import { authenticator } from 'otplib';
+
 const axios = require('axios').default;
 
 export interface IntraToken {
@@ -93,5 +95,24 @@ export class AuthService {
 	async getJwtCookie(userInfo: UserInfo): Promise<string> {
 		const token = await this.jwtService.signAsync(userInfo);
 		return JSON.stringify({ access_token: token });
+	}
+
+	async generateTwoFASecret(userInfo: UserInfo) {
+		const secret = authenticator.generateSecret();
+		const otpAuthUrl = authenticator.keyuri('dummy', 'PONG', secret);
+
+		await this.userService.setTwoFA(secret, userInfo.userUid);
+		return {
+			secret,
+			otpAuthUrl,
+		};
+	}
+
+	async verify2FACode(twoFACode: string, userId: string) {
+		const user = await this.userService.getUserById(userId);
+		return authenticator.verify({
+			token: twoFACode,
+			secret: user.twoFASecret,
+		});
 	}
 }

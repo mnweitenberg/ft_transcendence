@@ -43,6 +43,13 @@ export class UserService {
 		return await this.userRepository.save(user);
 	}
 
+	async setTwoFA(secret: string, userId: string) {
+		const user = await this.getUserById(userId);	
+		user.twoFASecret = secret;
+		user.twoFAEnabled = true;
+		await this.userRepository.save(user);
+	}
+
 	async getGroupChats(user: User): Promise<Array<GroupChat>> {
 		const user_with_channels = await this.userRepository.findOne({
 			relations: { group_chats: true },
