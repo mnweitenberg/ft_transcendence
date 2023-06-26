@@ -59,7 +59,7 @@ const GET_RANKING = gql`
 	}
 `;
 
-function Ranking(propsModal: i.ModalProps) {
+function Ranking(modalProps: i.ModalProps) {
 	const {
 		data: ranking,
 		loading: queryLoading,
@@ -85,8 +85,8 @@ function Ranking(propsModal: i.ModalProps) {
 						<tr
 							key={ranking.user.username}
 							onClick={() => {
-								propsModal.toggleModal(
-									<UserStats user={ranking.user} propsModal={propsModal} />
+								modalProps.toggleModal(
+									<UserStats user={ranking.user} modalProps={modalProps} />
 								);
 							}}
 						>

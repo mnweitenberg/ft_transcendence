@@ -17,7 +17,6 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
-import { UploadAvatarInput } from './dto/upload-avatar.input';
 import { pubSub } from 'src/app.module';
 
 @Resolver(() => User)

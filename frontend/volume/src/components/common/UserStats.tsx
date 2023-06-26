@@ -2,36 +2,36 @@ import "../../styles/style.css";
 import Stats from "./Stats";
 import Friends from "./Friends";
 import MatchHistory from "./MatchHistory";
+import FriendRequestAlert from "./FriendRequestAlert";
 import * as i from "../../types/Interfaces";
-import {
-	createChallengeAlert,
-	createFriendRequestAlert,
-	createBlockAlert,
-} from "../../utils/utils";
+import { createChallengeAlert, createBlockAlert } from "../../utils/utils";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
-function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }) {
+function UserStats({ user, modalProps }: { user: any; modalProps: i.ModalProps }) {
+	console.log(user);
 	const renderUserActions = () => {
 		return (
 			<div className="user_actions">
 				<h1>{user.username}</h1>
 				<a
 					className="link"
-					onClick={() => propsModal.toggleModal(createChallengeAlert(user, propsModal))}
+					onClick={() => modalProps.toggleModal(createChallengeAlert(user, modalProps))}
 				>
 					challenge
 				</a>
 				<a
 					className="link"
 					onClick={() =>
-						propsModal.toggleModal(createFriendRequestAlert(user, propsModal))
+						modalProps.toggleModal(
+							<FriendRequestAlert user={user} modalProps={modalProps} />
+						)
 					}
 				>
 					send friend request
 				</a>
 				<a
 					className="link"
-					onClick={() => propsModal.toggleModal(createBlockAlert(user, propsModal))}
+					onClick={() => modalProps.toggleModal(createBlockAlert(user, modalProps))}
 				>
 					block
 				</a>
@@ -47,7 +47,7 @@ function UserStats({ user, propsModal }: { user: any; propsModal: i.ModalProps }
 			</div>
 			<Stats userId={user.id} />
 			<MatchHistory userId={user.id} />
-			<Friends userId={user.id} />
+			<Friends {...modalProps} />
 		</div>
 	);
 }

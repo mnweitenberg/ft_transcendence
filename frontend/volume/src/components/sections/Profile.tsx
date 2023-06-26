@@ -5,7 +5,7 @@ import * as i from "src/types/Interfaces";
 import { queryCurrentUser } from "src/utils/queryUser";
 import Friends from "src/components/common/Friends";
 
-export default function Profile(props: i.ModalProps) {
+export default function Profile(modalProps: i.ModalProps) {
 	//	const userId = queryCurrentUser().id;
 	const user = queryCurrentUser();
 	if (user === "loading" || user === "error") {
@@ -22,14 +22,16 @@ export default function Profile(props: i.ModalProps) {
 			</div>
 
 			<div className="friends">
-				<Friends userId={userId} />
+				<Friends {...modalProps} />
 			</div>
 
 			<div className="profile_section settings">
 				<h2>Settings</h2>
 				<div className="flex_row_spacebetween">
-					<a onClick={() => props.toggleModal(createUsernameAlert())}>change username</a>
-					<a onClick={() => props.toggleModal(createAvatarAlert())}>change avatar</a>
+					<a onClick={() => modalProps.toggleModal(createUsernameAlert())}>
+						change username
+					</a>
+					<a onClick={() => modalProps.toggleModal(createAvatarAlert())}>change avatar</a>
 				</div>
 			</div>
 		</>
