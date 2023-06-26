@@ -13,7 +13,7 @@ endif
 $(NAME): all
 
 all:
-	$(DK_CMP) up -d
+	$(DK_CMP) up -d --build
 
 build:
 	$(DK_CMP) build --no-cache
@@ -23,5 +23,6 @@ clean:
 
 fclean: clean
 	docker system prune -af --volumes ; \
-	docker compose down --rmi all --volumes
+	$(DK_CMP) down --rmi all --volumes
+
 re: fclean all
