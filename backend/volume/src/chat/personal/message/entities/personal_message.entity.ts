@@ -3,6 +3,7 @@ import {
 	Entity,
 	ManyToOne,
 	PrimaryGeneratedColumn,
+	CreateDateColumn,
 } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/entities/user.entity';
@@ -18,6 +19,10 @@ export class PersonalMessage {
 	@Column()
 	@Field()
 	content: string;
+
+	@CreateDateColumn()
+	@Field()
+	dateSent: Date;
 
 	@ManyToOne(() => PersonalChat, (channel) => channel.messages)
 	@Field(() => PersonalChat)
