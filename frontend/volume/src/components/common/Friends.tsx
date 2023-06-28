@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import * as i from "../../types/Interfaces";
 import UserStats from "./UserStats";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
+import { useFriendsData } from "src/utils/useFriendsData";
 
 const ACCEPT_FRIEND = gql`
 	mutation AcceptFriend($friendId: String!) {
@@ -17,18 +18,6 @@ const DENY_FRIEND = gql`
 	mutation DenyFriend($friendId: String!) {
 		denyFriend(friend_id: $friendId) {
 			id
-		}
-	}
-`;
-
-const GET_FRIENDS = gql`
-	query {
-		getFriends {
-			username
-			id
-			avatar {
-				file
-			}
 		}
 	}
 `;
@@ -54,12 +43,6 @@ const GET_OUTGOING_FRIEND_REQUEST = gql`
 				file
 			}
 		}
-	}
-`;
-
-const REMOVE_FRIEND = gql`
-	mutation RemoveFriend($friendId: String!) {
-		removeFriend(friend_id: $friendId)
 	}
 `;
 
@@ -91,43 +74,32 @@ const OUT_FRIEND_REQUEST_CHANGED = gql`
 	}
 `;
 
-const FRIENDS_CHANGED = gql`
-	subscription FriendsChanged($userId: String!) {
-		friendsChanged(user_id: $userId) {
-			username
-			id
-			avatar {
-				file
-			}
-		}
-	}
-`;
-
-function Friends(modalProps: i.ModalProps) {
-	const { data, loading, error, subscribeToMore } = useQuery(GET_FRIENDS);
-
-	useEffect(() => {
-		return subscribeToMore({
-			document: FRIENDS_CHANGED,
-			variables: { userId: modalProps.userId },
-			updateQuery: (prev, { subscriptionData }) => {
-				if (!subscriptionData.data) return prev;
-				const newFriends = subscriptionData.data.friendsChanged;
-				return Object.assign({}, prev, {
-					getFriends: newFriends,
-				});
-			},
-		});
-	}, []);
+function Friends(modalProps: i.ModalProps & { selectedUser: any }) {
+	const { friends, loading, error } = useFriendsData(modalProps.selectedUser.id);
 
 	if (loading) return <div>Loading friends</div>;
 	if (error) return <div>Error friends</div>;
-	// data.getFriends.sort((a: any, b: any) => a.username < b.username);
+
+	function renderFriendRequests() {
+		if (modalProps.selectedUser.id === modalProps.userId)
+			return (
+				<div>
+					<h3>Incoming friend requests</h3>
+					<IncomingFriendRequests {...modalProps} />
+
+					<h3>Outgoing friend requests</h3>
+					<OutgoingFriendRequests {...modalProps} />
+				</div>
+			);
+		return null;
+	}
+
+	if (!friends) return <div>No friends</div>;
 	return (
 		<div className="stat_block">
 			<h2>Friends</h2>
 			<div className="friend_list">
-				{data.getFriends.map(function (friend: any) {
+				{friends.map(function (friend: any) {
 					return (
 						<div className="flex_col" key={friend.username}>
 							<img
@@ -135,7 +107,7 @@ function Friends(modalProps: i.ModalProps) {
 								className="friend_list--avatar"
 								onClick={() => {
 									modalProps.toggleModal(
-										<UserStats user={friend} modalProps={modalProps} />
+										<UserStats {...modalProps} selectedUser={friend} />
 									);
 								}}
 							/>
@@ -145,13 +117,7 @@ function Friends(modalProps: i.ModalProps) {
 					);
 				})}
 			</div>
-			<div>
-				<h3>Incoming friend requests</h3>
-				<IncomingFriendRequests {...modalProps} />
-
-				<h3>Outgoing friend requests</h3>
-				<OutgoingFriendRequests {...modalProps} />
-			</div>
+			{renderFriendRequests()}
 		</div>
 	);
 }
@@ -211,8 +177,8 @@ function IncomingFriendRequests(modalProps: i.ModalProps) {
 								onClick={() => {
 									modalProps.toggleModal(
 										<UserStats
-											user={incoming_friend_req}
-											modalProps={modalProps}
+											{...modalProps}
+											selectedUser={incoming_friend_req}
 										/>
 									);
 								}}
@@ -274,25 +240,6 @@ function FriendDeny({ friend_id }: { friend_id: string }) {
 	);
 }
 
-function FriendRemove({ friend_id }: { friend_id: string }) {
-	const [remove_friend, { data, loading, error }] = useMutation(REMOVE_FRIEND);
-
-	if (loading) return <>Loading removal</>;
-	if (error) return <>Remove error</>;
-	return (
-		<div>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					remove_friend({ variables: { friendId: friend_id } });
-				}}
-			>
-				<button type="submit">Remove friend</button>
-			</form>
-		</div>
-	);
-}
-
 function OutgoingFriendRequests(modalProps: i.ModalProps) {
 	const {
 		data: outgoing_friend_data,
@@ -334,8 +281,8 @@ function OutgoingFriendRequests(modalProps: i.ModalProps) {
 
 export default Friends;
 
-const INVITE_FRIEND = gql`
-	mutation InviteFriend($friendId: String!) {
-		inviteFriend(friend_id: $friendId)
-	}
-`;
+// const INVITE_FRIEND = gql`
+// 	mutation InviteFriend($friendId: String!) {
+// 		inviteFriend(friend_id: $friendId)
+// 	}
+// `;

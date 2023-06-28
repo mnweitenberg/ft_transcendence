@@ -88,7 +88,7 @@ export default function Queue(props: i.ModalProps) {
 						<div
 							className="player player--one"
 							onClick={() =>
-								props.toggleModal(<UserStats user={game.p1} propsModal={props} />)
+								props.toggleModal(<UserStats {...props} selectedUser={game.p1} />)
 							}
 						>
 							<h3 className="name">{game.p1.username}</h3>
@@ -98,7 +98,7 @@ export default function Queue(props: i.ModalProps) {
 						<div
 							className="player player--two"
 							onClick={() =>
-								props.toggleModal(<UserStats user={game.p2} propsModal={props} />)
+								props.toggleModal(<UserStats {...props} selectedUser={game.p2} />)
 							}
 						>
 							<img className="avatar" src={game.p2.avatar} />

@@ -64,7 +64,7 @@ function Leaderboard(propsModal: i.ModalProps): JSX.Element {
 							key={ranking.user.username}
 							onClick={() => {
 								propsModal.toggleModal(
-									<UserStats user={ranking.user} propsModal={propsModal} />
+									<UserStats {...propsModal} selectedUser={ranking.user} />
 								);
 							}}
 						>

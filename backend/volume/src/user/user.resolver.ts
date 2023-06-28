@@ -93,10 +93,9 @@ export class UserResolver {
 		return this.userService.getPersonalChats(user);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Query (() => [User])
-	async getFriends(@AuthUser() userInfo: UserInfo) {
-		return this.userService.getFriends(userInfo.userUid);
+	async getFriends(@Args('user_id') user_id: string) {
+		return this.userService.getFriends(user_id);
 	}
 	
 	@UseGuards(JwtAuthGuard)

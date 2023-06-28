@@ -22,7 +22,7 @@ export default function Profile(modalProps: i.ModalProps) {
 			</div>
 
 			<div className="friends">
-				<Friends {...modalProps} />
+				<Friends {...modalProps} selectedUser={user} />
 			</div>
 
 			<div className="profile_section settings">

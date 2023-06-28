@@ -86,7 +86,7 @@ function Ranking(modalProps: i.ModalProps) {
 							key={ranking.user.username}
 							onClick={() => {
 								modalProps.toggleModal(
-									<UserStats user={ranking.user} modalProps={modalProps} />
+									<UserStats {...modalProps} selectedUser={ranking.user} />
 								);
 							}}
 						>
