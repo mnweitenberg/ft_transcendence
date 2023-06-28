@@ -17,11 +17,6 @@ export interface IntraToken {
 	created_at: number;
 }
 
-export interface UserInfo {
-	intraId: string;
-	userUid: string;
-}
-
 async function postTemporaryCode(intraCode: string): Promise<string> {
 	try {
 		const response: any = await axios.post(
@@ -64,7 +59,7 @@ export class AuthService {
 		return responseJSON;
 	}
 
-	async linkTokenToUser(intraToken: IntraToken): Promise<UserInfo> {
+	async linkTokenToUser(intraToken: IntraToken): Promise<User> {
 		const axiosConfig = {
 			headers: {
 				Authorization:
@@ -80,16 +75,15 @@ export class AuthService {
 		);
 		if (!user) {
 			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.small, axiosConfig);
-			console.log(response.data.image.versions.micro);
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,
 			});
 			intraAvatar.parentUserUid = user.id;
 			user.avatar = await this.userAvatarService.create(intraAvatar);
-			await this.userService.save(user);
+			user = await this.userService.save(user);
 		}
-		return { userUid: user.id, intraId: user.intraId };
+		return user;
 	}
 
 	async getJwtCookie(userInfo: UserInfo): Promise<string> {
