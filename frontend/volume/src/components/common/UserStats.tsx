@@ -34,7 +34,7 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 				>
 					challenge
 				</a>
-				{renderFriendRequestOfDefriend(friends, modalProps)}
+				{renderRequestOrDefriend(friends, modalProps)}
 				{renderBlockOrUnblock(friends, modalProps)}
 			</div>
 		);
@@ -62,7 +62,7 @@ const REMOVE_FRIEND = gql`
 	}
 `;
 
-function renderFriendRequestOfDefriend(friends: any, modalProps: any) {
+function renderRequestOrDefriend(friends: any, modalProps: any) {
 	const [remove_friend, { data, loading, error }] = useMutation(REMOVE_FRIEND);
 
 	if (loading) return <>Loading removal</>;
@@ -72,17 +72,9 @@ function renderFriendRequestOfDefriend(friends: any, modalProps: any) {
 		return (
 			<a
 				className="link"
-				onClick={
-					() => {
-						remove_friend({ variables: { friendId: modalProps.selectedUser.id } });
-					}
-					// modalProps.toggleModal(
-					// 	<FriendRequestAlert
-					// 		user={modalProps.selectedUser}
-					// 		modalProps={modalProps}
-					// 	/>
-					// )
-				}
+				onClick={() => {
+					remove_friend({ variables: { friendId: modalProps.selectedUser.id } });
+				}}
 			>
 				defriend {modalProps.selectedUser.username}
 			</a>
