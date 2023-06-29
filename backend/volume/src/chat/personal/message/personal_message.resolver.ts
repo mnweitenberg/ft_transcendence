@@ -13,14 +13,14 @@ import { pubSub } from 'src/app.module';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 
-@Resolver((of) => PersonalMessage)
+@Resolver(() => PersonalMessage)
 export class PersonalMessageResolver {
 	constructor(private readonly message_service: PersonalMessageService) {}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation((returns) => PersonalMessage, { nullable: true })
+	@Mutation(() => PersonalMessage, { nullable: true })
 	async createPersonalMessage(
 		@Args() message_input: CreatePersonalMessageInput,
 		@AuthUser() user_info: UserInfo,
@@ -32,7 +32,7 @@ export class PersonalMessageResolver {
 		return message;
 	}
 
-	@Subscription((returns) => PersonalMessage, {
+	@Subscription(() => PersonalMessage, {
 		filter: async (payload, variables) => {
 			console.log({
 				payload: {

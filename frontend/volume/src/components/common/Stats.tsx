@@ -1,6 +1,5 @@
 import "../../styles/style.css";
-import * as i from "../../types/Interfaces";
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
 
 const GET_STATS = gql`
@@ -30,11 +29,8 @@ function Stats({ userId }: { userId: string }) {
 	}, [data]);
 
 	if (loading) return <div> Loading </div>;
-	if (error) {
-		console.log(error);
-		return <div> Error </div>;
-	}
-	if (!stats) return <div> No stats </div>;
+	if (!stats) return <div> No stats available </div>;
+	if (error) return <div> Error </div>;
 	return (
 		<div className="stat_block">
 			<h2>Stats</h2>

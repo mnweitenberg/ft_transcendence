@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { MatchRepository } from './match/match.repository';
 import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
-import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 import { RankingService } from './ranking/ranking.service';
 
 @Injectable()

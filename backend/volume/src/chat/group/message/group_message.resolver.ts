@@ -13,15 +13,14 @@ import { pubSub } from 'src/app.module';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
-import { User } from 'src/user/entities/user.entity';
+import { UserInfo } from 'src/auth/user-info.interface';
 
-@Resolver((of) => GroupMessage)
+@Resolver(() => GroupMessage)
 export class GroupMessageResolver {
 	constructor(private readonly group_message_service: GroupMessageService) {}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation((returns) => GroupMessage, { nullable: true })
+	@Mutation(() => GroupMessage, { nullable: true })
 	async createGroupMessage(
 		@Args() message_input: CreateGroupMessageInput,
 		@AuthUser() user_info: UserInfo,
@@ -31,7 +30,7 @@ export class GroupMessageResolver {
 		return message;
 	}
 
-	@Subscription((returns) => GroupMessage, {
+	@Subscription(() => GroupMessage, {
 		filter: async (payload, variables) => {
 			console.log({
 				payload: {

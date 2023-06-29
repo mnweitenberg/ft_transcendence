@@ -119,17 +119,13 @@ export default function PersonalChat({
 				<div className="groupchat_info">
 					<a
 						className="link"
-						onClick={() =>
-							props.toggleModal(props.selectedUser, <GroupStats {...props} />)
-						}
+						onClick={() => props.toggleModal(<GroupStats {...props} />)}
 					>
 						group stats
 					</a>
 					<a
 						className="link"
-						onClick={() =>
-							props.toggleModal(props.selectedUser, createLeaveGroupChatAlert(props))
-						}
+						onClick={() => props.toggleModal(createLeaveGroupChatAlert(props))}
 					>
 						leave group
 					</a>

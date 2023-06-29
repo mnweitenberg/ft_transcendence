@@ -30,13 +30,11 @@ export default function Chat(props: i.ModalProps) {
 		);
 
 	if (chatState === ChatState.personalMessage)
-		// return <PersonalMessage props={props} renderOverview={renderOverview} />;
 		return (
 			<PersonalChat props={props} channel_id={channel_id} renderOverview={renderOverview} />
 		);
 
 	if (chatState === ChatState.groupMessage)
-		// return <GroupMessage props={props} renderOverview={renderOverview} />;
 		return <GroupChat props={props} channel_id={channel_id} renderOverview={renderOverview} />;
 
 	return <>No state defined</>;
