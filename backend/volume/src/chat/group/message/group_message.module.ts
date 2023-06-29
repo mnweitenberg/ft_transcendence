@@ -14,6 +14,11 @@ import { UserService } from 'src/user/user.service';
 		TypeOrmModule.forFeature([User]),
 		TypeOrmModule.forFeature([GroupChat]),
 	],
-	providers: [GroupMessageService, GroupMessageResolver, GroupChatService, UserService],
+	providers: [
+		GroupMessageService,
+		GroupMessageResolver,
+		GroupChatService,
+		UserService,
+	],
 })
 export class GroupMessageModule {}

@@ -23,7 +23,9 @@ export class GroupChatService {
 		return this.channelRepository.findOne({ where: { id: id } });
 	}
 
-	async create(createChannelInput: CreateGroupChannelInput): Promise<GroupChat> {
+	async create(
+		createChannelInput: CreateGroupChannelInput,
+	): Promise<GroupChat> {
 		const members = await Promise.all(
 			createChannelInput.member_ids.map((id) =>
 				this.userService.getUserById(id),
@@ -40,14 +42,14 @@ export class GroupChatService {
 	async join(userId: string, channelId: string): Promise<GroupChat> {
 		const channel = await this.getChannelById(channelId);
 		const user = await this.userService.getUserById(userId);
-	
-		if (!channel) throw new Error(`Channel with id ${channelId} does not exist`);
+
+		if (!channel)
+			throw new Error(`Channel with id ${channelId} does not exist`);
 		channel.members = await this.getMembers(channel);
 		channel.members.push(user);
 		return await this.channelRepository.save(channel);
-	  }
-	
-	
+	}
+
 	async getMembers(channel: GroupChat): Promise<Array<User>> {
 		const channel_with_members = await this.channelRepository.findOne({
 			relations: { members: true },

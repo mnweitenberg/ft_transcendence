@@ -70,8 +70,8 @@ const GET_ALL_PUBLIC_CHANNELS = gql`
 `;
 
 const JOIN_GROUP_CHAT = gql`
-	mutation JoinGroupChat($userId: String!, $channelId: String!) {
-		joinGroupChat(userId: $userId, channelId: $channelId) {
+	mutation JoinGroupChat($channelId: String!) {
+		joinGroupChat(channelId: $channelId) {
 			id
 			name
 			logo
@@ -97,10 +97,10 @@ function PublicChannel({
 	const [joinGroupChat, { loading: joinLoading, error: joinError }] =
 		useMutation(JOIN_GROUP_CHAT);
 
-	async function Join(channelId: string, channelName: string, userId: string) {
+	async function Join(channelId: string) {
 		try {
 			await joinGroupChat({
-				variables: { userId: userId, channelId: channelId },
+				variables: { channelId: channelId },
 			});
 			refetchChannels();
 			setShowModal(false);
@@ -121,9 +121,7 @@ function PublicChannel({
 				return (
 					<div key={chat.id} className="selectUser">
 						<img className="avatar" src={chat.logo} />
-						<button onClick={() => Join(chat.id, chat.name, userId)}>
-							Join {chat.name}
-						</button>
+						<button onClick={() => Join(chat.id)}>Join {chat.name}</button>
 					</div>
 				);
 			})}

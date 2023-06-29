@@ -17,13 +17,13 @@ export class GroupChat {
 	@Field()
 	id: string;
 
-	@ManyToMany((type) => User, (user) => user.group_chats)
+	@ManyToMany(() => User, (user) => user.group_chats)
 	@JoinTable()
-	@Field((type) => [User], { nullable: true })
+	@Field(() => [User], { nullable: true })
 	members: User[];
 
 	@OneToMany(() => GroupMessage, (message) => message.channel)
-	@Field((type) => [GroupMessage], { nullable: true })
+	@Field(() => [GroupMessage], { nullable: true })
 	messages: GroupMessage[];
 
 	@Column()
@@ -38,6 +38,6 @@ export class GroupChat {
 	})
 	logo: string;
 
-	@Field(() => GroupMessage, {nullable: true})
+	@Field(() => GroupMessage, { nullable: true })
 	lastMessage: GroupMessage;
 }
