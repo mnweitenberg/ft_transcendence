@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
 import { authenticator } from 'otplib';
+import { UserInfo } from 'src/auth/user-info.interface';
 
 const axios = require('axios').default;
 
@@ -26,7 +27,7 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 				client_id: process.env.CLIENT_UID,
 				client_secret: process.env.CLIENT_SECRET,
 				code: JSON.parse(intraCode).code,
-				redirect_uri: `https://${process.env["DOMAIN"]}/api/callback`,
+				redirect_uri: `https://${process.env['DOMAIN']}/api/callback`,
 			},
 		);
 		return JSON.stringify(response.data);
@@ -35,12 +36,18 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 	}
 }
 
-async function downloadIntraAvatar(url: string, axiosConfig: any): Promise<UploadAvatarInput> {
-	const file = await axios.get(url, {
-			responseType: 'arraybuffer'
+async function downloadIntraAvatar(
+	url: string,
+	axiosConfig: any,
+): Promise<UploadAvatarInput> {
+	const file = await axios
+		.get(url, {
+			responseType: 'arraybuffer',
 		})
-		.then(response => Buffer.from(response.data, 'binary').toString('base64'));
-	return { parentUserUid: "", file: file, filename: "intraPic" };
+		.then((response) =>
+			Buffer.from(response.data, 'binary').toString('base64'),
+		);
+	return { parentUserUid: '', file: file, filename: 'intraPic' };
 }
 
 @Injectable()
@@ -74,7 +81,10 @@ export class AuthService {
 			response.data.id,
 		);
 		if (!user) {
-			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.small, axiosConfig);
+			const intraAvatar = await downloadIntraAvatar(
+				response.data.image.versions.small,
+				axiosConfig,
+			);
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,

@@ -74,23 +74,6 @@ export class UserService {
 		return userMatchHistory.match_history;
 	}
 
-	// async getMatchHistory(user: User): Promise<Array<Match>> {
-	// 	const userMatchHistory = await this.userRepository.find({
-	// 		join: {
-	// 			alias: 'user',
-	// 			leftJoinAndSelect: {
-	// 				match_history: 'user.match_history',
-	// 				players: 'match_history.players',
-	// 			},
-	// 		},
-	// 		where: { id: user.id },
-	// 	});
-
-	// 	if (userMatchHistory.length > 0)
-	// 		return userMatchHistory[0].match_history;
-	// 	return [];
-// }
-
 	async save(user: User): Promise<User> {
 		return await this.userRepository.save(user);
 	}

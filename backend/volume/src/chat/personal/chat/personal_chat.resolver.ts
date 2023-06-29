@@ -10,8 +10,6 @@ import {
 import { PersonalChat } from './entities/personal_chat.entity';
 import { CreatePersonalChatInput } from './dto/create_personal_chat.input';
 import { PersonalChatService } from './personal_chat.service';
-import { PersonalMessage } from '../message/entities/personal_message.entity';
-import { pubSub } from 'src/app.module';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { User } from 'src/user/entities/user.entity';
 
@@ -45,18 +43,17 @@ export class PersonalChatResolver {
 	}
 
 	@ResolveField()
-	async lastMessage(@Parent() channel: PersonalChat) { // NOTE: maybe there is a better way to do this
-		const messages = channel.messages ?? await this.messages(channel);
-		if (messages.length > 0)
-			return messages[messages.length - 1];
+	async lastMessage(@Parent() channel: PersonalChat) {
+		// NOTE: maybe there is a better way to do this
+		const messages = channel.messages ?? (await this.messages(channel));
+		if (messages.length > 0) return messages[messages.length - 1];
 		return null;
 	}
 
 	@ResolveField()
 	async logo(@Parent() channel: PersonalChat, @AuthUser() user: User) {
-		const members = channel.members ?? await this.members(channel);
-		if (members[0].id === user.id)
-			return members[1].avatar;
+		const members = channel.members ?? (await this.members(channel));
+		if (members[0].id === user.id) return members[1].avatar;
 		return members[0].avatar;
 	}
 }

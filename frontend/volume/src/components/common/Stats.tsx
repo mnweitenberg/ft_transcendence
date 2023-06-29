@@ -1,6 +1,5 @@
 import "../../styles/style.css";
-import * as i from "../../types/Interfaces";
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
 
 const GET_STATS = gql`
