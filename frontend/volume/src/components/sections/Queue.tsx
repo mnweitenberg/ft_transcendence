@@ -92,7 +92,9 @@ export default function Queue(props: i.ModalProps) {
 							}
 						>
 							<h3 className="name">{game.p1.username}</h3>
-							<img className="avatar" src={game.p1.avatar} />
+							<div className="avatar_container">
+								<img src={game.p1.avatar} />
+							</div>
 						</div>
 
 						<div
@@ -101,7 +103,9 @@ export default function Queue(props: i.ModalProps) {
 								props.toggleModal(<UserStats {...props} selectedUser={game.p2} />)
 							}
 						>
-							<img className="avatar" src={game.p2.avatar} />
+							<div className="avatar_container">
+								<img src={game.p2.avatar} />
+							</div>
 							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>

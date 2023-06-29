@@ -42,7 +42,7 @@ interface Stats {
 export interface User {
 	id: string;
 	username: string;
-	avatar?: string;
+	avatar: string;
 	stats: Stats;
 	// chat?: Array<Chat>;
 	friends?: Array<User>;
@@ -96,8 +96,6 @@ export interface ModalProps {
 	username: string;
 	avatarfile: string;
 	toggleModal: (content: JSX.Element) => void;
-	// selectedUser: any;
-	// setSelectedUser: (user: any) => void;
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
 	modalContent: JSX.Element | null;

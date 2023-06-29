@@ -157,7 +157,9 @@ function PersonalChat() {
 			{data.allUsersQuery.map(function (user: any) {
 				return (
 					<div key={user.username} className="selectUser">
-						{/* <img className="avatar" src={convertEncodedImage(user?.avatar.file)} /> */}
+						<div className="avatar_container">
+							<img src={convertEncodedImage(user?.avatar.file)} />
+						</div>
 						<button onClick={() => CreateNewPersonalChannel(user)}>
 							Send message to {user.username}
 						</button>

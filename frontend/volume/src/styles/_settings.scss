@@ -10,7 +10,6 @@ div.background {
 }
 
 .white_block {
-	// Center div
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -26,72 +25,41 @@ div.background {
 }
 
 .settings_content {
-	margin: 4em 6em;
+	margin: 3em 8em;
 
-	.user_profile_settings {
-		background-color: white !important;
+	.wrapper {
+		margin-top: 2em;
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		gap: 5em;
 	}
 
 	.avatar_container {
-		width: 10em;
-		height: 10em;
-		overflow: hidden;
-		position: relative;
-		border-radius: 100%;
-		margin-top: 2em 0;
-	}
-
-	.avatar_container::before {
-		content: "";
-		display: block;
-		padding-top: 100%;
-	}
-
-	.avatar_container img {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		min-width: 100%;
-		min-height: 100%;
-		max-width: none;
-		max-height: none;
+		width: 15em;
+		height: 15em;
 	}
 
 	.profile_form {
-		width: 20em;
+		width: 25em;
 	}
 
 	input {
 		margin-top: 1em;
+		margin-bottom: 3em;
 	}
 
 	input[type="file"] {
 		display: none;
 	}
 
-	label {
-		margin-top: 3em;
-	}
-
 	.choose_file {
-
-		// width: 100%;
-		// display: inline-block;
-		// width: 100%;
-		// margin-top: 2em;
-		// padding: 1em 1.5em;
-		// box-sizing: border-box;
-		// border-radius: 10px;
-		// border: none;
-		// caret-color: black;
-		// box-shadow: inset rgba(17, 17, 26, 0.50) 0px 0px 2px,
-		// 	inset rgba(17, 17, 26, 0.10) 0px 0px 4px,
-		// 	inset rgba(17, 17, 26, 0.05) 0px 0px 8px;
-		// cursor: pointer;
 		font-weight: 500;
 		color: $color-link;
 		text-decoration: inherit;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 	}
 
 	.choose_file:hover {
@@ -99,4 +67,7 @@ div.background {
 		cursor: pointer;
 	}
 
+	.submit_button {
+		margin-top: 3em;
+	}
 }

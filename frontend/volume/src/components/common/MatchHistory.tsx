@@ -72,10 +72,9 @@ function MatchHistory({ userId }: { userId: string }) {
 					{matches.map((match: any) => (
 						<tr key={match.id}>
 							<td className="td_ava">
-								<img
-									className="match_avatar"
-									src={convertEncodedImage(match.players[0]?.avatar.file)}
-								/>
+								<div className="avatar_container">
+									<img src={convertEncodedImage(match.players[0]?.avatar.file)} />
+								</div>
 							</td>
 
 							<td className="td_name">{match.players[0]?.username}</td>
@@ -91,10 +90,9 @@ function MatchHistory({ userId }: { userId: string }) {
 							<td className="td_name align_right">{match.players[1]?.username}</td>
 
 							<td className="td_ava">
-								<img
-									className="match_avatar"
-									src={convertEncodedImage(match.players[1]?.avatar.file)}
-								/>
+								<div className="avatar_container">
+									<img src={convertEncodedImage(match.players[1]?.avatar.file)} />
+								</div>
 							</td>
 						</tr>
 					))}

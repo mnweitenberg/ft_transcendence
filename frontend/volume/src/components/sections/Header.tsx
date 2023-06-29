@@ -1,5 +1,6 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 function Header(props: i.PongProps) {
 	if (!props.playersAvailable) return <header></header>;
@@ -10,7 +11,9 @@ function Header(props: i.PongProps) {
 	return (
 		<header>
 			<div className="player">
-				<img className="avatar" src={p1.avatar}></img>
+				<div className="avatar_container">
+					{/* <img src={convertEncodedImage(p1.avatar.file)}></img> */}
+				</div>
 				<div className="wrap_name_message">
 					<h3 className="name">{p1.username}</h3>
 				</div>
@@ -25,7 +28,9 @@ function Header(props: i.PongProps) {
 				<div className="wrap_name_message">
 					<h3 className="name">{p2.username}</h3>
 				</div>
-				<img className="avatar" src={p2.avatar} />
+				<div className="avatar_container">
+					<img src={p2.avatar} />
+				</div>
 			</div>
 		</header>
 	);

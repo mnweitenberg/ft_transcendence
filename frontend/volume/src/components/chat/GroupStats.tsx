@@ -5,9 +5,9 @@ function UserStats(props: i.ModalProps & { selectedUser: any }) {
 	return (
 		<div className="userStats">
 			<div className="user">
-				<img className="avatar" src="" />
-				{/* <img className="avatar" src={props.selectedUser.avatar} /> */}
-
+				<div className="avatar_container">
+					<img src={props.selectedUser.avatar} />
+				</div>
 				<div className="user_actions">
 					{/* <h1>{props.selectedUser.name}</h1> */}
 					<h1>"[name of groupchat]"</h1>
@@ -22,16 +22,17 @@ function UserStats(props: i.ModalProps & { selectedUser: any }) {
 				{props.selectedUser.friends &&
 					props.selectedUser.friends.map(function (friend: any) {
 						return (
-							<img
-								className="friend_list--avatar"
-								onClick={() =>
-									props.toggleModal(
-										<UserStats {...props} selectedUser={friend} />
-									)
-								}
-								key={friend.name}
-								src={friend.avatar}
-							/>
+							<div className="friends_avatar_container">
+								<img
+									onClick={() =>
+										props.toggleModal(
+											<UserStats {...props} selectedUser={friend} />
+										)
+									}
+									key={friend.name}
+									src={friend.avatar}
+								/>
+							</div>
 						);
 					})}
 			</div>

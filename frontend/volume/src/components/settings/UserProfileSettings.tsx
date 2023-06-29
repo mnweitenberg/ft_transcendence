@@ -21,7 +21,7 @@ interface PictureForm {
 	data: string;
 }
 
-function UserProfileSettings({ userdata }): JSX.Element {
+function UserProfileSettings({ userdata }: { userdata: any }): JSX.Element {
 	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION);
 	const [picture, setPicture] = useState<PictureForm>({ name: "", data: "" });
 	const [usernameInput, setUsernameInput] = useState("");
@@ -76,43 +76,43 @@ function UserProfileSettings({ userdata }): JSX.Element {
 	return (
 		<div className="user_profile_settings">
 			<header>
-				<h1>Profile Information</h1>
+				<h1>Settings</h1>
 				<h3>
 					<Link to="/home">back to game</Link>
 				</h3>
 			</header>
-			<div>
+			<div className="wrapper">
+				<div className="avatar_container">
+					<img src={convertEncodedImage(userdata.avatar.file)} alt="error no image" />
+				</div>
 				<form className="profile_form" method="post" onSubmit={handleSubmit}>
 					{isEmptyForm && (
 						<p className="empty-form-message">Please fill in at least one field</p>
 					)}
-					<label htmlFor="name">
-						<h3>New username</h3>
-						<input
-							type="text"
-							name="username"
-							placeholder={userdata.username}
-							onChange={handleChange}
-						/>
-					</label>
-					<h3>New username</h3>
-					<div className="avatar_container">
-						<img
-							className="avatar"
-							src={convertEncodedImage(userdata.avatar.file)}
-							alt="error no image"
-						/>
+					<div>
+						<label htmlFor="name">
+							<h3>Change username</h3>
+							<input
+								type="text"
+								name="username"
+								placeholder={userdata.username}
+								onChange={handleChange}
+							/>
+						</label>
+						<div className="flex_row_spacebetween">
+							<h3>Change profile picture: </h3>
+							<label className="choose_file" htmlFor="changeAvatar">
+								<input
+									id="changeAvatar"
+									type="file"
+									name="profilePicture"
+									onChange={handleFileChange}
+								/>
+								<h3>select a new image</h3>
+							</label>
+						</div>
 					</div>
-					Current avatar
-					<label className="choose_file" htmlFor="changeAvatar">
-						<input
-							id="changeAvatar"
-							type="file"
-							name="profilePicture"
-							onChange={handleFileChange}
-						/>
-						Select a new image
-					</label>
+
 					<button className="submit_button" type="submit">
 						Save Profile
 					</button>

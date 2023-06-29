@@ -19,10 +19,9 @@ section#queue {
 		transition: $transition-slow;
 		align-items: center;
 
-		.avatar {
+		.avatar_container {
 			width: 40px;
 			height: 40px;
-			border-radius: 100%;
 		}
 
 		.name {
