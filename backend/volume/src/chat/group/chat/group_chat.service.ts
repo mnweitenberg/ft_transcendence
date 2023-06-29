@@ -6,10 +6,6 @@ import { UserService } from 'src/user/user.service';
 import { CreateGroupChannelInput } from './dto/create_group_chat.input';
 import { User } from 'src/user/entities/user.entity';
 import { GroupMessage } from '../message/entities/group_message.entity';
-import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
 
 @Injectable()
 export class GroupChatService {
@@ -27,7 +23,9 @@ export class GroupChatService {
 		return this.channelRepository.findOne({ where: { id: id } });
 	}
 
-	async create(createChannelInput: CreateGroupChannelInput): Promise<GroupChat> {
+	async create(
+		createChannelInput: CreateGroupChannelInput,
+	): Promise<GroupChat> {
 		const members = await Promise.all(
 			createChannelInput.member_ids.map((id) =>
 				this.userService.getUserById(id),
@@ -41,17 +39,17 @@ export class GroupChatService {
 		return await this.channelRepository.save(channel);
 	}
 
-	@UseGuards(JwtAuthGuard)
-	async join(@AuthUser() userInfo: UserInfo, channelId: string): Promise<GroupChat> {
+	async join(userId: string, channelId: string): Promise<GroupChat> {
 		const channel = await this.getChannelById(channelId);
-		const user = await this.userService.getUserById(userInfo.userUid);
-	
-		if (!channel) throw new Error(`Channel with id ${channelId} does not exist`);
+		const user = await this.userService.getUserById(userId);
+
+		if (!channel)
+			throw new Error(`Channel with id ${channelId} does not exist`);
 		channel.members = await this.getMembers(channel);
 		channel.members.push(user);
 		return await this.channelRepository.save(channel);
-	  }
-	
+	}
+
 	async getMembers(channel: GroupChat): Promise<Array<User>> {
 		const channel_with_members = await this.channelRepository.findOne({
 			relations: { members: true },
