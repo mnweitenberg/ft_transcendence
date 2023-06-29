@@ -2,12 +2,12 @@ import "../../styles/style.css";
 import Stats from "./Stats";
 import Friends from "./Friends";
 import MatchHistory from "./MatchHistory";
-import FriendRequestAlert from "./FriendRequestAlert";
 import * as i from "../../types/Interfaces";
 import { createChallengeAlert, createBlockAlert } from "../../utils/utils";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useFriendsData } from "src/utils/useFriendsData";
 import { gql, useQuery, useMutation } from "@apollo/client";
+import { useOutgoingRequests } from "src/utils/useOutgoingRequests";
 
 export default function UserStats(modalProps: i.ModalProps & { selectedUser: any }) {
 	const { friends, loading, error } = useFriendsData(modalProps.userId);
@@ -34,7 +34,7 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 				>
 					challenge
 				</a>
-				{renderRequestOrDefriend(friends, modalProps)}
+				{renderFriendRequestActions(friends, modalProps)}
 				{renderBlockOrUnblock(friends, modalProps)}
 			</div>
 		);
@@ -56,17 +56,32 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 	);
 }
 
+const INVITE_FRIEND = gql`
+	mutation InviteFriend($friendId: String!) {
+		inviteFriend(friend_id: $friendId)
+	}
+`;
+
 const REMOVE_FRIEND = gql`
 	mutation RemoveFriend($friendId: String!) {
 		removeFriend(friend_id: $friendId)
 	}
 `;
 
-function renderRequestOrDefriend(friends: any, modalProps: any) {
-	const [remove_friend, { data, loading, error }] = useMutation(REMOVE_FRIEND);
+function renderFriendRequestActions(friends: any, modalProps: any) {
+	const [remove_friend, { loading: loadingRemove, error: errorRemove }] =
+		useMutation(REMOVE_FRIEND);
+	const [invite_friend, { loading: loadingRequest, error: errorRequest }] =
+		useMutation(INVITE_FRIEND);
+	const { outgoingRequests, loading, error } = useOutgoingRequests(modalProps.userId);
 
-	if (loading) return <>Loading removal</>;
-	if (error) return <>Remove error</>;
+	if (loading) return <>Loading</>;
+	if (loadingRemove) return <>Loading</>;
+	if (loadingRequest) return <>Loading</>;
+
+	if (error) return <>error</>;
+	if (errorRemove) return <>error</>;
+	if (errorRequest) return <>error</>;
 
 	if (friends.find((friend: any) => friend.id === modalProps.selectedUser.id))
 		return (
@@ -79,14 +94,14 @@ function renderRequestOrDefriend(friends: any, modalProps: any) {
 				defriend {modalProps.selectedUser.username}
 			</a>
 		);
+	if (outgoingRequests.find((request: any) => request.id === modalProps.selectedUser.id))
+		return <>friend request has been sent</>;
 	return (
 		<a
 			className="link"
-			onClick={() =>
-				modalProps.toggleModal(
-					<FriendRequestAlert user={modalProps.selectedUser} modalProps={modalProps} />
-				)
-			}
+			onClick={() => {
+				invite_friend({ variables: { friendId: modalProps.selectedUser.id } });
+			}}
 		>
 			send friend request
 		</a>
