@@ -9,7 +9,6 @@ export default function Profile(props: i.ModalProps) {
 	//	const userId = queryCurrentUser().id;
 	const user = queryCurrentUser();
 	if (user === "loading" || user === "error") {
-		console.log(user);
 		return user;
 	}
 	const userId = user.id;
