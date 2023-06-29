@@ -1,7 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
-import Layout from "src/components/common/Layout";
 import UserProfileSettings from "./settings/UserProfileSettings";
+import "src/styles/style.css";
+import { Link } from "react-router-dom";
 
 const USER_QUERY = gql`
 	query currentUserQuery {
@@ -25,9 +26,14 @@ function Settings(): JSX.Element {
 	if (loading) return <>loading</>;
 
 	return (
-		<Layout>
-			<UserProfileSettings userdata={data.currentUserQuery} />
-		</Layout>
+		<div className="background">
+			<div className="content_block">
+				<h1>
+					<Link to="/home">&lt; Home</Link>
+				</h1>
+				<UserProfileSettings userdata={data.currentUserQuery} />
+			</div>
+		</div>
 	);
 }
 export default Settings;

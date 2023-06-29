@@ -13,7 +13,7 @@ function ProtectedRoute({ children }: { children: any }): JSX.Element {
 
 	if (loading) return <Loading />;
 
-	if (!loading && !data.loginQuery) {
+	if (!data.loginQuery) {
 		return <Navigate to="/login" replace />;
 	}
 	return children;

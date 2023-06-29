@@ -73,12 +73,12 @@ function UserProfileSettings({ userdata }): JSX.Element {
 		fileReader.readAsBinaryString(file);
 	};
 	return (
-		<div className="UserProfileSettings">
+		<div className="user_profile_settings">
 			<header>
 				<h1>Profile Information</h1>
 			</header>
 			<div>
-				<form method="post" onSubmit={handleSubmit}>
+				<form className="profile_form" method="post" onSubmit={handleSubmit}>
 					{isEmptyForm && (
 						<p className="empty-form-message">Please fill in at least one field</p>
 					)}
@@ -96,7 +96,9 @@ function UserProfileSettings({ userdata }): JSX.Element {
 						Profile Picture
 						<input type="file" name="profilePicture" onChange={handleFileChange} />
 					</label>
-					<button type="submit">Confirm Profile</button>
+					<button className="submit_button" type="submit">
+						Save Profile
+					</button>
 				</form>
 			</div>
 			<header>

@@ -33,6 +33,12 @@ export class User {
 	@Field() 
 	username: string;
 
+	@Column({ nullable: true })
+	twoFASecret: string;
+
+	@Column('boolean', { default: false })
+	twoFAEnabled: boolean = false;
+
 	@OneToOne(
 		() => Avatar, {onDelete: "SET NULL", orphanedRowAction: "delete"}
 	)
