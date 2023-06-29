@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
+import { Link } from "react-router-dom";
 import "src/styles/style.css";
 
 const FORM_MUTATION = gql`
@@ -76,6 +77,9 @@ function UserProfileSettings({ userdata }): JSX.Element {
 		<div className="user_profile_settings">
 			<header>
 				<h1>Profile Information</h1>
+				<h3>
+					<Link to="/home">back to game</Link>
+				</h3>
 			</header>
 			<div>
 				<form className="profile_form" method="post" onSubmit={handleSubmit}>
@@ -83,18 +87,31 @@ function UserProfileSettings({ userdata }): JSX.Element {
 						<p className="empty-form-message">Please fill in at least one field</p>
 					)}
 					<label htmlFor="name">
-						Username
-						<input type="text" name="username" onChange={handleChange} />
+						<h3>New username</h3>
+						<input
+							type="text"
+							name="username"
+							placeholder={userdata.username}
+							onChange={handleChange}
+						/>
 					</label>
-					<img
-						className="avatar"
-						src={convertEncodedImage(userdata.avatar.file)}
-						alt="error no image"
-					/>{" "}
-					<br />
-					<label htmlFor="Profile Picture">
-						Profile Picture
-						<input type="file" name="profilePicture" onChange={handleFileChange} />
+					<h3>New username</h3>
+					<div className="avatar_container">
+						<img
+							className="avatar"
+							src={convertEncodedImage(userdata.avatar.file)}
+							alt="error no image"
+						/>
+					</div>
+					Current avatar
+					<label className="choose_file" htmlFor="changeAvatar">
+						<input
+							id="changeAvatar"
+							type="file"
+							name="profilePicture"
+							onChange={handleFileChange}
+						/>
+						Select a new image
 					</label>
 					<button className="submit_button" type="submit">
 						Save Profile

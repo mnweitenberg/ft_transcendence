@@ -227,12 +227,11 @@ body {
 
 #right_top {
   grid-area: right_top;
-}
-
-#logout {
-  position: absolute;
-  top: 1em;
-  right: 2em;
+  display: flex;
+  justify-content: flex-end;
+  gap: 3em;
+  margin-top: 1em;
+  margin-right: 2em;
 }
 
 #auth {
@@ -836,7 +835,7 @@ div.background {
   animation: AnimateBG 10s ease infinite;
 }
 
-.content_block {
+.white_block {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -844,22 +843,61 @@ div.background {
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   margin: auto;
-  width: 90%;
+  width: 60%;
   height: 90%;
-  font: Ariel !important;
   background-color: white;
   border-radius: 1em;
-  padding: 1em;
 }
-.content_block .user_profile_settings {
+
+.settings_content {
+  margin: 4em 6em;
+}
+.settings_content .user_profile_settings {
   background-color: white !important;
 }
-.content_block .avatar {
+.settings_content .avatar_container {
   width: 10em;
   height: 10em;
+  overflow: hidden;
+  position: relative;
+  border-radius: 100%;
+  margin-top: 2em 0;
 }
-.content_block .profile_form {
+.settings_content .avatar_container::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+.settings_content .avatar_container img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  max-width: none;
+  max-height: none;
+}
+.settings_content .profile_form {
   width: 20em;
+}
+.settings_content input {
+  margin-top: 1em;
+}
+.settings_content input[type=file] {
+  display: none;
+}
+.settings_content label {
+  margin-top: 3em;
+}
+.settings_content .choose_file {
+  font-weight: 500;
+  color: #309a9f;
+  text-decoration: inherit;
+}
+.settings_content .choose_file:hover {
+  color: #0fa2a9;
+  cursor: pointer;
 }
 
 img.profile-settings {

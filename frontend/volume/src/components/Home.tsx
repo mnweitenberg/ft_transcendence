@@ -32,6 +32,7 @@ function Home(): JSX.Element {
 			<Header {...pongProps} />
 
 			<div id="right_top">
+				<Link to="/settings">settings</Link>
 				<a
 					id="logout"
 					onClick={() => {
@@ -54,9 +55,7 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">
-					<Link to="/settings">{username}</Link>
-				</h1>
+				<h1 className="section_header chat_profile_header">{username}</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>
