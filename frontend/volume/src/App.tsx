@@ -6,6 +6,7 @@ import Auth from "src/components/login/Auth";
 import Home from "src/components/Home";
 import Settings from "./components/Settings";
 import { AuthProvider } from "./utils/authLogic";
+import TwoFactor from "./components/login/TwoFactor";
 
 function App() {
 	return (
@@ -14,6 +15,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Welcome />} />
 					<Route path="/login" element={<Auth />} />
+					<Route path="/2fa" element={<TwoFactor />} />
 					<Route
 						path="/home"
 						element={
