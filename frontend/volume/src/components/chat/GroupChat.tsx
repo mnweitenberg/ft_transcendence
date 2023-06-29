@@ -40,7 +40,6 @@ const SUBSCRIBE_MESSAGES = gql`
 
 const SEND_MESSAGE = gql`
 	mutation sendMessage($channel_id: String!, $content: String!) {
-		# TODO: do something better than author_id
 		createGroupMessage(channel_id: $channel_id, content: $content) {
 			id
 		}

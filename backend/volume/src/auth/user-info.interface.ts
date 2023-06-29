@@ -1,6 +1,6 @@
 export enum TokenType {
-	FULL = "FULL",
-	PARTIAL = "PARTIAL",
+	FULL = 'FULL',
+	PARTIAL = 'PARTIAL',
 }
 
 export interface UserInfo {

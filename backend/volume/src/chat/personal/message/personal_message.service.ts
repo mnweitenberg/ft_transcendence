@@ -19,10 +19,9 @@ export class PersonalMessageService {
 
 	async create(
 		createMessageInput: CreatePersonalMessageInput,
+		author_id: string,
 	): Promise<PersonalMessage> {
-		const author = await this.userService.getUserById(
-			createMessageInput.author_id,
-		);
+		const author = await this.userService.getUserById(author_id);
 		const channel = await this.channelService.getChannelById(
 			createMessageInput.channel_id,
 		);

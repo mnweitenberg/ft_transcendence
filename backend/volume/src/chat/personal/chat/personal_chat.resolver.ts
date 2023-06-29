@@ -5,29 +5,28 @@ import {
 	Query,
 	ResolveField,
 	Resolver,
-	Subscription,
 } from '@nestjs/graphql';
 import { PersonalChat } from './entities/personal_chat.entity';
 import { CreatePersonalChatInput } from './dto/create_personal_chat.input';
 import { PersonalChatService } from './personal_chat.service';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { User } from 'src/user/entities/user.entity';
+import { UserInfo } from 'src/auth/user-info.interface';
 
-@Resolver((of) => PersonalChat)
+@Resolver(() => PersonalChat)
 export class PersonalChatResolver {
 	constructor(private readonly personal_chat_service: PersonalChatService) {}
 
-	@Query((returns) => [PersonalChat])
+	@Query(() => [PersonalChat])
 	async all_personal_chats() {
 		return this.personal_chat_service.getAllChannels();
 	}
 
-	@Query((returns) => PersonalChat) // TODO: add guards, to check if the user is a member of the channel, else disallow (also do this in other places)
+	@Query(() => PersonalChat) // TODO: add guards, to check if the user is a member of the channel, else disallow (also do this in other places)
 	async personal_chat(@Args('id') id: string) {
 		return this.personal_chat_service.getChannelById(id);
 	}
 
-	@Mutation((returns) => PersonalChat, { nullable: true })
+	@Mutation(() => PersonalChat, { nullable: true })
 	async createPersonalChat(@Args() channel_input: CreatePersonalChatInput) {
 		return this.personal_chat_service.create(channel_input);
 	}
@@ -51,9 +50,12 @@ export class PersonalChatResolver {
 	}
 
 	@ResolveField()
-	async logo(@Parent() channel: PersonalChat, @AuthUser() user: User) {
+	async logo(
+		@Parent() channel: PersonalChat,
+		@AuthUser() user_info: UserInfo,
+	) {
 		const members = channel.members ?? (await this.members(channel));
-		if (members[0].id === user.id) return members[1].avatar;
+		if (members[0].id === user_info.userUid) return members[1].avatar;
 		return members[0].avatar;
 	}
 }

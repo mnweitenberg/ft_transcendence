@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Request } from 'express';
 import { Login } from './login.model';
-const axios = require('axios').default;
 
 @Injectable()
 export class LoginService {

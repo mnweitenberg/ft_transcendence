@@ -46,7 +46,6 @@ export class QueueResolver {
 		return this.queueService.fillDbUser();
 	}
 
-
 	@Query(() => Number)
 	addAvatarToUser(@Args('username') username: string) {
 		return this.queueService.addAvatarToUser(username);

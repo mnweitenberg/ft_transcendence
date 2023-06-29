@@ -1,19 +1,18 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LoginService } from './login.service';
 import { Login } from './login.model';
 import { GraphQLContext } from 'src/utils/graphql-context';
-import { ExecutionContext } from '@nestjs/common';
 
-@Resolver((of) => Login)
+@Resolver(() => Login)
 export class LoginResolver {
 	constructor(private loginService: LoginService) {}
 
-	@Query((returns) => Boolean)
+	@Query(() => Boolean)
 	async loginQuery(@Context() context: GraphQLContext) {
 		return this.loginService.isCookieValid(context.req);
 	}
 
-	@Mutation((returns) => Boolean)
+	@Mutation(() => Boolean)
 	async logoutMutation(@Context() context: GraphQLContext) {
 		context.res.setHeader('Clear-Site-Data', '"cookies", "storage"');
 		return true;

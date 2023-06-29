@@ -17,13 +17,13 @@ export class PersonalChat {
 	@Field()
 	id: string;
 
-	@ManyToMany((type) => User, (user) => user.personal_chats)
+	@ManyToMany(() => User, (user) => user.personal_chats)
 	@JoinTable()
-	@Field((type) => [User], { nullable: true })
+	@Field(() => [User], { nullable: true })
 	members: User[];
 
 	@OneToMany(() => PersonalMessage, (message) => message.channel)
-	@Field((type) => [PersonalMessage])
+	@Field(() => [PersonalMessage])
 	messages: PersonalMessage[];
 
 	@Column()
@@ -38,6 +38,6 @@ export class PersonalChat {
 	})
 	logo: string;
 
-	@Field(() => PersonalMessage, {nullable: true})
+	@Field(() => PersonalMessage, { nullable: true })
 	lastMessage: PersonalMessage;
 }

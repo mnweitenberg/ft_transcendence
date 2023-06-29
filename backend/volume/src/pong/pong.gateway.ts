@@ -18,7 +18,7 @@ import { PongService } from './pong.service';
 @WebSocketGateway({
 	cors: {
 		credentials: true,
-		origin: `https://${process.env["DOMAIN"]}/`,
+		origin: `https://${process.env['DOMAIN']}/`,
 	},
 })
 @UseGuards(JwtWsGuard)
@@ -28,7 +28,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	async handleConnection(client: Socket, ...args: any[]): Promise<void> {
+	async handleConnection(client: Socket): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
 
 		this.pongService.startLoop();

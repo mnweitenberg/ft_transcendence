@@ -23,7 +23,9 @@ export class PersonalChatService {
 		return this.channelRepository.findOne({ where: { id: id } });
 	}
 
-	async create(createChannelInput: CreatePersonalChatInput): Promise<PersonalChat> {
+	async create(
+		createChannelInput: CreatePersonalChatInput,
+	): Promise<PersonalChat> {
 		const members = await Promise.all(
 			createChannelInput.member_ids.map((id) =>
 				this.userService.getUserById(id),
