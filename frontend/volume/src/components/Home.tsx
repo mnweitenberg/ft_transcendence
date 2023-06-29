@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import "src/styles/style.css";
 import Chat from "src/components/chat/Chat";
 import Header from "src/components/sections/Header";
@@ -53,7 +54,9 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">{username}</h1>
+				<h1 className="section_header chat_profile_header">
+					<Link to="/settings">{username}</Link>
+				</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>

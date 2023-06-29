@@ -4,12 +4,9 @@ import ProtectedRoute from "./components/authorization/ProtectedRoute";
 import Welcome from "./components/login/Welcome";
 import Auth from "src/components/login/Auth";
 import Home from "src/components/Home";
-import NewUser from "./components/login/NewUser";
-import Lobby from "./components/Lobby";
-import Leaderboard from "./components/Leaderboard";
 import Settings from "./components/Settings";
-import Layout from "./components/common/Layout";
 import { AuthProvider } from "./utils/authLogic";
+import TwoFactor from "./components/login/TwoFactor";
 
 function App() {
 	return (
@@ -18,37 +15,12 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Welcome />} />
 					<Route path="/login" element={<Auth />} />
+					<Route path="/2fa" element={<TwoFactor />} />
 					<Route
 						path="/home"
 						element={
 							<ProtectedRoute>
 								<Home />
-							</ProtectedRoute>
-						}
-					/>
-					<Route
-						path="/new-user"
-						element={
-							<ProtectedRoute>
-								<NewUser />
-							</ProtectedRoute>
-						}
-					/>
-					<Route
-						path="/lobby"
-						element={
-							<ProtectedRoute>
-								<Lobby />
-							</ProtectedRoute>
-						}
-					/>
-					<Route
-						path="/leaderboard"
-						element={
-							<ProtectedRoute>
-								<Layout>
-									<Leaderboard />
-								</Layout>
 							</ProtectedRoute>
 						}
 					/>

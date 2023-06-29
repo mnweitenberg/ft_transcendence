@@ -4,6 +4,8 @@ import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
+import { authenticator } from 'otplib';
+
 const axios = require('axios').default;
 
 export interface IntraToken {
@@ -13,11 +15,6 @@ export interface IntraToken {
 	refresh_token: string;
 	scope: string;
 	created_at: number;
-}
-
-export interface UserInfo {
-	intraId: string;
-	userUid: string;
 }
 
 async function postTemporaryCode(intraCode: string): Promise<string> {
@@ -62,7 +59,7 @@ export class AuthService {
 		return responseJSON;
 	}
 
-	async linkTokenToUser(intraToken: IntraToken): Promise<UserInfo> {
+	async linkTokenToUser(intraToken: IntraToken): Promise<User> {
 		const axiosConfig = {
 			headers: {
 				Authorization:
@@ -78,20 +75,38 @@ export class AuthService {
 		);
 		if (!user) {
 			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.small, axiosConfig);
-			console.log(response.data.image.versions.micro);
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,
 			});
 			intraAvatar.parentUserUid = user.id;
 			user.avatar = await this.userAvatarService.create(intraAvatar);
-			await this.userService.save(user);
+			user = await this.userService.save(user);
 		}
-		return { userUid: user.id, intraId: user.intraId };
+		return user;
 	}
 
 	async getJwtCookie(userInfo: UserInfo): Promise<string> {
 		const token = await this.jwtService.signAsync(userInfo);
 		return JSON.stringify({ access_token: token });
+	}
+
+	async generateTwoFASecret(userInfo: UserInfo) {
+		const secret = authenticator.generateSecret();
+		const otpAuthUrl = authenticator.keyuri('dummy', 'PONG', secret);
+
+		await this.userService.setTwoFA(secret, userInfo.userUid);
+		return {
+			secret,
+			otpAuthUrl,
+		};
+	}
+
+	async verify2FACode(twoFACode: string, userId: string) {
+		const user = await this.userService.getUserById(userId);
+		return authenticator.verify({
+			token: twoFACode,
+			secret: user.twoFASecret,
+		});
 	}
 }

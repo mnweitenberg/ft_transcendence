@@ -23,14 +23,6 @@ export default function Profile(props: i.ModalProps) {
 			<div className="friends">
 				<Friends userId={userId} />
 			</div>
-
-			<div className="profile_section settings">
-				<h2>Settings</h2>
-				<div className="flex_row_spacebetween">
-					<a onClick={() => props.toggleModal(createUsernameAlert())}>change username</a>
-					<a onClick={() => props.toggleModal(createAvatarAlert())}>change avatar</a>
-				</div>
-			</div>
 		</>
 	);
 }
