@@ -1,4 +1,4 @@
-import { AuthService } from "./auth.service";
+import { AuthService } from './auth.service';
 
 // @Resolver(() => Auth)
 // export class AuthResolver {

@@ -20,7 +20,7 @@ export class RankingService {
 		await this.updatePlayerStats(match, players);
 		await this.determineRankingOrder();
 	}
-	
+
 	async recalculateTotalRanking() {
 		const users = await this.userService.getAllUsers();
 		for (const user of users) {
@@ -101,7 +101,7 @@ export class RankingService {
 		});
 	}
 
-	async getRanking() : Promise<Ranking[]> {
+	async getRanking(): Promise<Ranking[]> {
 		return await this.rankingRepo.findAll();
 	}
 }

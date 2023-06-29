@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Login {
-	@Field((type) => String)
+	@Field(() => String)
 	client_uid: string;
 
 	client_secret: string;

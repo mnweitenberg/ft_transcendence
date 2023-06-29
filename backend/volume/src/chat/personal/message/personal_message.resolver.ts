@@ -25,7 +25,10 @@ export class PersonalMessageResolver {
 		@Args() message_input: CreatePersonalMessageInput,
 		@AuthUser() user_info: UserInfo,
 	) {
-		const message = this.message_service.create(message_input, user_info.userUid);
+		const message = this.message_service.create(
+			message_input,
+			user_info.userUid,
+		);
 		pubSub.publish('personal_message_sent', {
 			personal_message_sent: message,
 		});

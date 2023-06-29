@@ -50,7 +50,10 @@ export class PersonalChatResolver {
 	}
 
 	@ResolveField()
-	async logo(@Parent() channel: PersonalChat, @AuthUser() user_info: UserInfo) {
+	async logo(
+		@Parent() channel: PersonalChat,
+		@AuthUser() user_info: UserInfo,
+	) {
 		const members = channel.members ?? (await this.members(channel));
 		if (members[0].id === user_info.userUid) return members[1].avatar;
 		return members[0].avatar;

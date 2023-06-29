@@ -25,7 +25,10 @@ export class GroupMessageResolver {
 		@Args() message_input: CreateGroupMessageInput,
 		@AuthUser() user_info: UserInfo,
 	) {
-		const message = this.group_message_service.create(message_input, user_info.userUid);
+		const message = this.group_message_service.create(
+			message_input,
+			user_info.userUid,
+		);
 		pubSub.publish('group_message_sent', { group_message_sent: message });
 		return message;
 	}

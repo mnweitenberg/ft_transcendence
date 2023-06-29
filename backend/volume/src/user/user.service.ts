@@ -44,7 +44,7 @@ export class UserService {
 	}
 
 	async setTwoFA(secret: string, userId: string) {
-		const user = await this.getUserById(userId);	
+		const user = await this.getUserById(userId);
 		user.twoFASecret = secret;
 		user.twoFAEnabled = true;
 		await this.userRepository.save(user);
@@ -78,9 +78,6 @@ export class UserService {
 		return await this.userRepository.save(user);
 	}
 
-
-
-
 	// TODO: tests all friend functions for empty friend lists
 	async acceptFriend(user_uid: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
@@ -89,7 +86,7 @@ export class UserService {
 		});
 		const friend = await this.userRepository.findOne({
 			relations: { friends: true },
-			where : { id: friend_id },
+			where: { id: friend_id },
 		});
 		for (let i = 0; i < user.friends.length; i++) {
 			if (user.friends[i].username === friend.username) {
@@ -99,27 +96,27 @@ export class UserService {
 		friend.friends.push(user);
 		user.friends.push(friend);
 
-		await this.userRepository.save([ user, friend ]);
+		await this.userRepository.save([user, friend]);
 
 		return true;
 	}
-	
+
 	async removeFriend(user_id: string, friend_id: string) {
 		const user = await this.userRepository.findOne({
-			relations: { friends : true },
+			relations: { friends: true },
 			where: { id: user_id },
 		});
-		for (let i = 0; i < user.friends.length; i++){
-			if (user.friends[i].id === friend_id ) {
+		for (let i = 0; i < user.friends.length; i++) {
+			if (user.friends[i].id === friend_id) {
 				user.friends.splice(i, 1);
 			}
 		}
 		const friend = await this.userRepository.findOne({
-			relations: { friends : true },
+			relations: { friends: true },
 			where: { id: friend_id },
 		});
-		for (let i = 0; i < friend.friends.length; i++){
-			if (friend.friends[i].id === user_id ) {
+		for (let i = 0; i < friend.friends.length; i++) {
+			if (friend.friends[i].id === user_id) {
 				friend.friends.splice(i, 1);
 			}
 		}
@@ -127,15 +124,13 @@ export class UserService {
 		return true;
 	}
 
-	async getFriends(user_id: string) : Promise <User[]> {
+	async getFriends(user_id: string): Promise<User[]> {
 		const user = await this.userRepository.findOne({
-			relations: { friends : true },
+			relations: { friends: true },
 			where: { id: user_id },
 		});
 		return user.friends;
 	}
-
-
 
 	// TESTING
 
@@ -145,32 +140,32 @@ export class UserService {
 			2. query { fillDbUser }
 			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
 	 */
-	async createFriends (user_name: string) : Promise<Number> {
+	async createFriends(user_name: string): Promise<number> {
 		const user = await this.userRepository.findOne({
 			where: { username: user_name },
 		});
 		const friend = await this.userRepository.findOne({
-			where : { username: 'Marius' },
+			where: { username: 'Marius' },
 		});
 		const friend1 = await this.userRepository.findOne({
-			where : { username: 'Milan' },
+			where: { username: 'Milan' },
 		});
 		const friend2 = await this.userRepository.findOne({
-			where : { username: 'Justin' },
+			where: { username: 'Justin' },
 		});
 		const friend3 = await this.userRepository.findOne({
-			where : { username: 'Henk4' },
+			where: { username: 'Henk4' },
 		});
 		const friend4 = await this.userRepository.findOne({
-			where : { username: 'Henk1' },
+			where: { username: 'Henk1' },
 		});
 		const friend5 = await this.userRepository.findOne({
-			where : { username: 'Henk2' },
+			where: { username: 'Henk2' },
 		});
 		const friend6 = await this.userRepository.findOne({
-			where : { username: 'Henk3' },
+			where: { username: 'Henk3' },
 		});
-		
+
 		await this.acceptFriend(user.id, friend.id);
 		await this.acceptFriend(user.id, friend1.id);
 		await this.acceptFriend(user.id, friend2.id);
@@ -181,5 +176,4 @@ export class UserService {
 
 		return 3;
 	}
-
 }

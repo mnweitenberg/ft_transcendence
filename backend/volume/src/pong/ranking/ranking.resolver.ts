@@ -19,7 +19,7 @@ export class RankingResolver {
 		return ranking;
 	}
 
-	@Query(() => Ranking, { nullable: true } )
+	@Query(() => Ranking, { nullable: true })
 	async getStats(@Args('userId', { type: () => String }) userId: string) {
 		return await this.rankingRepo.getRankingByUser(userId);
 	}

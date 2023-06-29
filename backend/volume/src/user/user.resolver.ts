@@ -61,7 +61,7 @@ export class UserResolver {
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation((returns) => User)
+	@Mutation(() => User)
 	async changeUserData(
 		@AuthUser() userInfo: UserInfo,
 		@Args('changeUserData') changeUserData: ChangeUserDataInput,
@@ -78,7 +78,7 @@ export class UserResolver {
 		return await this.userService.getUserById(userInfo.userUid);
 	}
 
-	@ResolveField('avatar', (returns) => Avatar)
+	@ResolveField('avatar', () => Avatar)
 	async getAvatar(@Parent() user: User) {
 		return this.userAvatarService.getAvatar(user.id);
 	}
