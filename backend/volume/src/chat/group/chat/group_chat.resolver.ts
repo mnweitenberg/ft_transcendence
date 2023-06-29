@@ -12,7 +12,7 @@ import { GroupChatService } from './group_chat.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 
 @Resolver(() => GroupChat)
 export class GroupChatResolver {

@@ -13,16 +13,15 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
-import { UploadAvatarInput } from './dto/upload-avatar.input';
 
 @Resolver(() => User)
 export class UserResolver {
 	constructor(
 		private userService: UserService,
-		private userAvatarService: UserAvatarService
+		private userAvatarService: UserAvatarService,
 	) {}
 
 	@Query(() => [User])
@@ -30,7 +29,7 @@ export class UserResolver {
 		return this.userService.getAllUsers();
 	}
 
-	@Query(() => User, { name: 'user'})
+	@Query(() => User, { name: 'user' })
 	async userQuery(
 		@Args('username', { type: () => String }) usernameParam: string,
 	) {
@@ -62,22 +61,24 @@ export class UserResolver {
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation(returns => User)
+	@Mutation((returns) => User)
 	async changeUserData(
 		@AuthUser() userInfo: UserInfo,
-		@Args('changeUserData') changeUserData: ChangeUserDataInput
+		@Args('changeUserData') changeUserData: ChangeUserDataInput,
 	) {
 		const user = await this.userService.getUserById(userInfo.userUid);
 		if (changeUserData.avatar) {
 			changeUserData.avatar.parentUserUid = userInfo.userUid;
-			user.avatar = await this.userAvatarService.createOrUpdate(changeUserData.avatar);
+			user.avatar = await this.userAvatarService.createOrUpdate(
+				changeUserData.avatar,
+			);
 		}
 		user.username = changeUserData.username;
 		await this.userService.save(user);
 		return await this.userService.getUserById(userInfo.userUid);
 	}
 
-	@ResolveField('avatar', returns => Avatar)
+	@ResolveField('avatar', (returns) => Avatar)
 	async getAvatar(@Parent() user: User) {
 		return this.userAvatarService.getAvatar(user.id);
 	}
@@ -93,45 +94,55 @@ export class UserResolver {
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Query (() => [User])
+	@Query(() => [User])
 	async getFriends(@AuthUser() userInfo: UserInfo) {
 		return this.userService.getFriends(userInfo.userUid);
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation (() => Boolean)
-	async acceptFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
+	@Mutation(() => Boolean)
+	async acceptFriend(
+		@AuthUser() userInfo: UserInfo,
+		@Args('friend_id') friend_id: string,
+	) {
 		return this.userService.acceptFriend(userInfo.userUid, friend_id);
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation (() => Boolean)
-	async removeFriend(@AuthUser() userInfo: UserInfo, @Args('friend_id') friend_id: string) {
+	@Mutation(() => Boolean)
+	async removeFriend(
+		@AuthUser() userInfo: UserInfo,
+		@Args('friend_id') friend_id: string,
+	) {
 		return this.userService.removeFriend(userInfo.userUid, friend_id);
 	}
 
-
-
 	// TESTING
-	
+
 	/*
 	 	How to create some friends in 3 easy steps:
 			1. go to backend/graphql
 			2. query { fillDbUser }
 			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
 	 */
-	@Mutation (() => Boolean)
-	async acceptFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
+	@Mutation(() => Boolean)
+	async acceptFriend1(
+		@Args('user_id') user_id: string,
+		@Args('friend_id') friend_id: string,
+	) {
 		return this.userService.acceptFriend(user_id, friend_id);
 	}
 
 	@Mutation(() => Boolean)
-	async removeFriend1(@Args('user_id') user_id: string, @Args('friend_id') friend_id: string) {
-		return this.userService.removeFriend(user_id, friend_id);	
+	async removeFriend1(
+		@Args('user_id') user_id: string,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.userService.removeFriend(user_id, friend_id);
 	}
 
 	@Query(() => [User])
-	async getFriends1(@Args ('user_id') user_id: string) {
+	async getFriends1(@Args('user_id') user_id: string) {
 		return this.userService.getFriends(user_id);
 	}
 

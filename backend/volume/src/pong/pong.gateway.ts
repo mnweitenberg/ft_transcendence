@@ -11,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import * as C from './constants';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PongService } from './pong.service';
 

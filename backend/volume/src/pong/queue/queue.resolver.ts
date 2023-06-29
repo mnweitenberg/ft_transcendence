@@ -5,8 +5,7 @@ import { QueuedMatch } from './queuedmatch.model';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
-import { AuthGuard } from '@nestjs/passport';
+import { UserInfo } from 'src/auth/user-info.interface';
 
 @Resolver()
 export class QueueResolver {
