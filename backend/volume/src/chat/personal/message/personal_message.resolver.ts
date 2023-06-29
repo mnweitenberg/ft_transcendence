@@ -22,9 +22,9 @@ export class PersonalMessageResolver {
 	@UseGuards(JwtAuthGuard)
 	@Mutation((returns) => PersonalMessage, { nullable: true })
 	async createPersonalMessage(
-    @Args() message_input: CreatePersonalMessageInput,
+		@Args() message_input: CreatePersonalMessageInput,
 		@AuthUser() user_info: UserInfo,
-  ) {
+	) {
 		const message = this.message_service.create(message_input, user_info.userUid);
 		pubSub.publish('personal_message_sent', {
 			personal_message_sent: message,
