@@ -46,7 +46,9 @@ export class QueueService {
 		const ret = this.canPlayerLookForMatch(player_id);
 		if (ret !== 'yes') {
 			return ret;
-		} 
+		}
+
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: {userId: player_id, state: false} });
 
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
@@ -76,6 +78,26 @@ export class QueueService {
 
 	getWholeQueue() {
 		return this.queued_matches;
+	}
+
+	canJoinQueue(playerId: string) : boolean {
+		for (let i = 0; i < this.users_looking_for_match.length; i++) {
+			if (playerId === this.users_looking_for_match[i]) {
+				return false;
+			}
+		}
+		if (this.current_match && (this.current_match.p1.id === playerId || this.current_match.p2.id === playerId)) {
+			return false;
+		}
+		for (let i = 0; i < this.queued_matches.length; i++) {
+			if (
+				playerId === this.queued_matches[i].p1.id ||
+				playerId === this.queued_matches[i].p2.id
+			) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	canPlayerLookForMatch(playerId: string): string {

@@ -1,7 +1,8 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
 import { useEffect } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
@@ -25,6 +26,7 @@ const GET_WHOLE_QUEUE = gql`
 const CURRENT_USER = gql`
 	query currentUserQuery {
 		currentUserQuery {
+			id
 			username
 			avatar {
 				file
@@ -54,6 +56,14 @@ const QUEUE_CHANGED = gql`
 					file
 				}
 			}
+		}
+	}
+`;
+
+const QUEUE_AVAILABILITY_CHANGED = gql`
+	subscription queueAvailabilityChanged($userId: String!) {
+		queueAvailabilityChanged(userId: $userId) {
+			state
 		}
 	}
 `;
@@ -101,11 +111,17 @@ export default function Queue(props: i.ModalProps) {
 					>
 						<div className="player player--one">
 							<h3 className="name">{game.p1.username}</h3>
-							<img className="avatar" src={game.p1.avatar} />
+							<img
+								className="avatar"
+								src={convertEncodedImage(game.p1.avatar.file)}
+							/>
 						</div>
 
 						<div className="player player--two">
-							<img className="avatar" src={game.p2.avatar} />
+							<img
+								className="avatar"
+								src={convertEncodedImage(game.p2.avatar.file)}
+							/>
 							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>
@@ -125,12 +141,53 @@ function JoinQueueElement() {
 			called: tried_joining_queue,
 		},
 	] = useMutation(JOIN_QUEUE);
+
 	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
+
+	const { data: can_join_queue, subscribeToMore } = useQuery(CAN_JOIN_QUEUE);
+
+	useEffect(() => {
+		if (!user_data?.currentUserQuery) return;
+		console.log("subscribed to more");
+		return subscribeToMore({
+			document: QUEUE_AVAILABILITY_CHANGED,
+			variables: { userId: user_data.currentUserQuery.id },
+			updateQuery: (prev, { subscriptionData }) => {
+				console.log("event!");
+				if (!subscriptionData.data) return prev;
+				return Object.assign({}, prev, {
+					canJoinQueue: subscriptionData.data.queueAvailabilityChanged.state,
+				});
+				// const newQueue = subscriptionData.data.queueChanged;
+				// return Object.assign({}, prev, {
+				// 	getWholeQueue: newQueue,
+				// });
+			},
+		});
+	}, [user_data]);
+
+	if (user_loading) return <>Loading user</>;
+
+	// subscribe to matchhistoryhasbeenupdated en dan queuejoin knop laten zien als dat gebeurt!
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
 		joinQueue();
 	};
+
+	// const { data: can_join_queue, loading: join_queue_loading } = useSubscription(CAN_JOIN_QUEUE, {
+	// 	variables: { userId: user_data.currentUserQuery.id },
+	// });
+
+	console.log(can_join_queue);
+
+	if (can_join_queue?.canJoinQueue) {
+		return (
+			<form onSubmit={handleClick}>
+				<button type="submit">Join queue</button>
+			</form>
+		);
+	}
 
 	if (tried_joining_queue) {
 		if (queue_loading) {

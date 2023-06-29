@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver, Subscription, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Subscription, Query, ObjectType, Field } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { pubSub } from 'src/app.module';
 import { QueuedMatch } from './queuedmatch.model';
@@ -8,9 +8,25 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
+@ObjectType()
+export class A {
+	@Field()
+	userId: String;
+
+	@Field()
+	state: Boolean;
+}
+
 @Resolver()
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
+
+	@UseGuards(JwtAuthGuard)
+	@Query(() => Boolean)
+	async canJoinQueue(@AuthUser() user: UserInfo) {
+		if (!user) return;
+		return await this.queueService.canJoinQueue(user.userUid);
+	}
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation(() => String)
@@ -22,6 +38,20 @@ export class QueueResolver {
 	@Subscription(() => [QueuedMatch])
 	queueChanged() {
 		return pubSub.asyncIterator('queueChanged');
+	}
+
+	@Subscription(() => A, {
+		filter: async (payload, variables) => {
+			return (
+				payload.queueAvailabilityChanged.userId === variables.userId
+			);
+		},
+		// resolve(payload) {
+		// 	return payload.state
+		// },
+	})
+	queueAvailabilityChanged(@Args('userId') userId: string) {
+		return pubSub.asyncIterator('queueAvailabilityChanged');
 	}
 
 	@Query(() => [QueuedMatch])
