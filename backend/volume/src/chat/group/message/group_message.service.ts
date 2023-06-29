@@ -19,9 +19,9 @@ export class GroupMessageService {
 
 	async create(
 		createMessageInput: CreateGroupMessageInput,
-		author_: User,
+		author_id: string,
 	): Promise<GroupMessage> {
-		const author = await this.userService.getUserById(author_.id);
+		const author = await this.userService.getUserById(author_id);
 		const channel = await this.channelService.getChannelById(
 			createMessageInput.channel_id,
 		);

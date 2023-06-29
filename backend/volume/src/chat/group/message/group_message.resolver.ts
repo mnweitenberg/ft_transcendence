@@ -13,6 +13,7 @@ import { pubSub } from 'src/app.module';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
 
 @Resolver((of) => GroupMessage)
@@ -23,9 +24,9 @@ export class GroupMessageResolver {
 	@Mutation((returns) => GroupMessage, { nullable: true })
 	async createGroupMessage(
 		@Args() message_input: CreateGroupMessageInput,
-		@AuthUser() user: User,
+		@AuthUser() user_info: UserInfo,
 	) {
-		const message = this.group_message_service.create(message_input, user);
+		const message = this.group_message_service.create(message_input, user_info.userUid);
 		pubSub.publish('group_message_sent', { group_message_sent: message });
 		return message;
 	}

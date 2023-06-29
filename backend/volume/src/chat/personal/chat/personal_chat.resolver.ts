@@ -13,6 +13,7 @@ import { PersonalChatService } from './personal_chat.service';
 import { PersonalMessage } from '../message/entities/personal_message.entity';
 import { pubSub } from 'src/app.module';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
 
 @Resolver((of) => PersonalChat)
@@ -53,9 +54,9 @@ export class PersonalChatResolver {
 	}
 
 	@ResolveField()
-	async logo(@Parent() channel: PersonalChat, @AuthUser() user: User) {
+	async logo(@Parent() channel: PersonalChat, @AuthUser() user_info: UserInfo) {
 		const members = channel.members ?? await this.members(channel);
-		if (members[0].id === user.id)
+		if (members[0].id === user_info.userUid)
 			return members[1].avatar;
 		return members[0].avatar;
 	}
