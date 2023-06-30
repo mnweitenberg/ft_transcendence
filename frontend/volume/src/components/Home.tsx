@@ -10,7 +10,7 @@ import Modal, { createModalProps } from "src/components/common/Modal";
 import { Game, createPongProps, handleFinishGame } from "src/components/game/Game";
 import * as i from "src/types/Interfaces";
 import { useAuth } from "src/utils/authLogic";
-import { queryCurrentUser } from "src/utils/queryUser";
+import { useQueryCurrentUser } from "src/utils/useQueryUser";
 
 function Home(): JSX.Element {
 	const modalProps: i.ModalProps = createModalProps();
@@ -23,7 +23,7 @@ function Home(): JSX.Element {
 		}
 	}, [pongProps.finished]);
 
-	const username = queryCurrentUser().username;
+	const username = useQueryCurrentUser().username;
 
 	return (
 		<div className="grid-container">

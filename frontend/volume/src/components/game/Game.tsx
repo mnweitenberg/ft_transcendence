@@ -41,7 +41,7 @@ export function createPongProps(): i.PongProps {
 	const [p1, setp1] = useState<any>({});
 	const [p2, setp2] = useState<any>({});
 	const players = [p1, p2];
-	function setPlayers(players: i.User[]) {
+	function setPlayers(players: any[]) {
 		setp1(players[0]);
 		setp2(players[1]);
 	}

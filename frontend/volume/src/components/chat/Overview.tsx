@@ -169,7 +169,7 @@ function PersonalChat() {
 	);
 }
 
-function CreateNewPersonalChannel(user: i.User) {
+function CreateNewPersonalChannel(user: any) {
 	console.log(user.username);
 }
 

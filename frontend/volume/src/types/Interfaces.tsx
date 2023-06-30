@@ -1,32 +1,4 @@
 import { ReactNode } from "react";
-//////////
-// CHAT //
-//////////
-
-// export interface Chat {
-// 	content: string;
-// 	name?: string;
-// 	class: 'user' | 'friend';
-// }
-
-// export interface Chat {
-// 	id: number;
-// 	// date: Date;
-// 	message: string;
-// 	sender: User;
-// 	reciever: User;
-// }
-
-// export interface Channel {
-// 	name: string;
-// 	avatar: string;
-// 	creator: User;
-// 	members: Array<User>;
-// }
-
-// export interface PrivateChannel extends Channel {
-// 	password: string;
-// }
 
 ///////////////
 // USERSTATS //
@@ -47,6 +19,14 @@ import { ReactNode } from "react";
 // 	// chat?: Array<Chat>;
 // 	friends?: Array<User>;
 // }
+
+export interface User {
+	id: string;
+	username: string;
+	avatar: {
+		file: string;
+	};
+}
 
 ///////////////
 // GAMESTATE //

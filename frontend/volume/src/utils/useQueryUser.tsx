@@ -1,5 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
+import * as i from "../types/Interfaces";
 
 const USER = gql`
 	query userQuery($userId: String!) {
@@ -9,15 +10,24 @@ const USER = gql`
 				file
 			}
 			id
-			ranking {
-				rank
-				wins
-				losses
-				score
-			}
 		}
 	}
 `;
+
+export function useQueryUser(userId: string): {
+	user: i.User | null;
+	loading: boolean;
+	error: any;
+} {
+	const [user, setUser] = useState<i.User | null>(null);
+	const { data, loading, error } = useQuery(USER, { variables: { userId } });
+
+	useEffect(() => {
+		if (data) setUser(data.userQuery);
+	}, [data]);
+
+	return { user, loading, error };
+}
 
 const CURRENT_USER = gql`
 	query currentUserQuery {
@@ -31,18 +41,7 @@ const CURRENT_USER = gql`
 	}
 `;
 
-export function queryUser(userId: string) {
-	const [user, setUser] = useState([]);
-	const { data, loading, error } = useQuery(USER, { variables: { userId } });
-
-	useEffect(() => {
-		if (data) setUser(data.userQuery);
-	}, [data]);
-
-	return { user, loading, error };
-}
-
-export function queryCurrentUser() {
+export function useQueryCurrentUser() {
 	const { loading, error, data } = useQuery(CURRENT_USER);
 
 	if (loading) return "loading";
