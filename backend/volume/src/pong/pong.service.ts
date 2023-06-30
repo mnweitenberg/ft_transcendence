@@ -6,6 +6,9 @@ import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/auth/user-info.interface';
 import { RankingService } from './ranking/ranking.service';
+import { QueueAvailability } from './queue/queuestatus.model';
+import { QueueStatus } from './queue/queuestatus.model';
+import { pubSub } from 'src/app.module';
 
 @Injectable()
 export class PongService {
@@ -70,6 +73,12 @@ export class PongService {
 			this.state.match.isFinished = true;
 			this.emitter.emit('gameIsFinished');
 			await this.matchRepo.saveMatch(this.state.match);
+
+			const queueAvailability: QueueAvailability = new QueueAvailability;
+			queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
+			pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.state.match.players[0].id } );
+			pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.state.match.players[1].id } );
+			
 			await this.rankingService.updateRanking(
 				this.state.match,
 				this.state.match.players[0],

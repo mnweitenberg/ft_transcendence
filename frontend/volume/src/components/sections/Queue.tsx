@@ -1,9 +1,9 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
 import { useEffect } from "react";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import UserStats from "src/components/common/UserStats";
-import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
@@ -19,6 +19,18 @@ const GET_WHOLE_QUEUE = gql`
 				avatar {
 					file
 				}
+			}
+		}
+	}
+`;
+
+const CURRENT_USER = gql`
+	query currentUserQuery {
+		currentUserQuery {
+			id
+			username
+			avatar {
+				file
 			}
 		}
 	}
@@ -49,7 +61,27 @@ const QUEUE_CHANGED = gql`
 	}
 `;
 
-// TODO: joinQueue knop moet terug komen nadat user niet meer in queue of match zit
+const GET_QUEUE_AVAILABILITY = gql`
+	query {
+		getQueueAvailability {
+			queueStatus
+		}
+	}
+`;
+
+const QUEUE_AVAILABILITY_CHANGED = gql`
+	subscription queueAvailabilityChanged($userId: String!) {
+		queueAvailabilityChanged(userId: $userId) {
+			queueStatus
+		}
+	}
+`;
+
+enum QueueStatus {
+	CAN_JOIN,
+	IN_MATCH,
+	IN_QUEUE,
+}
 
 export default function Queue(props: i.ModalProps) {
 	const {
@@ -117,41 +149,54 @@ export default function Queue(props: i.ModalProps) {
 }
 
 function JoinQueueElement() {
-	const [
-		joinQueue,
-		{
-			data: queue_data,
-			loading: queue_loading,
-			error: queue_error,
-			called: tried_joining_queue,
-		},
-	] = useMutation(JOIN_QUEUE);
+	const [joinQueue, { loading: queue_loading, error: queue_error }] = useMutation(JOIN_QUEUE);
+	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
+	const { data: queue_availability, subscribeToMore } = useQuery(GET_QUEUE_AVAILABILITY);
+
+	useEffect(() => {
+		if (!user_data?.currentUserQuery) return;
+		return subscribeToMore({
+			document: QUEUE_AVAILABILITY_CHANGED,
+			variables: { userId: user_data.currentUserQuery.id },
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				return Object.assign({}, prev, {
+					getQueueAvailability: subscriptionData.data.queueAvailabilityChanged,
+				});
+			},
+		});
+	}, [user_data]);
+
+	if (user_loading) return <>Loading user</>;
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
 		joinQueue();
 	};
 
-	if (tried_joining_queue) {
-		if (queue_loading) {
-			return <>joining queue...</>;
-		}
-		if (queue_error) {
-			return <>error joining queue</>;
-		}
-		return (
-			<>
-				<div>{queue_data.joinQueue}</div>
-				<form onSubmit={handleClick}>
-					<button type="submit">Join queue</button>
-				</form>
-			</>
-		);
-	} else {
+	if (queue_loading) {
+		return <>Loading queue...</>;
+	}
+	if (queue_error) {
+		return <>error joining queue</>;
+	}
+	if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.CAN_JOIN) {
 		return (
 			<form onSubmit={handleClick}>
 				<button type="submit">Join queue</button>
 			</form>
+		);
+	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_QUEUE) {
+		return (
+			<div>
+				<h3>'Join queue' not available. You are in the queue </h3>
+			</div>
+		);
+	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_MATCH) {
+		return (
+			<div>
+				<h3>'Join queue' not available. You are in a match</h3>
+			</div>
 		);
 	}
 }
