@@ -42,8 +42,13 @@ export default function CreateChannel(props: i.ModalProps & { refetchChannels: (
 			<form onSubmit={onSubmit}>
 				<h3>Name</h3>
 				<input type="text" placeholder="Channel Name"></input>
-				<h3>Image</h3>
-				<input type="text" placeholder="Image URL"></input>
+				<h3>Chat picture</h3>
+				<div className="flex_row_spacebetween">
+					<label className="choose_file" htmlFor="channelPicture">
+						<input id="channelPicture" type="file" name="channelPicture" />
+						<h3>Upload an image</h3>
+					</label>
+				</div>
 				<h3>Password</h3>
 				<input type="text" placeholder="leave blank to create public channel"></input>
 				<button type="submit">Create channel</button>

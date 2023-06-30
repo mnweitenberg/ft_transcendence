@@ -75,7 +75,7 @@ function UserProfileSettings({ userdata }: { userdata: any }): JSX.Element {
 	};
 	return (
 		<div className="user_profile_settings">
-			<header>
+			<header className="flex_row_spacebetween">
 				<h1>Settings</h1>
 				<h3>
 					<Link to="/home">back to game</Link>

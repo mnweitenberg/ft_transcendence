@@ -6,6 +6,7 @@ import { UserService } from 'src/user/user.service';
 import { CreateGroupChannelInput } from './dto/create_group_chat.input';
 import { User } from 'src/user/entities/user.entity';
 import { GroupMessage } from '../message/entities/group_message.entity';
+import { Not, In } from 'typeorm';
 
 @Injectable()
 export class GroupChatService {
@@ -17,6 +18,19 @@ export class GroupChatService {
 
 	async getAllChannels(): Promise<Array<GroupChat>> {
 		return this.channelRepository.find();
+	}
+
+	async getAvailablePublicChannels(id: string): Promise<Array<GroupChat>> {
+		const user = await this.userService.getUserById(id);
+		const userChannels = await this.userService.getGroupChats(user);
+		const userChannelIds = userChannels.map((channel) => channel.id);
+		const availableChannels = await this.channelRepository.find({
+			where: {
+				isPublic: true,
+				id: Not(In(userChannelIds)),
+			},
+		});
+		return availableChannels;
 	}
 
 	async getChannelById(id: string): Promise<GroupChat> {

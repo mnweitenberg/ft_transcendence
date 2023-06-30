@@ -4,6 +4,7 @@ import * as i from "../../types/Interfaces";
 import { createLeaveGroupChatAlert } from "../../utils/utils";
 import GroupStats from "./GroupStats";
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 const GET_CHANNEL = gql`
 	query group_chat($channel_id: String!) {
@@ -16,6 +17,9 @@ const GET_CHANNEL = gql`
 				author {
 					id
 					username
+					avatar {
+						file
+					}
 				}
 			}
 		}
@@ -33,6 +37,9 @@ const SUBSCRIBE_MESSAGES = gql`
 			author {
 				id
 				username
+				avatar {
+					file
+				}
 			}
 		}
 	}
@@ -151,7 +158,7 @@ export default function GroupChat({
 						<div key={message.id} className="friend">
 							<div className="flexContainer">
 								<div className="avatar_container">
-									<img className="avatar" src={message.author.avatar} />
+									<img src={convertEncodedImage(message.author.avatar.file)} />
 								</div>
 								<div>
 									<h3>{message.author.username}</h3>

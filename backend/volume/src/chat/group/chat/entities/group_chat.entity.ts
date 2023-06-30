@@ -40,4 +40,10 @@ export class GroupChat {
 
 	@Field(() => GroupMessage, { nullable: true })
 	lastMessage: GroupMessage;
+
+	@Column({ default: true })
+	@Field(() => Boolean, {
+		description: 'Determines if the channel is public or not',
+	})
+	isPublic: boolean;
 }

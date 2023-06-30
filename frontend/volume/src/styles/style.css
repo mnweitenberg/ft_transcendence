@@ -533,6 +533,26 @@ section#chat .new_chat {
   right: 0;
 }
 
+input[type=file] {
+  display: none;
+}
+
+.choose_file {
+  font-weight: 500;
+  color: #309a9f;
+  text-decoration: inherit;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 0.5em;
+  margin-bottom: 2em;
+}
+
+.choose_file:hover {
+  color: #0fa2a9;
+  cursor: pointer;
+}
+
 #game {
   grid-area: game;
   background-color: #eff4f6;
@@ -577,7 +597,6 @@ section#chat .new_chat {
 header {
   grid-area: header;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 120px;
 }
@@ -590,14 +609,25 @@ header .player {
   display: flex;
   justify-content: space-between;
   height: 70px;
+  width: 75%;
 }
 header .player .avatar_container {
   width: 70px;
   height: 70px;
   border-radius: 100%;
+  overflow: hidden;
+}
+header .player .avatar_container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 header .player .name {
-  height: 2em;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 2em;
 }
 header .player .stats {
   height: 2em;
@@ -607,6 +637,12 @@ header .player .stats {
 }
 header .player .stats .stat {
   margin: 0 5px 0 0;
+}
+header .player_left {
+  justify-content: flex-start;
+}
+header .player_right {
+  justify-content: flex-end;
 }
 header .score {
   display: flex;
@@ -632,13 +668,22 @@ header .score {
 .match_history .td_score {
   width: 2em;
 }
-.match_history .avatar_container {
+.match_history .friends_avatar_container {
   width: 30px;
   height: 30px;
   flex-basis: 30px;
   margin-bottom: -7px;
+  border-radius: 100%;
+  overflow: hidden;
 }
-.match_history h4 {
+.match_history .friends_avatar_container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+h4 {
   font-size: 1.5em;
   font-weight: 300;
   margin: 0;
