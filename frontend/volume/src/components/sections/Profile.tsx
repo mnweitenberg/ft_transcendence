@@ -5,8 +5,7 @@ import * as i from "src/types/Interfaces";
 import { queryCurrentUser } from "src/utils/queryUser";
 import Friends from "src/components/common/Friends";
 
-export default function Profile(props: i.ModalProps) {
-	//	const userId = queryCurrentUser().id;
+export default function Profile(modalProps: i.ModalProps) {
 	const user = queryCurrentUser();
 	if (user === "loading" || user === "error") {
 		return user;
@@ -21,36 +20,8 @@ export default function Profile(props: i.ModalProps) {
 			</div>
 
 			<div className="friends">
-				<Friends userId={userId} />
+				<Friends {...modalProps} selectedUser={user} />
 			</div>
 		</>
-	);
-}
-
-function createUsernameAlert() {
-	return (
-		<div className="alert">
-			<h2>Change username</h2>
-			<form>
-				<input type="text" placeholder="new username" />
-				<button> submit </button>
-			</form>
-		</div>
-	);
-}
-
-function createAvatarAlert() {
-	const user = queryCurrentUser();
-	return (
-		<div className="alert">
-			<h2>Change avatar</h2>
-			<form>
-				<div className="flex_row_spacebetween">
-					<img src={user.avatar.file} />
-					<input className="fileupload" type="file" />
-				</div>
-				<button> submit </button>
-			</form>
-		</div>
 	);
 }

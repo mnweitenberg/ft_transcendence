@@ -2,6 +2,7 @@ import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
 import { useEffect } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
+import UserStats from "src/components/common/UserStats";
 
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
@@ -17,17 +18,6 @@ const GET_WHOLE_QUEUE = gql`
 				avatar {
 					file
 				}
-			}
-		}
-	}
-`;
-
-const CURRENT_USER = gql`
-	query currentUserQuery {
-		currentUserQuery {
-			username
-			avatar {
-				file
 			}
 		}
 	}
@@ -57,9 +47,6 @@ const QUEUE_CHANGED = gql`
 		}
 	}
 `;
-
-// TODO: add waiting for queue met plaatje (zie begin code voor html)
-//	check of queue goed update nadat joinQueue is geklikt
 
 // TODO: joinQueue knop moet terug komen nadat user niet meer in queue of match zit
 
@@ -93,18 +80,27 @@ export default function Queue(props: i.ModalProps) {
 		<>
 			<JoinQueueElement />
 			{queue_data.getWholeQueue.map(function (game: any) {
-				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
 				return (
 					<div
 						className="flex_row_spacebetween"
 						key={game.p1.username + game.p2.username}
 					>
-						<div className="player player--one">
+						<div
+							className="player player--one"
+							onClick={() =>
+								props.toggleModal(<UserStats {...props} selectedUser={game.p1} />)
+							}
+						>
 							<h3 className="name">{game.p1.username}</h3>
 							<img className="avatar" src={game.p1.avatar} />
 						</div>
 
-						<div className="player player--two">
+						<div
+							className="player player--two"
+							onClick={() =>
+								props.toggleModal(<UserStats {...props} selectedUser={game.p2} />)
+							}
+						>
 							<img className="avatar" src={game.p2.avatar} />
 							<h3 className="name">{game.p2.username}</h3>
 						</div>
@@ -125,7 +121,6 @@ function JoinQueueElement() {
 			called: tried_joining_queue,
 		},
 	] = useMutation(JOIN_QUEUE);
-	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
 
 	const handleClick = (event: any) => {
 		event.preventDefault();
@@ -139,14 +134,12 @@ function JoinQueueElement() {
 		if (queue_error) {
 			return <>error joining queue</>;
 		}
-
 		return (
 			<>
-				<div className="player player--one">
-					<h3 className="name">{user_data.currentUserQuery.username}</h3>
-					<img className="avatar" src={user_data.currentUserQuery.avatar} />
-					<h3> {queue_data.joinQueue} </h3>
-				</div>
+				<div>{queue_data.joinQueue}</div>
+				<form onSubmit={handleClick}>
+					<button type="submit">Join queue</button>
+				</form>
 			</>
 		);
 	} else {

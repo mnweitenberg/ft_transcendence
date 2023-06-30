@@ -1,7 +1,7 @@
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 
-function UserStats(props: i.ModalProps) {
+function UserStats(props: i.ModalProps & { selectedUser: any }) {
 	return (
 		<div className="userStats">
 			<div className="user">
@@ -24,7 +24,11 @@ function UserStats(props: i.ModalProps) {
 						return (
 							<img
 								className="friend_list--avatar"
-								onClick={() => props.toggleModal(<UserStats {...props} />)}
+								onClick={() =>
+									props.toggleModal(
+										<UserStats {...props} selectedUser={friend} />
+									)
+								}
 								key={friend.name}
 								src={friend.avatar}
 							/>

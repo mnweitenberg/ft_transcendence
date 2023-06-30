@@ -5,6 +5,7 @@ import {
 	Query,
 	ResolveField,
 	Resolver,
+	Subscription,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -16,6 +17,7 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/user-info.interface';
 import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
+import { pubSub } from 'src/app.module';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -93,14 +95,34 @@ export class UserResolver {
 		return this.userService.getPersonalChats(user);
 	}
 
+	@Query(() => [User])
+	async getFriends(@Args('user_id') user_id: string) {
+		return this.userService.getFriends(user_id);
+	}
+
 	@UseGuards(JwtAuthGuard)
 	@Query(() => [User])
-	async getFriends(@AuthUser() userInfo: UserInfo) {
-		return this.userService.getFriends(userInfo.userUid);
+	async getIncomingFriendRequest(@AuthUser() userInfo: UserInfo) {
+		return this.userService.getIncomingFriendRequest(userInfo.userUid);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Query(() => [User])
+	async getOutgoingFriendRequest(@AuthUser() userInfo: UserInfo) {
+		return this.userService.getOutgoingFriendRequest(userInfo.userUid);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation(() => Boolean)
+	async inviteFriend(
+		@AuthUser() userInfo: UserInfo,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.userService.inviteFriend(userInfo.userUid, friend_id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => User)
 	async acceptFriend(
 		@AuthUser() userInfo: UserInfo,
 		@Args('friend_id') friend_id: string,
@@ -117,6 +139,48 @@ export class UserResolver {
 		return this.userService.removeFriend(userInfo.userUid, friend_id);
 	}
 
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => User)
+	async denyFriend(
+		@AuthUser() userInfo: UserInfo,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.userService.denyFriend(userInfo.userUid, friend_id);
+	}
+
+	@Subscription(() => User, {
+		filter: async (payload, variables) => {
+			return (
+				(await variables.user_id) ===
+				payload.outgoingFriendRequestChanged.id
+			);
+		},
+	})
+	async outgoingFriendRequestChanged(@Args('user_id') user_id: string) {
+		return pubSub.asyncIterator('outgoingFriendRequestChanged');
+	}
+
+	@Subscription(() => User, {
+		filter: async (payload, variables) => {
+			return (
+				(await variables.user_id) ===
+				payload.incomingFriendRequestChanged.id
+			);
+		},
+	})
+	async incomingFriendRequestChanged(@Args('user_id') user_id: string) {
+		return pubSub.asyncIterator('incomingFriendRequestChanged');
+	}
+
+	@Subscription(() => [User], {
+		filter: async (payload, variables) => {
+			return (await variables.user_id) === payload.id;
+		},
+	})
+	async friendsChanged(@Args('user_id') user_id: string) {
+		return pubSub.asyncIterator('friendsChanged');
+	}
+
 	// TESTING
 
 	/*
@@ -125,6 +189,19 @@ export class UserResolver {
 			2. query { fillDbUser }
 			3. query { createFriends (user_name: "your_user_name") }	eg. 'jhille' if you're Justin
 	 */
+	@Query(() => [User])
+	async getIncomingFriendRequest1(@Args('user_id') user_id: string) {
+		return this.userService.getIncomingFriendRequest(user_id);
+	}
+
+	@Mutation(() => Boolean)
+	async inviteFriend1(
+		@Args('user_id') user_id: string,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.userService.inviteFriend(user_id, friend_id);
+	}
+
 	@Mutation(() => Boolean)
 	async acceptFriend1(
 		@Args('user_id') user_id: string,
@@ -146,8 +223,26 @@ export class UserResolver {
 		return this.userService.getFriends(user_id);
 	}
 
+	@Mutation(() => User)
+	async denyFriend1(
+		@Args('user_id') user_id: string,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.userService.denyFriend(user_id, friend_id);
+	}
+
 	@Query(() => Number)
 	createFriends(@Args('user_name') user_name: string) {
 		return this.userService.createFriends(user_name);
+	}
+
+	@Mutation(() => Number)
+	inviteFromMultiFriends(@Args('username') username: string) {
+		return this.userService.inviteFromMultiFriends(username);
+	}
+
+	@Mutation(() => Number)
+	inviteToMultiFriends(@Args('username') username: string) {
+		return this.userService.inviteToMultiFriends(username);
 	}
 }

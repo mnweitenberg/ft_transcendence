@@ -33,3 +33,16 @@
 		width: 20%;
 	}
 }
+
+.requestAlert {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	gap: 3em;
+
+	.avatar {
+		width: 100px;
+		height: 100px;
+		border-radius: 100%;
+	}
+}

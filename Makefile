@@ -1,4 +1,3 @@
-
 NAME = pong
 
 SRCS = docker-compose.yml

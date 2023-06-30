@@ -41,7 +41,6 @@ export function createModalProps(): i.ModalProps {
 	// if (error) return;
 
 	const [showModal, setShowModal] = useState<boolean>(false);
-	const [selectedUser, setSelectedUser] = useState<any>();
 	const [modalContent, setContent] = useState(<></>);
 
 	function toggleModal(content: JSX.Element) {
@@ -64,8 +63,6 @@ export function createModalProps(): i.ModalProps {
 		toggleModal(content: JSX.Element) {
 			toggleModal(content);
 		},
-		selectedUser,
-		setSelectedUser,
 		showModal,
 		setShowModal,
 		modalContent,

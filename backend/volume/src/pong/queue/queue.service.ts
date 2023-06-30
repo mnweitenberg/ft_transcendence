@@ -55,7 +55,7 @@ export class QueueService {
 			}
 		}
 		this.users_looking_for_match.push(player_id);
-		return 'has joined the queue';
+		return 'You joined the queue';
 	}
 
 	removeCurrentMatch() {
@@ -77,7 +77,7 @@ export class QueueService {
 	canPlayerLookForMatch(playerId: string): string {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
-				return 'is waiting to be matched';
+				return 'You are already in the queue';
 			}
 		}
 		if (
@@ -92,7 +92,7 @@ export class QueueService {
 				playerId === this.queued_matches[i].p1.id ||
 				playerId === this.queued_matches[i].p2.id
 			) {
-				return 'is already matched with another player';
+				return 'You are matched with another player';
 			}
 		}
 		return 'yes';
