@@ -17,13 +17,11 @@ function Header(props: i.PongProps) {
 
 	return (
 		<header>
-			<div className="player">
+			<div className="player player_left">
 				<div className="avatar_container">
 					<img src={convertEncodedImage(p1.avatar.file)}></img>
 				</div>
-				<div className="wrap_name_message">
-					<h3 className="name">{p1.username}</h3>
-				</div>
+				<h3 className="name">{p1.username}</h3>
 			</div>
 
 			<div className="score">
@@ -31,10 +29,8 @@ function Header(props: i.PongProps) {
 				<div className="player_two">{p2Score}</div>
 			</div>
 
-			<div className="player">
-				<div className="wrap_name_message">
-					<h3 className="name">{p2.username}</h3>
-				</div>
+			<div className="player player_right">
+				<h3 className="name">{p2.username}</h3>
 				<div className="avatar_container">
 					<img src={convertEncodedImage(p2.avatar.file)}></img>
 				</div>
