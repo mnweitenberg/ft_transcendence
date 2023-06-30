@@ -3,6 +3,7 @@ import * as i from "src/types/Interfaces";
 import { useEffect } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import UserStats from "src/components/common/UserStats";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
@@ -92,7 +93,9 @@ export default function Queue(props: i.ModalProps) {
 							}
 						>
 							<h3 className="name">{game.p1.username}</h3>
-							<img className="avatar" src={game.p1.avatar} />
+							<div className="avatar_container">
+								<img src={convertEncodedImage(game.p1.avatar.file)} />
+							</div>
 						</div>
 
 						<div
@@ -101,7 +104,9 @@ export default function Queue(props: i.ModalProps) {
 								props.toggleModal(<UserStats {...props} selectedUser={game.p2} />)
 							}
 						>
-							<img className="avatar" src={game.p2.avatar} />
+							<div className="avatar_container">
+								<img src={convertEncodedImage(game.p2.avatar.file)} />
+							</div>
 							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>

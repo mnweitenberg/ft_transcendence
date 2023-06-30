@@ -31,11 +31,9 @@ export class UserResolver {
 		return this.userService.getAllUsers();
 	}
 
-	@Query(() => User, { name: 'user' })
-	async userQuery(
-		@Args('username', { type: () => String }) usernameParam: string,
-	) {
-		const user = await this.userService.getUser(usernameParam);
+	@Query(() => User)
+	async userQuery(@Args('userId', { type: () => String }) userId: string) {
+		const user = await this.userService.getUserById(userId);
 		if (user) return user;
 		return null;
 	}

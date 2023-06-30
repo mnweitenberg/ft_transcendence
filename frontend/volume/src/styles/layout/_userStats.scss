@@ -1,8 +1,7 @@
 .userStats {
-	.avatar {
+	.avatar_container {
 		width: 100px;
 		height: 100px;
-		border-radius: 100%;
 	}
 
 	.user {
@@ -40,9 +39,8 @@
 	justify-content: flex-start;
 	gap: 3em;
 
-	.avatar {
+	.avatar_container {
 		width: 100px;
 		height: 100px;
-		border-radius: 100%;
 	}
 }

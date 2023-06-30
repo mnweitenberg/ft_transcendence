@@ -37,9 +37,6 @@ const CURRENT_USER = gql`
 export function createModalProps(): i.ModalProps {
 	const { loading, error, data } = useQuery(CURRENT_USER);
 
-	// if (loading) return;
-	// if (error) return;
-
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [modalContent, setContent] = useState(<></>);
 
@@ -47,6 +44,7 @@ export function createModalProps(): i.ModalProps {
 		setContent(content);
 		setShowModal(true);
 	}
+
 	let userId = "";
 	let username = "";
 	let avatarfile = "";

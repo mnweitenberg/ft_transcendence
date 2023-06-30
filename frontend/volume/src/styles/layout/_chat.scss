@@ -12,10 +12,9 @@ section#chat {
 		padding: 1em 0 1em 2em;
 		transition: $transition-slow;
 
-		.avatar {
+		.avatar_container {
 			width: 60px;
 			height: 60px;
-			border-radius: 100%;
 		}
 
 		.name {
@@ -118,7 +117,7 @@ section#chat {
 			flex: 1 1 0;
 			text-align: right;
 			display: flex;
-			gap:0.5em;
+			gap: 0.5em;
 			flex-direction: column;
 			justify-content: space-between;
 		}
@@ -207,7 +206,7 @@ section#chat {
 		display: flex;
 		gap: 1em;
 
-		.avatar {
+		.avatar_container {
 			width: 40px;
 			height: 40px;
 			border-radius: 100%;
@@ -235,15 +234,14 @@ section#chat {
 		font-weight: bold;
 	}
 
-	h5{
-		margin:0;
-		color:$color-messages_friend;
+	h5 {
+		margin: 0;
+		color: $color-messages_friend;
 	}
 
-	.avatar {
+	.avatar_container {
 		height: 50px;
 		width: 50px;
-		border-radius: 100%;
 		margin-right: 1.5em;
 	}
 

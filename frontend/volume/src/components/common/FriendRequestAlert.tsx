@@ -20,6 +20,39 @@ const DENY_FRIEND = gql`
 	}
 `;
 
+export default function FriendRequestAlert({ user }: { user: any }) {
+	const [showModal, setShowModal] = useState(false);
+
+	useEffect(() => {
+		setShowModal(true);
+	}, [user]);
+
+	return (
+		<>
+			{showModal && (
+				<div className="modal">
+					<div className="modal-content">
+						{/* <span className="close" onClick={() => setShowModal(false)}>
+							&times;
+						</span> */}
+						<div className="requestAlert">
+							<div className="avatar_container">
+								<img src={convertEncodedImage(user.avatar.file)} />
+							</div>
+							<div className="user_actions">
+								<h1>{user.username}</h1>
+								<p>New friend request from {user.username}</p>
+							</div>
+						</div>
+						<FriendAccept friend_id={user.id} setShowModal={setShowModal} />
+						<FriendDeny friend_id={user.id} setShowModal={setShowModal} />
+					</div>
+				</div>
+			)}
+		</>
+	);
+}
+
 function FriendAccept({ friend_id, setShowModal }: { friend_id: string; setShowModal: any }) {
 	const [
 		accept_friend,
@@ -65,36 +98,3 @@ function FriendDeny({ friend_id, setShowModal }: { friend_id: string; setShowMod
 		</div>
 	);
 }
-
-function FriendRequestAlert({ user }: { user: any }) {
-	const [showModal, setShowModal] = useState(false);
-
-	useEffect(() => {
-		setShowModal(true);
-	}, [user]);
-
-	return (
-		<>
-			{showModal && (
-				<div className="modal">
-					<div className="modal-content">
-						{/* <span className="close" onClick={() => setShowModal(false)}>
-							&times;
-						</span> */}
-						<div className="requestAlert">
-							<img className="avatar" src={convertEncodedImage(user.avatar.file)} />
-							<div className="user_actions">
-								<h1>{user.username}</h1>
-								<p>New friend request from {user.username}</p>
-							</div>
-						</div>
-						<FriendAccept friend_id={user.id} setShowModal={setShowModal} />
-						<FriendDeny friend_id={user.id} setShowModal={setShowModal} />
-					</div>
-				</div>
-			)}
-		</>
-	);
-}
-
-export default FriendRequestAlert;

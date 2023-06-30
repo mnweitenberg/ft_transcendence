@@ -1,4 +1,3 @@
-
 div.background {
 	width: 100%;
 	height: 100vh;
@@ -10,35 +9,65 @@ div.background {
 	animation: AnimateBG 10s ease infinite;
 }
 
-.content_block {
-	// Center div
+.white_block {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	-moz-transform: translateX(-50%) translateY(-50%);
 	-webkit-transform: translateX(-50%) translateY(-50%);
 	transform: translateX(-50%) translateY(-50%);
-
-
 	margin: auto;
-	width: 90%;
+	width: 60%;
 	height: 90%;
-	font: Ariel !important;
 	background-color: white;
 	border-radius: 1em;
-	padding: 1em;
-	
-	.user_profile_settings {
-		background-color: white !important;
+
+}
+
+.settings_content {
+	margin: 3em 8em;
+
+	.wrapper {
+		margin-top: 2em;
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		gap: 5em;
 	}
 
-	.avatar {
-		width: 10em;
-		height: 10em;
+	.avatar_container {
+		width: 15em;
+		height: 15em;
 	}
 
 	.profile_form {
-		width: 20em;
+		width: 25em;
+	}
+
+	input {
+		margin-top: 1em;
+		margin-bottom: 3em;
+	}
+
+	input[type="file"] {
+		display: none;
+	}
+
+	.choose_file {
+		font-weight: 500;
+		color: $color-link;
+		text-decoration: inherit;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.choose_file:hover {
+		color: $color-hover;
+		cursor: pointer;
+	}
+
+	.submit_button {
+		margin-top: 3em;
 	}
 }
-

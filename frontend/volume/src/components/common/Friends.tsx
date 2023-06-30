@@ -17,15 +17,16 @@ function Friends(modalProps: i.ModalProps & { selectedUser: any }) {
 				{friends.map(function (friend: any) {
 					return (
 						<div className="flex_col" key={friend.username}>
-							<img
-								src={convertEncodedImage(friend.avatar.file)}
-								className="friend_list--avatar"
-								onClick={() => {
-									modalProps.toggleModal(
-										<UserStats {...modalProps} selectedUser={friend} />
-									);
-								}}
-							/>
+							<div className="friends_avatar_container">
+								<img
+									src={convertEncodedImage(friend.avatar.file)}
+									onClick={() => {
+										modalProps.toggleModal(
+											<UserStats {...modalProps} selectedUser={friend} />
+										);
+									}}
+								/>
+							</div>
 							{friend.username}
 						</div>
 					);

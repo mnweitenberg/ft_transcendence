@@ -32,10 +32,15 @@ body {
 
 #right_top {
 	grid-area: right_top;
+	display: flex;
+	justify-content: flex-end;
+	gap: 3em;
+	margin-top: 1em;
+	margin-right: 2em;
 }
 
-#logout {
-	position: absolute;
-	top: 1em;
-	right: 2em;
-}
+// #logout {
+// 	position: absolute;
+// 	top: 1em;
+// 	right: 2em;
+// }

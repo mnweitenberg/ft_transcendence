@@ -101,6 +101,17 @@ input:focus {
   outline: none;
 }
 
+.avatar_container {
+  border-radius: 100%;
+  overflow: hidden;
+}
+.avatar_container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 button {
   background-color: #0fa2a9;
   color: #eff4f6;
@@ -227,12 +238,11 @@ body {
 
 #right_top {
   grid-area: right_top;
-}
-
-#logout {
-  position: absolute;
-  top: 1em;
-  right: 2em;
+  display: flex;
+  justify-content: flex-end;
+  gap: 3em;
+  margin-top: 1em;
+  margin-right: 2em;
 }
 
 #auth {
@@ -309,10 +319,9 @@ section#chat .chat_container {
   padding: 1em 0 1em 2em;
   transition: 1s;
 }
-section#chat .chat_container .avatar {
+section#chat .chat_container .avatar_container {
   width: 60px;
   height: 60px;
-  border-radius: 100%;
 }
 section#chat .chat_container .name {
   height: 2em;
@@ -470,7 +479,7 @@ section#chat .new_chat {
   display: flex;
   gap: 1em;
 }
-.personalMessage .flexContainer .avatar {
+.personalMessage .flexContainer .avatar_container {
   width: 40px;
   height: 40px;
   border-radius: 100%;
@@ -491,10 +500,9 @@ section#chat .new_chat {
   margin: 0;
   color: #c0d7e0;
 }
-.new_chat .avatar {
+.new_chat .avatar_container {
   height: 50px;
   width: 50px;
-  border-radius: 100%;
   margin-right: 1.5em;
 }
 .new_chat .selectUser {
@@ -583,7 +591,7 @@ header .player {
   justify-content: space-between;
   height: 70px;
 }
-header .player .avatar {
+header .player .avatar_container {
   width: 70px;
   height: 70px;
   border-radius: 100%;
@@ -624,12 +632,11 @@ header .score {
 .match_history .td_score {
   width: 2em;
 }
-.match_history .match_avatar {
+.match_history .avatar_container {
   width: 30px;
   height: 30px;
   flex-basis: 30px;
   margin-bottom: -7px;
-  border-radius: 100%;
 }
 .match_history h4 {
   font-size: 1.5em;
@@ -675,14 +682,21 @@ section#profile .settings {
   gap: 15px;
   align-content: space-between;
 }
-.friend_list .friend_list--avatar {
-  border-radius: 100%;
+.friend_list .friends_avatar_container {
   width: 40px;
   height: 40px;
   opacity: 0.8;
   transition: 1s;
+  border-radius: 100%;
+  overflow: hidden;
 }
-.friend_list .friend_list--avatar:hover {
+.friend_list .friends_avatar_container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.friend_list .friends_avatar_container:hover {
   opacity: 1;
   transition: 0.1s;
   cursor: pointer;
@@ -716,10 +730,9 @@ section#queue .player {
   transition: 1s;
   align-items: center;
 }
-section#queue .player .avatar {
+section#queue .player .avatar_container {
   width: 40px;
   height: 40px;
-  border-radius: 100%;
 }
 section#queue .player .name {
   height: 40px;
@@ -785,10 +798,9 @@ section#ranking tr:hover {
   transition: 0.1s;
 }
 
-.userStats .avatar {
+.userStats .avatar_container {
   width: 100px;
   height: 100px;
-  border-radius: 100%;
 }
 .userStats .user {
   display: flex;
@@ -819,10 +831,9 @@ section#ranking tr:hover {
   justify-content: flex-start;
   gap: 3em;
 }
-.requestAlert .avatar {
+.requestAlert .avatar_container {
   width: 100px;
   height: 100px;
-  border-radius: 100%;
 }
 
 div.background {
@@ -836,7 +847,7 @@ div.background {
   animation: AnimateBG 10s ease infinite;
 }
 
-.content_block {
+.white_block {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -844,22 +855,50 @@ div.background {
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   margin: auto;
-  width: 90%;
+  width: 60%;
   height: 90%;
-  font: Ariel !important;
   background-color: white;
   border-radius: 1em;
-  padding: 1em;
 }
-.content_block .user_profile_settings {
-  background-color: white !important;
+
+.settings_content {
+  margin: 3em 8em;
 }
-.content_block .avatar {
-  width: 10em;
-  height: 10em;
+.settings_content .wrapper {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 5em;
 }
-.content_block .profile_form {
-  width: 20em;
+.settings_content .avatar_container {
+  width: 15em;
+  height: 15em;
+}
+.settings_content .profile_form {
+  width: 25em;
+}
+.settings_content input {
+  margin-top: 1em;
+  margin-bottom: 3em;
+}
+.settings_content input[type=file] {
+  display: none;
+}
+.settings_content .choose_file {
+  font-weight: 500;
+  color: #309a9f;
+  text-decoration: inherit;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.settings_content .choose_file:hover {
+  color: #0fa2a9;
+  cursor: pointer;
+}
+.settings_content .submit_button {
+  margin-top: 3em;
 }
 
 img.profile-settings {

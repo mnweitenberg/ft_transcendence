@@ -10,7 +10,7 @@ import Modal, { createModalProps } from "src/components/common/Modal";
 import { Game, createPongProps, handleFinishGame } from "src/components/game/Game";
 import * as i from "src/types/Interfaces";
 import { useAuth } from "src/utils/authLogic";
-import { queryCurrentUser } from "src/utils/queryUser";
+import { useQueryCurrentUser } from "src/utils/useQueryUser";
 
 function Home(): JSX.Element {
 	const modalProps: i.ModalProps = createModalProps();
@@ -23,7 +23,7 @@ function Home(): JSX.Element {
 		}
 	}, [pongProps.finished]);
 
-	const username = queryCurrentUser().username;
+	const username = useQueryCurrentUser().username;
 
 	return (
 		<div className="grid-container">
@@ -32,6 +32,7 @@ function Home(): JSX.Element {
 			<Header {...pongProps} />
 
 			<div id="right_top">
+				<Link to="/settings">settings</Link>
 				<a
 					id="logout"
 					onClick={() => {
@@ -54,9 +55,7 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">
-					<Link to="/settings">{username}</Link>
-				</h1>
+				<h1 className="section_header chat_profile_header">{username}</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>
