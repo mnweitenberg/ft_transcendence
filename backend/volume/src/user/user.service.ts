@@ -61,10 +61,24 @@ export class UserService {
 
 	async getPersonalChats(user: User): Promise<Array<PersonalChat>> {
 		const user_with_channels = await this.userRepository.findOne({
-			relations: { personal_chats: true },
+			relations: ['personal_chats', 'personal_chats.members'],
 			where: { id: user.id },
 		});
 		return user_with_channels.personal_chats;
+	}
+
+	async getAvailablePersonalChats(id: string): Promise<Array<User>> {
+		const user = await this.getUserById(id);
+		const userChannels = await this.getPersonalChats(user);
+		const currentChatUsersIds = userChannels.flatMap((channel) =>
+			channel.members.map((member) => member.id),
+		);
+		const availableUsers = await this.getAllUsers();
+		const availableChatUsers = availableUsers.filter(
+			(user) => !currentChatUsersIds.includes(user.id) && user.id !== id,
+		);
+		console.log(availableChatUsers);
+		return availableChatUsers;
 	}
 
 	async getMatchHistory(user: User): Promise<Array<Match>> {

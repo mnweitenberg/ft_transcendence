@@ -30,13 +30,13 @@ export class PersonalChat {
 	@Field(() => String, {
 		description: 'name of the channel',
 	})
-	name: string;
+	name: string = '';
 
 	@Column()
 	@Field(() => String, {
 		description: 'logo of the channel',
 	})
-	logo: string;
+	logo: string = '';
 
 	@Field(() => PersonalMessage, { nullable: true })
 	lastMessage: PersonalMessage;

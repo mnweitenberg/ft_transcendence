@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PersonalChat } from './entities/personal_chat.entity';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
-import { CreatePersonalChatInput } from './dto/create_personal_chat.input';
 import { User } from 'src/user/entities/user.entity';
 import { PersonalMessage } from '../message/entities/personal_message.entity';
 
@@ -23,18 +22,12 @@ export class PersonalChatService {
 		return this.channelRepository.findOne({ where: { id: id } });
 	}
 
-	async create(
-		createChannelInput: CreatePersonalChatInput,
-	): Promise<PersonalChat> {
-		const members = await Promise.all(
-			createChannelInput.member_ids.map((id) =>
-				this.userService.getUserById(id),
-			),
-		);
+	async create(userId1: string, userId2: string): Promise<PersonalChat> {
+		const user1 = await this.userService.getUserById(userId1);
+		const user2 = await this.userService.getUserById(userId2);
+		const members = [user1, user2];
 		const channel = this.channelRepository.create({
 			members,
-			name: createChannelInput.name,
-			logo: createChannelInput.logo,
 		});
 		return await this.channelRepository.save(channel);
 	}

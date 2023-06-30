@@ -1,6 +1,15 @@
 section#chat {
 	grid-area: chat;
 
+	.overview_wrapper {
+		max-height: 80vh;
+		box-sizing: border-box;
+		width: 100%;
+		height: calc(100% - 124px);
+		overflow-y: scroll;
+		overflow-x: hidden;
+	}
+
 	.chat_container {
 		display: flex;
 		flex-direction: row;
