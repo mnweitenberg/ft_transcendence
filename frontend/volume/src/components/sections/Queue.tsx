@@ -189,13 +189,13 @@ function JoinQueueElement() {
 	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_QUEUE) {
 		return (
 			<div>
-				<h3> You are in the queue </h3>
+				<h3>'Join queue' not available. You are in the queue </h3>
 			</div>
 		);
 	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_MATCH) {
 		return (
 			<div>
-				<h3> You are in a match</h3>
+				<h3>'Join queue' not available. You are in a match</h3>
 			</div>
 		);
 	}
