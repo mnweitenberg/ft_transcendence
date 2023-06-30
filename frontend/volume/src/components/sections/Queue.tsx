@@ -61,9 +61,9 @@ const QUEUE_CHANGED = gql`
 	}
 `;
 
-const CAN_JOIN_QUEUE = gql`
+const GET_QUEUE_AVAILABILITY = gql`
 	query {
-		canJoinQueue {
+		getQueueAvailability {
 			queueStatus
 		}
 	}
@@ -72,15 +72,16 @@ const CAN_JOIN_QUEUE = gql`
 const QUEUE_AVAILABILITY_CHANGED = gql`
 	subscription queueAvailabilityChanged($userId: String!) {
 		queueAvailabilityChanged(userId: $userId) {
-			state
+			queueStatus
 		}
 	}
 `;
 
-// TODO: add waiting for queue met plaatje (zie begin code voor html)
-//	check of queue goed update nadat joinQueue is geklikt
-
-// TODO: joinQueue knop moet terug komen nadat user niet meer in queue of match zit
+enum QueueStatus {
+	CAN_JOIN,
+	IN_MATCH,
+	IN_QUEUE,
+}
 
 export default function Queue(props: i.ModalProps) {
 	const {
@@ -149,43 +150,21 @@ export default function Queue(props: i.ModalProps) {
 	);
 }
 
-export enum QueueStatus {
-	CAN_JOIN,
-	IN_MATCH,
-	IN_QUEUE,
-}
-
 function JoinQueueElement() {
-	const [
-		joinQueue,
-		{
-			data: queue_data,
-			loading: queue_loading,
-			error: queue_error,
-			called: tried_joining_queue,
-		},
-	] = useMutation(JOIN_QUEUE);
-
+	const [joinQueue, { loading: queue_loading, error: queue_error }] = useMutation(JOIN_QUEUE);
 	const { data: user_data, loading: user_loading, error: user_error } = useQuery(CURRENT_USER);
-
-	const { data: can_join_queue, subscribeToMore } = useQuery(CAN_JOIN_QUEUE);
+	const { data: queue_availability, subscribeToMore } = useQuery(GET_QUEUE_AVAILABILITY);
 
 	useEffect(() => {
 		if (!user_data?.currentUserQuery) return;
-		console.log("subscribed to more");
 		return subscribeToMore({
 			document: QUEUE_AVAILABILITY_CHANGED,
 			variables: { userId: user_data.currentUserQuery.id },
 			updateQuery: (prev, { subscriptionData }) => {
-				console.log("event!");
 				if (!subscriptionData.data) return prev;
 				return Object.assign({}, prev, {
-					canJoinQueue: subscriptionData.data.queueAvailabilityChanged.state,
+					getQueueAvailability: subscriptionData.data.queueAvailabilityChanged,
 				});
-				// const newQueue = subscriptionData.data.queueChanged;
-				// return Object.assign({}, prev, {
-				// 	getWholeQueue: newQueue,
-				// });
 			},
 		});
 	}, [user_data]);
@@ -197,39 +176,29 @@ function JoinQueueElement() {
 		joinQueue();
 	};
 
-	console.log(can_join_queue?.canJoinQueue.queueStatus);
-
-	if (can_join_queue?.canJoinQueue.queueStatus === QueueStatus.CAN_JOIN) {
+	if (queue_loading) {
+		return <>Loading queue...</>;
+	}
+	if (queue_error) {
+		return <>error joining queue</>;
+	}
+	if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.CAN_JOIN) {
 		return (
 			<form onSubmit={handleClick}>
 				<button type="submit">Join queue</button>
 			</form>
 		);
-	}
-
-	// if (tried_joining_queue) {
-	if (queue_loading) {
-		return <>joining queue...</>;
-	}
-	if (queue_error) {
-		return <>error joining queue</>;
-	}
-
-	return (
-		<>
-			<div className="player player--one">
-				<h3 className="name">{user_data.currentUserQuery.username}</h3>
-				<img className="avatar" src={user_data.currentUserQuery.avatar} />
-				<h3> {queue_data.joinQueue} </h3>
+	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_QUEUE) {
+		return (
+			<div>
+				<h3> You are in the queue </h3>
 			</div>
-		</>
-	);
-	// }
-	// } else {
-	// 	return (
-	// 		<form onSubmit={handleClick}>
-	// 			<button type="submit">Join queue2</button>
-	// 		</form>
-	// 	);
-	// }
+		);
+	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_MATCH) {
+		return (
+			<div>
+				<h3> You are in a match</h3>
+			</div>
+		);
+	}
 }

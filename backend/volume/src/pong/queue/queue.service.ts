@@ -43,22 +43,22 @@ export class QueueService {
 	}
 
 	async joinQueue(player_id: string): Promise<string> {
-		const ret = this.canPlayerLookForMatch(player_id);
-		if (ret !== 'yes') {
-			return ret;
+		if (!this.canPlayerLookForMatch(player_id)) {
+			return ;
 		}
 
-		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: {userId: player_id, state: false} });
-
+		const queueAvailability: QueueAvailability = new QueueAvailability;
+		queueAvailability.queueStatus = QueueStatus.IN_QUEUE;
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: player_id } );
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
 				this.addQueuedMatch(this.users_looking_for_match[i], player_id);
 				this.users_looking_for_match.splice(i, 1);
-				return 'Match found';
+				return ;
 			}
 		}
 		this.users_looking_for_match.push(player_id);
-		return 'You joined the queue';
+		return ;
 	}
 
 	removeCurrentMatch() {
@@ -70,6 +70,11 @@ export class QueueService {
 		this.current_match = this.queued_matches.at(0);
 		this.queued_matches.splice(0, 1);
 		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
+
+		const queueAvailability: QueueAvailability = new QueueAvailability;
+		queueAvailability.queueStatus = QueueStatus.IN_MATCH;
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.current_match.p1.id } );
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.current_match.p2.id } );
 		return this.current_match;
 	}
 
@@ -77,9 +82,10 @@ export class QueueService {
 		return this.queued_matches;
 	}
 
-	canJoinQueue(playerId: string) : QueueAvailability {
+	getQueueAvailability(playerId: string) : QueueAvailability {
 		const queueAvailability: QueueAvailability = new QueueAvailability;
 
+		queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
 				queueAvailability.queueStatus = QueueStatus.IN_QUEUE;
@@ -99,14 +105,13 @@ export class QueueService {
 				return queueAvailability;
 			}
 		}
-		queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
 		return queueAvailability;
 	}
 
-	canPlayerLookForMatch(playerId: string): string {
+	canPlayerLookForMatch(playerId: string): Boolean {
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
-				return 'You are already in the queue';
+				return false;
 			}
 		}
 		if (
@@ -114,17 +119,17 @@ export class QueueService {
 			(this.current_match.p1.id === playerId ||
 				this.current_match.p2.id === playerId)
 		) {
-			return 'is already playing a match';
+			return false;
 		}
 		for (let i = 0; i < this.queued_matches.length; i++) {
 			if (
 				playerId === this.queued_matches[i].p1.id ||
 				playerId === this.queued_matches[i].p2.id
 			) {
-				return 'You are matched with another player';
+				return false;
 			}
 		}
-		return 'yes';
+		return true;
 	}
 
 	/*
