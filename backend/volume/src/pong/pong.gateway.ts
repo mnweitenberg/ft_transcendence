@@ -11,14 +11,14 @@ import { Server, Socket } from 'socket.io';
 import * as C from './constants';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 import { JwtWsGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PongService } from './pong.service';
 
 @WebSocketGateway({
 	cors: {
 		credentials: true,
-		origin: `https://${process.env["DOMAIN"]}/`,
+		origin: `https://${process.env['DOMAIN']}/`,
 	},
 })
 @UseGuards(JwtWsGuard)
@@ -28,7 +28,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	async handleConnection(client: Socket, ...args: any[]): Promise<void> {
+	async handleConnection(client: Socket): Promise<void> {
 		console.log(`Client connected: ${client.id}`);
 
 		this.pongService.startLoop();

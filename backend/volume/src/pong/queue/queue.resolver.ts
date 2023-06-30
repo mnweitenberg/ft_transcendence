@@ -5,7 +5,8 @@ import { QueuedMatch } from './queuedmatch.model';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { UserInfo } from 'src/auth/auth.service';
+// import { UserInfo } from 'src/auth/auth.service';
+import { UserInfo } from 'src/auth/user-info.interface';
 import { QueueAvailability } from './queuestatus.model';
 
 @ObjectType()
@@ -74,7 +75,6 @@ export class QueueResolver {
 	fillDbUser() {
 		return this.queueService.fillDbUser();
 	}
-
 
 	@Query(() => Number)
 	addAvatarToUser(@Args('username') username: string) {

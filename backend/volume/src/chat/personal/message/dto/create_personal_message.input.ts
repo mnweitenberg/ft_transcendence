@@ -11,9 +11,4 @@ export class CreatePersonalMessageInput {
 		description: 'content of the message',
 	})
 	content: string;
-
-	@Field(() => String, {
-		description: 'id of the user who sent this message',
-	})
-	author_id: string;
 }

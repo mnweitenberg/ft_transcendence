@@ -1,8 +1,9 @@
 import "src/styles/style.css";
 import * as i from "src/types/Interfaces";
 import { useEffect } from "react";
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import UserStats from "src/components/common/UserStats";
 
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
@@ -111,13 +112,17 @@ export default function Queue(props: i.ModalProps) {
 		<>
 			<JoinQueueElement />
 			{queue_data.getWholeQueue.map(function (game: any) {
-				// if (!game.p1 || !game.p2) return <JoinQueueElement />;
 				return (
 					<div
 						className="flex_row_spacebetween"
 						key={game.p1.username + game.p2.username}
 					>
-						<div className="player player--one">
+						<div
+							className="player player--one"
+							onClick={() =>
+								props.toggleModal(<UserStats {...props} selectedUser={game.p1} />)
+							}
+						>
 							<h3 className="name">{game.p1.username}</h3>
 							<img
 								className="avatar"
@@ -125,11 +130,13 @@ export default function Queue(props: i.ModalProps) {
 							/>
 						</div>
 
-						<div className="player player--two">
-							<img
-								className="avatar"
-								src={convertEncodedImage(game.p2.avatar.file)}
-							/>
+						<div
+							className="player player--two"
+							onClick={() =>
+								props.toggleModal(<UserStats {...props} selectedUser={game.p2} />)
+							}
+						>
+							<img className="avatar"src={convertEncodedImage(game.p2.avatar.file)} />
 							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>

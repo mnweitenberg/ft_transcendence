@@ -1,3 +1,4 @@
+
 div.background {
 	width: 100%;
 	height: 100vh;
@@ -9,7 +10,7 @@ div.background {
 	animation: AnimateBG 10s ease infinite;
 }
 
-div.content-block {
+.content_block {
 	// Center div
 	position: absolute;
 	top: 50%;
@@ -26,40 +27,18 @@ div.content-block {
 	background-color: white;
 	border-radius: 1em;
 	padding: 1em;
-
-	display: grid;
-	grid-template-columns: 100%;
-	grid-template-rows: 0.2fr 1.8fr;
-	gap: 0px 0px;
-	grid-auto-flow: row;
-	grid-template-areas:
-		"header"
-		"content";
 	
-	.header {
-		grid-area: header;
-		.row {
-			height: 100%;
-			width: 75%;
-	
-			display: flex;
-			gap: 16px;
-			flex-direction: row;
-			align-items: center;
-			margin: auto;
-	
-			a {
-				flex: 1;
-				div {
-					font-size: 3em !important;
-					text-align: center;
-					color: black;
-				}
-			}
-		}
+	.user_profile_settings {
+		background-color: white !important;
 	}
-	
-	.content {
-		grid-area: content;
+
+	.avatar {
+		width: 10em;
+		height: 10em;
+	}
+
+	.profile_form {
+		width: 20em;
 	}
 }
+

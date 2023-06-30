@@ -30,12 +30,19 @@ export class User {
 	@Column({
 		unique: true,
 	})
-	@Field() 
+	@Field()
 	username: string;
 
-	@OneToOne(
-		() => Avatar, {onDelete: "SET NULL", orphanedRowAction: "delete"}
-	)
+	@Column({ nullable: true })
+	twoFASecret: string;
+
+	@Column('boolean', { default: false })
+	twoFAEnabled: boolean = false;
+
+	@OneToOne(() => Avatar, {
+		onDelete: 'SET NULL',
+		orphanedRowAction: 'delete',
+	})
 	@JoinColumn()
 	@Field()
 	avatar: Avatar;
@@ -58,7 +65,17 @@ export class User {
 	@Field(() => [Match])
 	match_history: Match[];
 
-	@ManyToMany(type => User, user => user.friends)
+	@ManyToMany(() => User, (user) => user.friends)
 	@JoinTable()
 	friends: User[];
+
+	@ManyToMany(() => User, (user) => user.incoming_friend_requests)
+	@JoinTable()
+	@Field(() => [User])
+	incoming_friend_requests: User[];
+
+	@ManyToMany(() => User, (user) => user.outgoing_friend_requests)
+	@JoinTable()
+	@Field(() => [User])
+	outgoing_friend_requests: User[];
 }

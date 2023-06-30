@@ -1,47 +1,36 @@
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import UserStats from "./UserStats";
-import { gql, useQuery } from "@apollo/client";
+import { convertEncodedImage } from "src/utils/convertEncodedImage";
+import { useFriendsData } from "src/utils/useFriendsData";
 
-const GET_FRIENDS = gql`
-	query {
-		getFriends {
-			username
-		}
-	}
-`;
+function Friends(modalProps: i.ModalProps & { selectedUser: any }) {
+	const { friends, loading, error } = useFriendsData(modalProps.selectedUser.id);
 
-/*
-	
-
-*/
-function Friends({ userId }: { userId: string }) {
-	const { data, loading, error } = useQuery(GET_FRIENDS);
-
-	if (loading) {
-		return <div>Loading friends</div>;
-	}
-	if (error) {
-		return <div>Error friends</div>;
-	}
+	if (loading) return <div>Loading friends</div>;
+	if (error) return <div>Error friends</div>;
+	if (!friends) return <div>No friends</div>;
 	return (
 		<div className="stat_block">
 			<h2>Friends</h2>
 			<div className="friend_list">
-				{data.getFriends.map(function (friend) {
+				{friends.map(function (friend: any) {
 					return (
-						<div key={friend.username}>
-							<h3 className="name">{friend.username}</h3>
+						<div className="flex_col" key={friend.username}>
 							<img
+								src={convertEncodedImage(friend.avatar.file)}
 								className="friend_list--avatar"
-								onClick={() => props.toggleModal(friend, <UserStats {...props} />)}
-								src={friend.avatar}
+								onClick={() => {
+									modalProps.toggleModal(
+										<UserStats {...modalProps} selectedUser={friend} />
+									);
+								}}
 							/>
+							{friend.username}
 						</div>
 					);
 				})}
 			</div>
-			{/* <div>Friend requests</div> */}
 		</div>
 	);
 }

@@ -40,7 +40,6 @@ const SUBSCRIBE_MESSAGES = gql`
 
 const SEND_MESSAGE = gql`
 	mutation sendMessage($channel_id: String!, $content: String!) {
-		# TODO: do something better than author_id
 		createPersonalMessage(channel_id: $channel_id, content: $content) {
 			id
 		}
@@ -120,17 +119,13 @@ export default function PersonalChat({
 				<div className="groupchat_info">
 					<a
 						className="link"
-						onClick={() =>
-							props.toggleModal(props.selectedUser, <GroupStats {...props} />)
-						}
+						onClick={() => props.toggleModal(<GroupStats {...props} />)}
 					>
 						group stats
 					</a>
 					<a
 						className="link"
-						onClick={() =>
-							props.toggleModal(props.selectedUser, createLeaveGroupChatAlert(props))
-						}
+						onClick={() => props.toggleModal(createLeaveGroupChatAlert(props))}
 					>
 						leave group
 					</a>

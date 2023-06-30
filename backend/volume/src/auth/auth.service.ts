@@ -4,6 +4,9 @@ import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
+import { authenticator } from 'otplib';
+import { UserInfo } from 'src/auth/user-info.interface';
+
 const axios = require('axios').default;
 
 export interface IntraToken {
@@ -15,11 +18,6 @@ export interface IntraToken {
 	created_at: number;
 }
 
-export interface UserInfo {
-	intraId: string;
-	userUid: string;
-}
-
 async function postTemporaryCode(intraCode: string): Promise<string> {
 	try {
 		const response: any = await axios.post(
@@ -29,7 +27,7 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 				client_id: process.env.CLIENT_UID,
 				client_secret: process.env.CLIENT_SECRET,
 				code: JSON.parse(intraCode).code,
-				redirect_uri: `https://${process.env["DOMAIN"]}/api/callback`,
+				redirect_uri: `https://${process.env['DOMAIN']}/api/callback`,
 			},
 		);
 		return JSON.stringify(response.data);
@@ -38,12 +36,18 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 	}
 }
 
-async function downloadIntraAvatar(url: string, axiosConfig: any): Promise<UploadAvatarInput> {
-	const file = await axios.get(url, {
-			responseType: 'arraybuffer'
+async function downloadIntraAvatar(
+	url: string,
+	axiosConfig: any,
+): Promise<UploadAvatarInput> {
+	const file = await axios
+		.get(url, {
+			responseType: 'arraybuffer',
 		})
-		.then(response => Buffer.from(response.data, 'binary').toString('base64'));
-	return { parentUserUid: "", file: file, filename: "intraPic" };
+		.then((response) =>
+			Buffer.from(response.data, 'binary').toString('base64'),
+		);
+	return { parentUserUid: '', file: file, filename: 'intraPic' };
 }
 
 @Injectable()
@@ -62,7 +66,7 @@ export class AuthService {
 		return responseJSON;
 	}
 
-	async linkTokenToUser(intraToken: IntraToken): Promise<UserInfo> {
+	async linkTokenToUser(intraToken: IntraToken): Promise<User> {
 		const axiosConfig = {
 			headers: {
 				Authorization:
@@ -77,21 +81,42 @@ export class AuthService {
 			response.data.id,
 		);
 		if (!user) {
-			const intraAvatar = await downloadIntraAvatar(response.data.image.versions.small, axiosConfig);
-			console.log(response.data.image.versions.micro);
+			const intraAvatar = await downloadIntraAvatar(
+				response.data.image.versions.small,
+				axiosConfig,
+			);
 			user = await this.userService.create({
 				intraId: response.data.id,
 				username: response.data.login,
 			});
 			intraAvatar.parentUserUid = user.id;
 			user.avatar = await this.userAvatarService.create(intraAvatar);
-			await this.userService.save(user);
+			user = await this.userService.save(user);
 		}
-		return { userUid: user.id, intraId: user.intraId };
+		return user;
 	}
 
 	async getJwtCookie(userInfo: UserInfo): Promise<string> {
 		const token = await this.jwtService.signAsync(userInfo);
 		return JSON.stringify({ access_token: token });
+	}
+
+	async generateTwoFASecret(userInfo: UserInfo) {
+		const secret = authenticator.generateSecret();
+		const otpAuthUrl = authenticator.keyuri('dummy', 'PONG', secret);
+
+		await this.userService.setTwoFA(secret, userInfo.userUid);
+		return {
+			secret,
+			otpAuthUrl,
+		};
+	}
+
+	async verify2FACode(twoFACode: string, userId: string) {
+		const user = await this.userService.getUserById(userId);
+		return authenticator.verify({
+			token: twoFACode,
+			secret: user.twoFASecret,
+		});
 	}
 }

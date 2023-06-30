@@ -66,6 +66,12 @@ section {
 	width: 100%;
 }
 
+.flex_col {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
 a,
 .link {
 	font-weight: 500;

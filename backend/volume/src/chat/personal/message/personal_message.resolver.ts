@@ -10,21 +10,32 @@ import { PersonalMessage } from './entities/personal_message.entity';
 import { CreatePersonalMessageInput } from './dto/create_personal_message.input';
 import { PersonalMessageService } from './personal_message.service';
 import { pubSub } from 'src/app.module';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
+import { UserInfo } from 'src/auth/user-info.interface';
 
-@Resolver((of) => PersonalMessage)
+@Resolver(() => PersonalMessage)
 export class PersonalMessageResolver {
 	constructor(private readonly message_service: PersonalMessageService) {}
 
-	@Mutation((returns) => PersonalMessage, { nullable: true })
-	async createMessage(@Args() message_input: CreatePersonalMessageInput) {
-		const message = this.message_service.create(message_input);
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => PersonalMessage, { nullable: true })
+	async createPersonalMessage(
+		@Args() message_input: CreatePersonalMessageInput,
+		@AuthUser() user_info: UserInfo,
+	) {
+		const message = this.message_service.create(
+			message_input,
+			user_info.userUid,
+		);
 		pubSub.publish('personal_message_sent', {
 			personal_message_sent: message,
 		});
 		return message;
 	}
 
-	@Subscription((returns) => PersonalMessage, {
+	@Subscription(() => PersonalMessage, {
 		filter: async (payload, variables) => {
 			console.log({
 				payload: {

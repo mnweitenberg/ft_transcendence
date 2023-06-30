@@ -14,6 +14,11 @@ import { UserService } from 'src/user/user.service';
 		TypeOrmModule.forFeature([User]),
 		TypeOrmModule.forFeature([PersonalChat]),
 	],
-	providers: [PersonalMessageService, PersonalMessageResolver, PersonalChatService, UserService],
+	providers: [
+		PersonalMessageService,
+		PersonalMessageResolver,
+		PersonalChatService,
+		UserService,
+	],
 })
 export class PersonalMessageModule {}
