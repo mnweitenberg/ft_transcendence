@@ -2,7 +2,6 @@ import "../../styles/style.css";
 import { gql, useQuery, useSubscription } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
-// import { useQueryWithSubscription } from "../../utils/useQueryWithSubscription";
 
 const GET_INITIAL_MATCH_HISTORY = gql`
 	query getInitialMatchHistory($userId: String!) {

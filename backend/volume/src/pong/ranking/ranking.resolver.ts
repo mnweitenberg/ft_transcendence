@@ -13,10 +13,8 @@ export class RankingResolver {
 	}
 
 	@Query(() => [Ranking])
-	async getInitialRanking() {
-		const ranking = await this.rankingRepo.findAll();
-		ranking.sort((a, b) => b.score - a.score);
-		return ranking;
+	async getRanking() {
+		return await this.rankingRepo.findAll();
 	}
 
 	@Query(() => Ranking, { nullable: true })

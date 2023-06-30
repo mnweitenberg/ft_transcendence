@@ -7,9 +7,8 @@ import Friends from "src/components/common/Friends";
 
 export default function Profile(modalProps: i.ModalProps) {
 	const user = queryCurrentUser();
-	if (user === "loading" || user === "error") {
-		return user;
-	}
+	if (user === "loading" || user === "error") return user;
+
 	const userId = user.id;
 	return (
 		<>

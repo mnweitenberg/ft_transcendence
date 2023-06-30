@@ -13,7 +13,11 @@ export class RankingRepository {
 	) {}
 
 	public async findAll(): Promise<Ranking[]> {
-		return this.rankingRepo.find({ relations: { user: true } });
+		const ranking = await this.rankingRepo.find({
+			relations: { user: true },
+		});
+		ranking.sort((a, b) => b.score - a.score);
+		return ranking;
 	}
 
 	public async getRankingByUser(userId: string): Promise<Ranking> {
