@@ -26,7 +26,6 @@ export default function JoinChannel(props: i.ModalProps & { refetchChannels: () 
 				<PrivateChannel />
 			) : (
 				<PublicChannel
-					userId={props.userId}
 					setShowModal={props.setShowModal}
 					refetchChannels={props.refetchChannels}
 				/>
@@ -58,7 +57,7 @@ function PrivateChannel() {
 
 const GET_ALL_PUBLIC_CHANNELS = gql`
 	query {
-		all_group_chats {
+		all_available_public_channels {
 			id
 			name
 			logo
@@ -81,15 +80,11 @@ const JOIN_GROUP_CHAT = gql`
 		}
 	}
 `;
-// TO DO:
-// Should only show channels that the user is not already a member of
-// Should show a message if there are no channels to join
+
 function PublicChannel({
-	userId,
 	setShowModal,
 	refetchChannels,
 }: {
-	userId: string;
 	setShowModal: (showModal: boolean) => void;
 	refetchChannels: () => void;
 }) {
@@ -109,6 +104,7 @@ function PublicChannel({
 		}
 	}
 
+	if (data && data.all_available_public_channels.length === 0) return <p>No channels to join</p>;
 	if (joinError) return <p>Error: {joinError.message}</p>;
 	if (joinLoading) return <p>Joining...</p>;
 
@@ -117,7 +113,7 @@ function PublicChannel({
 
 	return (
 		<div className="new_chat">
-			{data.all_group_chats.map(function (chat: any) {
+			{data.all_available_public_channels.map(function (chat: any) {
 				return (
 					<div key={chat.id} className="selectUser">
 						<img className="avatar" src={chat.logo} />

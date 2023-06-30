@@ -279,3 +279,23 @@ section#chat {
 	}
 
 }
+
+input[type="file"] {
+	display: none;
+}
+
+.choose_file {
+	font-weight: 500;
+	color: $color-link;
+	text-decoration: inherit;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-top: 0.5em;
+	margin-bottom: 2em;
+}
+
+.choose_file:hover {
+	color: $color-hover;
+	cursor: pointer;
+}

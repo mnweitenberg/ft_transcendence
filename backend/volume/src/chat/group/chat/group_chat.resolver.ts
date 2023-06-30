@@ -23,6 +23,14 @@ export class GroupChatResolver {
 		return this.group_chat_service.getAllChannels();
 	}
 
+	@Query(() => [GroupChat])
+	@UseGuards(JwtAuthGuard)
+	async all_available_public_channels(@AuthUser() userInfo: UserInfo) {
+		return this.group_chat_service.getAvailablePublicChannels(
+			userInfo.userUid,
+		);
+	}
+
 	@Query(() => GroupChat) // TODO: add guards, to check if the user is a member of the channel, else disallow (also do this in other places)
 	async group_chat(@Args('id') id: string) {
 		return this.group_chat_service.getChannelById(id);

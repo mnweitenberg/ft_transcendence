@@ -533,6 +533,26 @@ section#chat .new_chat {
   right: 0;
 }
 
+input[type=file] {
+  display: none;
+}
+
+.choose_file {
+  font-weight: 500;
+  color: #309a9f;
+  text-decoration: inherit;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 0.5em;
+  margin-bottom: 2em;
+}
+
+.choose_file:hover {
+  color: #0fa2a9;
+  cursor: pointer;
+}
+
 #game {
   grid-area: game;
   background-color: #eff4f6;
