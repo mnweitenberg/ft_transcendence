@@ -12,9 +12,9 @@ header {
 	.player {
 		display: flex;
 		justify-content: space-between;
-		height: 70px;
+		// height: 70px;
 
-		.avatar {
+		.avatar_container {
 			width: 70px;
 			height: 70px;
 			border-radius: 100%;

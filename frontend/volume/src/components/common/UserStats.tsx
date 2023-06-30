@@ -6,7 +6,7 @@ import * as i from "../../types/Interfaces";
 import { createChallengeAlert, createBlockAlert } from "../../utils/utils";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useFriendsData } from "src/utils/useFriendsData";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { useOutgoingRequests } from "src/utils/useOutgoingRequests";
 
 export default function UserStats(modalProps: i.ModalProps & { selectedUser: any }) {
@@ -43,10 +43,9 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 	return (
 		<div className="userStats">
 			<div className="user">
-				<img
-					className="avatar"
-					src={convertEncodedImage(modalProps.selectedUser.avatar.file)}
-				/>
+				<div className="avatar_container">
+					<img src={convertEncodedImage(modalProps.selectedUser.avatar.file)} />
+				</div>
 				{renderUserActions()}
 			</div>
 			<Stats userId={modalProps.selectedUser.id} />
@@ -75,14 +74,16 @@ function renderFriendRequestActions(friends: any, modalProps: any) {
 		useMutation(INVITE_FRIEND);
 	const { outgoingRequests, loading, error } = useOutgoingRequests(modalProps.userId);
 
-	if (loading) return <>Loading</>;
-	if (loadingRemove) return <>Loading</>;
-	if (loadingRequest) return <>Loading</>;
+	if (loading) return <> </>;
+	if (loadingRemove) return <> </>;
+	if (loadingRequest) return <>send friend request</>;
 
 	if (error) return <>error</>;
 	if (errorRemove) return <>error</>;
 	if (errorRequest) return <>error</>;
 
+	if (outgoingRequests.find((request: any) => request.id === modalProps.selectedUser.id))
+		return <>friend request has been sent</>;
 	if (friends.find((friend: any) => friend.id === modalProps.selectedUser.id))
 		return (
 			<a
@@ -94,8 +95,6 @@ function renderFriendRequestActions(friends: any, modalProps: any) {
 				defriend {modalProps.selectedUser.username}
 			</a>
 		);
-	if (outgoingRequests.find((request: any) => request.id === modalProps.selectedUser.id))
-		return <>friend request has been sent</>;
 	return (
 		<a
 			className="link"

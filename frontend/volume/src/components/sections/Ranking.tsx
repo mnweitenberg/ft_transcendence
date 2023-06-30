@@ -1,12 +1,12 @@
 import "src/styles/style.css";
 import UserStats from "src/components/common/UserStats";
 import * as i from "src/types/Interfaces";
-import { gql } from "@apollo/client";
-import { useQueryWithSubscription } from "src/utils/useQueryWithSubscription";
+import { gql, useQuery, useSubscription } from "@apollo/client";
+import { useState, useEffect } from "react";
 
-const GET_INITIAL_RANKING = gql`
-	query getInitialRanking {
-		getInitialRanking {
+const GET_RANKING = gql`
+	query getRanking {
+		getRanking {
 			user {
 				id
 				username
@@ -40,34 +40,23 @@ const RANKING_CHANGED = gql`
 	}
 `;
 
-const GET_RANKING = gql`
-	query getRanking {
-		getRanking {
-			user {
-				id
-				intraId
-				username
-				avatar {
-					file
-				}
-			}
-			rank
-			wins
-			losses
-			score
-		}
-	}
-`;
-
 function Ranking(modalProps: i.ModalProps) {
-	const {
-		data: ranking,
-		loading: queryLoading,
-		error: queryError,
-	} = useQueryWithSubscription(GET_INITIAL_RANKING, RANKING_CHANGED);
+	const [ranking, setRanking] = useState([]);
+	const { data: subData } = useSubscription(RANKING_CHANGED);
+	const { data: queryData, loading: queryLoading, error: queryError } = useQuery(GET_RANKING);
+
+	useEffect(() => {
+		if (queryData) setRanking(queryData.getRanking);
+	}, [queryData]);
+
+	useEffect(() => {
+		if (subData) setRanking(subData.rankingHasBeenUpdated);
+	}, [subData]);
 
 	if (queryLoading) return <div> Loading </div>;
 	if (queryError) return <div> Error </div>;
+	if (!ranking) return <div> No ranking </div>;
+
 	return (
 		<table>
 			<thead>

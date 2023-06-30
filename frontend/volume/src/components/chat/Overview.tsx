@@ -2,7 +2,6 @@ import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
 import { gql, useQuery } from "@apollo/client";
-import { queryCurrentUser } from "src/utils/queryUser";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import JoinChannel from "./JoinChannel";
 import CreateChannel from "./CreateChannel";
@@ -157,7 +156,9 @@ function PersonalChat() {
 			{data.allUsersQuery.map(function (user: any) {
 				return (
 					<div key={user.username} className="selectUser">
-						{/* <img className="avatar" src={convertEncodedImage(user?.avatar.file)} /> */}
+						<div className="avatar_container">
+							<img src={convertEncodedImage(user?.avatar.file)} />
+						</div>
 						<button onClick={() => CreateNewPersonalChannel(user)}>
 							Send message to {user.username}
 						</button>
@@ -168,7 +169,7 @@ function PersonalChat() {
 	);
 }
 
-function CreateNewPersonalChannel(user: i.User) {
+function CreateNewPersonalChannel(user: any) {
 	console.log(user.username);
 }
 

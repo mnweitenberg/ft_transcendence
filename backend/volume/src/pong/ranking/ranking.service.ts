@@ -100,8 +100,4 @@ export class RankingService {
 			rankingHasBeenUpdated: ranking,
 		});
 	}
-
-	async getRanking(): Promise<Ranking[]> {
-		return await this.rankingRepo.findAll();
-	}
 }

@@ -146,7 +146,9 @@ export default function PersonalChat({
 					return (
 						<div key={message.id} className="friend">
 							<div className="flexContainer">
-								<img className="avatar" src={message.author.avatar} />
+								<div className="avatar_container">
+									<img src={message.author.avatar} />
+								</div>
 								<div>
 									<h3>{message.author.username}</h3>
 									{message.content}{" "}

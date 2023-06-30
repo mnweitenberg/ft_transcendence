@@ -1,51 +1,31 @@
 import { ReactNode } from "react";
-//////////
-// CHAT //
-//////////
-
-// export interface Chat {
-// 	content: string;
-// 	name?: string;
-// 	class: 'user' | 'friend';
-// }
-
-export interface Chat {
-	id: number;
-	// date: Date;
-	message: string;
-	sender: User;
-	reciever: User;
-}
-
-export interface Channel {
-	name: string;
-	avatar: string;
-	creator: User;
-	members: Array<User>;
-}
-
-export interface PrivateChannel extends Channel {
-	password: string;
-}
 
 ///////////////
 // USERSTATS //
 ///////////////
 
-interface Stats {
-	ranking: number;
-	wins: number;
-	losses: number;
-	score: number;
-}
+// interface Stats {
+// 	ranking: number;
+// 	wins: number;
+// 	losses: number;
+// 	score: number;
+// }
+
+// export interface User {
+// 	id: string;
+// 	username: string;
+// 	avatar: string;
+// 	stats: Stats;
+// 	// chat?: Array<Chat>;
+// 	friends?: Array<User>;
+// }
 
 export interface User {
 	id: string;
 	username: string;
-	avatar?: string;
-	stats: Stats;
-	// chat?: Array<Chat>;
-	friends?: Array<User>;
+	avatar: {
+		file: string;
+	};
 }
 
 ///////////////
@@ -96,8 +76,6 @@ export interface ModalProps {
 	username: string;
 	avatarfile: string;
 	toggleModal: (content: JSX.Element) => void;
-	// selectedUser: any;
-	// setSelectedUser: (user: any) => void;
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
 	modalContent: JSX.Element | null;
@@ -105,8 +83,8 @@ export interface ModalProps {
 }
 
 export interface PongProps {
-	players: User[];
-	setPlayers: (players: User[]) => void;
+	players: any[];
+	setPlayers: (players: any[]) => void;
 	playersAvailable: boolean;
 	setPlayersAvailable: (playersAvailable: boolean) => void;
 	score: number[];

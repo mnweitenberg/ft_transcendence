@@ -125,10 +125,9 @@ export default function Queue(props: i.ModalProps) {
 							}
 						>
 							<h3 className="name">{game.p1.username}</h3>
-							<img
-								className="avatar"
-								src={convertEncodedImage(game.p1.avatar.file)}
-							/>
+							<div className="avatar_container">
+								<img src={convertEncodedImage(game.p1.avatar.file)} />
+							</div>
 						</div>
 
 						<div
@@ -137,10 +136,9 @@ export default function Queue(props: i.ModalProps) {
 								props.toggleModal(<UserStats {...props} selectedUser={game.p2} />)
 							}
 						>
-							<img
-								className="avatar"
-								src={convertEncodedImage(game.p2.avatar.file)}
-							/>
+							<div className="avatar_container">
+								<img src={convertEncodedImage(game.p2.avatar.file)} />
+							</div>
 							<h3 className="name">{game.p2.username}</h3>
 						</div>
 					</div>
