@@ -4,10 +4,10 @@ import { QueuedMatch } from './queuedmatch.model';
 import { UserService } from 'src/user/user.service';
 import { CreateUserInput } from 'src/user/dto/create-user.input';
 import { User } from 'src/user/entities/user.entity';
-
-import { ChangeUserDataInput } from 'src/user/dto/change-user-data-input';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { Avatar } from 'src/user/entities/avatar.entity';
+import { QueueAvailability } from './queuestatus.model';
+import { QueueStatus } from './queuestatus.model';
 
 @Injectable()
 export class QueueService {
@@ -80,24 +80,30 @@ export class QueueService {
 		return this.queued_matches;
 	}
 
-	canJoinQueue(playerId: string) : boolean {
+	canJoinQueue(playerId: string) : QueueAvailability {
+		const queueAvailability: QueueAvailability = new QueueAvailability;
+
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
-				return false;
+				queueAvailability.queueStatus = QueueStatus.IN_QUEUE;
+				return queueAvailability;
 			}
 		}
-		if (this.current_match && (this.current_match.p1.id === playerId || this.current_match.p2.id === playerId)) {
-			return false;
+		if (this.current_match?.p1.id === playerId || this.current_match?.p2.id === playerId) {
+			queueAvailability.queueStatus = QueueStatus.IN_MATCH
+			return queueAvailability;
 		}
 		for (let i = 0; i < this.queued_matches.length; i++) {
 			if (
 				playerId === this.queued_matches[i].p1.id ||
 				playerId === this.queued_matches[i].p2.id
 			) {
-				return false;
+				queueAvailability.queueStatus = QueueStatus.IN_QUEUE;
+				return queueAvailability;
 			}
 		}
-		return true;
+		queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
+		return queueAvailability;
 	}
 
 	canPlayerLookForMatch(playerId: string): string {

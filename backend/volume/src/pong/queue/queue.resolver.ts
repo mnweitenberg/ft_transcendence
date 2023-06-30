@@ -6,7 +6,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/auth.service';
-import { AuthGuard } from '@nestjs/passport';
+import { QueueAvailability } from './queuestatus.model';
 
 @ObjectType()
 export class A {
@@ -22,16 +22,14 @@ export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
 	@UseGuards(JwtAuthGuard)
-	@Query(() => Boolean)
+	@Query(() => QueueAvailability)
 	async canJoinQueue(@AuthUser() user: UserInfo) {
-		if (!user) return;
 		return await this.queueService.canJoinQueue(user.userUid);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Mutation(() => String)
 	async joinQueue(@AuthUser() user: UserInfo) {
-		if (!user) return;
 		return await this.queueService.joinQueue(user.userUid);
 	}
 

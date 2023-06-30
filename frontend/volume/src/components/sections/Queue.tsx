@@ -60,6 +60,14 @@ const QUEUE_CHANGED = gql`
 	}
 `;
 
+const CAN_JOIN_QUEUE = gql`
+	query {
+		canJoinQueue {
+			queueStatus
+		}
+	}
+`;
+
 const QUEUE_AVAILABILITY_CHANGED = gql`
 	subscription queueAvailabilityChanged($userId: String!) {
 		queueAvailabilityChanged(userId: $userId) {
@@ -131,6 +139,12 @@ export default function Queue(props: i.ModalProps) {
 	);
 }
 
+export enum QueueStatus {
+	CAN_JOIN,
+	IN_MATCH,
+	IN_QUEUE,
+}
+
 function JoinQueueElement() {
 	const [
 		joinQueue,
@@ -168,20 +182,14 @@ function JoinQueueElement() {
 
 	if (user_loading) return <>Loading user</>;
 
-	// subscribe to matchhistoryhasbeenupdated en dan queuejoin knop laten zien als dat gebeurt!
-
 	const handleClick = (event: any) => {
 		event.preventDefault();
 		joinQueue();
 	};
 
-	// const { data: can_join_queue, loading: join_queue_loading } = useSubscription(CAN_JOIN_QUEUE, {
-	// 	variables: { userId: user_data.currentUserQuery.id },
-	// });
+	console.log(can_join_queue?.canJoinQueue.queueStatus);
 
-	console.log(can_join_queue);
-
-	if (can_join_queue?.canJoinQueue) {
+	if (can_join_queue?.canJoinQueue.queueStatus === QueueStatus.CAN_JOIN) {
 		return (
 			<form onSubmit={handleClick}>
 				<button type="submit">Join queue</button>
@@ -189,28 +197,29 @@ function JoinQueueElement() {
 		);
 	}
 
-	if (tried_joining_queue) {
-		if (queue_loading) {
-			return <>joining queue...</>;
-		}
-		if (queue_error) {
-			return <>error joining queue</>;
-		}
-
-		return (
-			<>
-				<div className="player player--one">
-					<h3 className="name">{user_data.currentUserQuery.username}</h3>
-					<img className="avatar" src={user_data.currentUserQuery.avatar} />
-					<h3> {queue_data.joinQueue} </h3>
-				</div>
-			</>
-		);
-	} else {
-		return (
-			<form onSubmit={handleClick}>
-				<button type="submit">Join queue</button>
-			</form>
-		);
+	// if (tried_joining_queue) {
+	if (queue_loading) {
+		return <>joining queue...</>;
 	}
+	if (queue_error) {
+		return <>error joining queue</>;
+	}
+
+	return (
+		<>
+			<div className="player player--one">
+				<h3 className="name">{user_data.currentUserQuery.username}</h3>
+				<img className="avatar" src={user_data.currentUserQuery.avatar} />
+				<h3> {queue_data.joinQueue} </h3>
+			</div>
+		</>
+	);
+	// }
+	// } else {
+	// 	return (
+	// 		<form onSubmit={handleClick}>
+	// 			<button type="submit">Join queue2</button>
+	// 		</form>
+	// 	);
+	// }
 }
