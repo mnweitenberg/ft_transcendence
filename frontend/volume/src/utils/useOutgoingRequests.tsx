@@ -38,7 +38,8 @@ export const useOutgoingRequests = (userId: any) => {
 			variables: { user_id: userId },
 			updateQuery: (prev, { subscriptionData }) => {
 				if (!subscriptionData.data) return prev;
-				const newRequests = subscriptionData.data.outgoingFriendRequestChanged;
+				const newRequests =
+					subscriptionData.data.outgoingFriendRequestChanged.outgoing_friend_requests;
 				return Object.assign({}, prev, {
 					getOutgoingFriendRequest: newRequests,
 				});
