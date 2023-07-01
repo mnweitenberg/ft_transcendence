@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { convertEncodedImage } from "../../utils/convertEncodedImage";
 import UserStats from "../common/UserStats";
-import { Link } from "react-router-dom";
+import { renderSendContainer } from "./Chat";
 
 const GET_CHANNEL = gql`
 	query personal_chat($channel_id: String!) {
@@ -113,76 +113,79 @@ export default function PersonalChat({
 		(member: any) => member.id !== current_user.id
 	)[0];
 
+	// Fix scroll to bottom
+	const messagesEndRef = useRef<HTMLDivElement | null>(null);
+	// const scrollToBottom = () => {
+	// 	messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	// };
+	// useEffect(() => {
+	// 	scrollToBottom();
+	// }, [data.personal_chat.messages]);
+
 	return (
 		<div className="personalMessage">
-			<div className="chat_pm_header">
-				<div className="go_back">
-					<img
-						className="arrow_back"
-						src="/img/arrow_back.png"
-						onClick={renderOverview}
-					/>
-				</div>
-				<div className="pm_user">
-					<div className="pm_avatar">
-						<img src={convertEncodedImage(data.personal_chat.logo)}></img>
-					</div>
-					{/* <img className="pm_avatar" src={data.personal_chat.logo} /> */}
-					<h3>{friend.username}</h3>
-				</div>
-				{renderOptions(props, friend)}
-			</div>
+			{renderHeader(props, friend, data, renderOverview)}
+			{renderMessages(data, current_user, messagesEndRef)}
+			{renderSendContainer(message, handleMessageInput, sendMessage)}
+		</div>
+	);
+}
 
-			<div className="messages_container">
-				{data.personal_chat.messages.map(function (message: any) {
-					// TODO: use better type
-					if (message.author.id === current_user.id)
-						// TODO: use real author
-						return (
-							<div key={message.id} className="user">
-								{" "}
-								{message.content}{" "}
-							</div>
-						);
-					return (
-						<div key={message.id} className="friend">
-							<div className="flexContainer">
-								<div className="avatar_container">
-									<img src={message.author.avatar} />
-								</div>
-								<div>
-									<h3>{message.author.username}</h3>
-									{message.content}{" "}
-								</div>
-							</div>
-						</div>
-					);
-				})}
+function renderHeader(props: i.ModalProps, friend: i.User, data: any, renderOverview: () => void) {
+	return (
+		<div className="chat_pm_header">
+			<div className="go_back">
+				<img className="arrow_back" src="/img/arrow_back.png" onClick={renderOverview} />
 			</div>
-
-			<div className="send_container">
-				<input
-					type="text"
-					className="input_message"
-					value={message}
-					onChange={handleMessageInput}
-				/>
-				<img className="send_icon" src="/img/send.png" onClick={sendMessage} />
+			<div className="pm_user">
+				<div className="pm_avatar">
+					<img src={convertEncodedImage(data.personal_chat.logo)}></img>
+				</div>
+				<h3>{friend.username}</h3>
+			</div>
+			<div className="groupchat_info">
+				<a className="link">challenge</a>
+				<a
+					className="link"
+					onClick={() =>
+						props.toggleModal(<UserStats selectedUser={friend} {...props} />)
+					}
+				>
+					stats
+				</a>
 			</div>
 		</div>
 	);
 }
 
-function renderOptions(props: i.ModalProps, user?: i.User) {
+function renderMessages(data: any, current_user: any, messagesEndRef: any) {
 	return (
-		<div className="groupchat_info">
-			<a className="link">challenge</a>
-			<a
-				className="link"
-				onClick={() => props.toggleModal(<UserStats selectedUser={user} {...props} />)}
-			>
-				stats
-			</a>
+		<div className="messages_container">
+			{data.personal_chat.messages.map(function (message: any) {
+				// TODO: use better type
+				if (message.author.id === current_user.id)
+					// TODO: use real author
+					return (
+						<div key={message.id} className="user">
+							{" "}
+							{message.content}{" "}
+						</div>
+					);
+				return (
+					<div key={message.id} className="friend">
+						<div className="flexContainer">
+							<div className="avatar_container">
+								<img src={message.author.avatar} />
+							</div>
+							<div>
+								<h3>{message.author.username}</h3>
+								{message.content}{" "}
+							</div>
+						</div>
+					</div>
+				);
+			})}
+			{/* <div ref={messagesEndRef} /> */}
 		</div>
 	);
 }

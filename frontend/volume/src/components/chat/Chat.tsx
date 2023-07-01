@@ -2,10 +2,8 @@ import { useState } from "react";
 import "../../styles/style.css";
 import Overview from "./Overview";
 import PersonalChat from "./PersonalChat";
-// import PersonalMessage from "./PersonalMessage-DEPRECATED";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
-// import GroupMessage from "./GroupMessage-DEPRECATED";
 import GroupChat from "./GroupChat";
 
 export default function Chat(props: i.ModalProps) {
@@ -38,4 +36,18 @@ export default function Chat(props: i.ModalProps) {
 		return <GroupChat props={props} channel_id={channel_id} renderOverview={renderOverview} />;
 
 	return <>No state defined</>;
+}
+
+export function renderSendContainer(message: string, handleMessageInput: any, sendMessage: any) {
+	return (
+		<div className="send_container">
+			<input
+				type="text"
+				className="input_message"
+				value={message}
+				onChange={handleMessageInput}
+			/>
+			<img className="send_icon" src="/img/send.png" onClick={sendMessage} />
+		</div>
+	);
 }

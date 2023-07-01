@@ -85,7 +85,7 @@ function Overview({
 	// merge personal and group chats
 	let allChats = data.currentUserQuery.personal_chats.concat(data.currentUserQuery.group_chats);
 
-	// if chat has no name, use the other user's name
+	// if chat has no name, use the other member's name
 	allChats = allChats.map((chat: any) => {
 		const newChat = { ...chat };
 		if (!newChat.name) {
@@ -106,8 +106,6 @@ function Overview({
 	// sort by dateSent
 	allChats.sort(function (a: any, b: any) {
 		if (a.lastMessage?.dateSent && b.lastMessage?.dateSent) {
-			console.log(a.lastMessage.dateSent);
-			console.log(Date.parse(a.lastMessage.dateSent));
 			return Date.parse(b.lastMessage.dateSent) - Date.parse(a.lastMessage.dateSent);
 		}
 	});
