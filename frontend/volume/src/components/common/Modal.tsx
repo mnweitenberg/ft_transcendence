@@ -1,15 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import { gql, useQuery } from "@apollo/client";
 
 function Modal(props: i.ModalProps) {
+	const closeModal = () => {
+		props.setShowModal(false);
+	};
+
+	useEffect(() => {
+		if (props.showModal) {
+			window.history.pushState(null, document.title, window.location.href);
+		}
+		// Listen to popstate event, which is fired when the history changes.
+		const handlePopstate = () => {
+			if (props.showModal) {
+				props.setShowModal(false);
+			} else {
+				props.setShowModal(true);
+			}
+		};
+		window.addEventListener("popstate", handlePopstate);
+		return () => {
+			window.removeEventListener("popstate", handlePopstate);
+		};
+	}, [props.showModal]);
+
 	return (
 		<>
 			{props.showModal && (
 				<div className="modal">
 					<div className="modal-content">
-						<span className="close" onClick={() => props.setShowModal(false)}>
+						<span className="close" onClick={() => closeModal()}>
 							&times;
 						</span>
 						{props.modalContent}

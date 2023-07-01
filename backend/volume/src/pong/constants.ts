@@ -1,5 +1,5 @@
 // GAME
-export const MAX_SCORE = 10;
+export const MAX_SCORE = 1;
 export const REFRESH_RATE = 1000 / 24;
 export const WAIT_TIME = 3000;
 

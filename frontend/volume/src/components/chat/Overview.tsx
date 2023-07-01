@@ -5,7 +5,7 @@ import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import JoinChannel from "./JoinChannel";
 import CreateChannel from "./CreateChannel";
-import { useEffect } from "react";
+import NewChat from "./NewChat";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
@@ -103,11 +103,12 @@ function Overview({
 		return newChat;
 	});
 
-	// TO DO is not working
 	// sort by dateSent
 	allChats.sort(function (a: any, b: any) {
 		if (a.lastMessage?.dateSent && b.lastMessage?.dateSent) {
-			Date.parse(b.lastMessage.dateSent) - Date.parse(a.lastMessage.dateSent);
+			console.log(a.lastMessage.dateSent);
+			console.log(Date.parse(a.lastMessage.dateSent));
+			return Date.parse(b.lastMessage.dateSent) - Date.parse(a.lastMessage.dateSent);
 		}
 	});
 
@@ -179,80 +180,6 @@ function renderNewChatOptions({
 			>
 				create channel
 			</a>
-		</div>
-	);
-}
-
-const GET_ALL_CHATS = gql`
-	query {
-		all_available_personal_chats {
-			username
-			id
-			avatar {
-				file
-			}
-		}
-	}
-`;
-
-const CREATE_PERSONAL_CHAT = gql`
-	mutation CreatePersonalChat($userId: String!) {
-		createPersonalChat(userId: $userId) {
-			id
-			members {
-				id
-			}
-		}
-	}
-`;
-
-// TODO: Make avatars work
-function NewChat({
-	setShowModal,
-	refetchChannels,
-}: {
-	setShowModal: (showModal: boolean) => void;
-	refetchChannels: () => void;
-}) {
-	const { loading, data, error } = useQuery(GET_ALL_CHATS);
-
-	const [createPersonalChat, { loading: joinLoading, error: joinError }] =
-		useMutation(CREATE_PERSONAL_CHAT);
-
-	async function CreateChat(userId: string) {
-		console.log("userId", userId);
-		try {
-			await createPersonalChat({
-				variables: { userId: userId },
-			});
-			refetchChannels();
-			setShowModal(false);
-		} catch (error) {
-			console.log("Error joining ", error);
-		}
-	}
-
-	if (data && data.all_available_personal_chats.length === 0)
-		return <p>You're already chatting with all possible users</p>;
-	if (joinError) return <p>Error: {joinError.message}</p>;
-	if (joinLoading) return <p>Joining...</p>;
-
-	if (error) return <p>Error {error.message}</p>;
-	if (loading) return <p>Loading...</p>;
-	return (
-		<div className="new_chat">
-			{data.all_available_personal_chats.map(function (user: any) {
-				return (
-					<div key={user.username} className="selectUser">
-						<div className="avatar_container">
-							<img src={convertEncodedImage(user.avatar.file)} />
-						</div>
-						<button onClick={() => CreateChat(user.id)}>
-							Send message to {user.username}
-						</button>
-					</div>
-				);
-			})}
 		</div>
 	);
 }

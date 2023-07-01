@@ -88,7 +88,7 @@ function PublicChannel({
 	setShowModal: (showModal: boolean) => void;
 	refetchChannels: () => void;
 }) {
-	const { loading, data, error } = useQuery(GET_ALL_PUBLIC_CHANNELS);
+	const { loading, data, error, refetch } = useQuery(GET_ALL_PUBLIC_CHANNELS);
 	const [joinGroupChat, { loading: joinLoading, error: joinError }] =
 		useMutation(JOIN_GROUP_CHAT);
 
@@ -97,6 +97,7 @@ function PublicChannel({
 			await joinGroupChat({
 				variables: { channelId: channelId },
 			});
+			refetch();
 			refetchChannels();
 			setShowModal(false);
 		} catch (error) {

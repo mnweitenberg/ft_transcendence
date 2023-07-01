@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
-import { createLeaveGroupChatAlert } from "../../utils/utils";
-import GroupStats from "./GroupStats";
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { convertEncodedImage } from "../../utils/convertEncodedImage";
+import UserStats from "../common/UserStats";
+import { Link } from "react-router-dom";
 
 const GET_CHANNEL = gql`
 	query personal_chat($channel_id: String!) {
@@ -16,6 +17,13 @@ const GET_CHANNEL = gql`
 				author {
 					id
 					username
+				}
+			}
+			members {
+				id
+				username
+				avatar {
+					file
 				}
 			}
 		}
@@ -101,6 +109,9 @@ export default function PersonalChat({
 	if (loading) return <p>Loading...</p>;
 
 	const current_user = data.currentUserQuery;
+	const friend = data.personal_chat.members.filter(
+		(member: any) => member.id !== current_user.id
+	)[0];
 
 	return (
 		<div className="personalMessage">
@@ -113,23 +124,13 @@ export default function PersonalChat({
 					/>
 				</div>
 				<div className="pm_user">
-					<img className="pm_avatar" src={data.personal_chat.logo} />
-					<h3>{data.personal_chat.name}</h3>
+					<div className="pm_avatar">
+						<img src={convertEncodedImage(data.personal_chat.logo)}></img>
+					</div>
+					{/* <img className="pm_avatar" src={data.personal_chat.logo} /> */}
+					<h3>{friend.username}</h3>
 				</div>
-				<div className="groupchat_info">
-					<a
-						className="link"
-						onClick={() => props.toggleModal(<GroupStats {...props} />)}
-					>
-						group stats
-					</a>
-					<a
-						className="link"
-						onClick={() => props.toggleModal(createLeaveGroupChatAlert(props))}
-					>
-						leave group
-					</a>
-				</div>
+				{renderOptions(props, friend)}
 			</div>
 
 			<div className="messages_container">
@@ -168,6 +169,20 @@ export default function PersonalChat({
 				/>
 				<img className="send_icon" src="/img/send.png" onClick={sendMessage} />
 			</div>
+		</div>
+	);
+}
+
+function renderOptions(props: i.ModalProps, user?: i.User) {
+	return (
+		<div className="groupchat_info">
+			<a className="link">challenge</a>
+			<a
+				className="link"
+				onClick={() => props.toggleModal(<UserStats selectedUser={user} {...props} />)}
+			>
+				stats
+			</a>
 		</div>
 	);
 }
