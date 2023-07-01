@@ -99,18 +99,16 @@ function UserProfileSettings({ userdata }: { userdata: any }): JSX.Element {
 								onChange={handleChange}
 							/>
 						</label>
-						<div className="flex_row_spacebetween">
-							<h3>Change profile picture: </h3>
-							<label className="choose_file" htmlFor="changeAvatar">
-								<input
-									id="changeAvatar"
-									type="file"
-									name="profilePicture"
-									onChange={handleFileChange}
-								/>
-								<h3>select a new image</h3>
-							</label>
-						</div>
+						<h3>Change profile picture </h3>
+						<label className="choose_file" htmlFor="changeAvatar">
+							<input
+								id="changeAvatar"
+								type="file"
+								name="profilePicture"
+								onChange={handleFileChange}
+							/>
+							<h3>Select a new image</h3>
+						</label>
 					</div>
 
 					<button className="submit_button" type="submit">

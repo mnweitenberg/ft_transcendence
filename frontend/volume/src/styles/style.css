@@ -923,7 +923,7 @@ div.background {
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   margin: auto;
-  width: 60%;
+  width: 60em;
   height: 90%;
   background-color: white;
   border-radius: 1em;

@@ -8,6 +8,7 @@ import UserStats from "src/components/common/UserStats";
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
 		getWholeQueue {
+			id
 			p1 {
 				username
 				avatar {
@@ -45,6 +46,7 @@ const JOIN_QUEUE = gql`
 const QUEUE_CHANGED = gql`
 	subscription queueChanged {
 		queueChanged {
+			id
 			p1 {
 				username
 				avatar {
