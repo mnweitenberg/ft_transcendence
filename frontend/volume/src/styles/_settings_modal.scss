@@ -1,0 +1,55 @@
+.modal_user_profile_settings {
+
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		gap: 5em;
+	}
+
+	.change_avatar {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		gap: 3em;
+		margin-bottom:2em;
+	}
+
+	.avatar_container {
+		width: 7em;
+		height: 7em;
+	}
+
+	h3{
+		margin: 1em 0;
+	}
+
+	input {
+		margin-top: 0;
+		margin-bottom: 2em;
+	}
+
+	input[type="file"] {
+		display: none;
+		margin: 0;
+	}
+
+	.choose_file {
+		font-weight: 500;
+		color: $color-link;
+		text-decoration: inherit;
+		margin:0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.choose_file:hover {
+		color: $color-hover;
+		cursor: pointer;
+	}
+
+	.submit_button {
+		margin-top: 2em;
+	}
+}

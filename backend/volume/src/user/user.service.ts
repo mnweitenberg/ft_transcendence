@@ -77,7 +77,6 @@ export class UserService {
 		const availableChatUsers = availableUsers.filter(
 			(user) => !currentChatUsersIds.includes(user.id) && user.id !== id,
 		);
-		console.log(availableChatUsers);
 		return availableChatUsers;
 	}
 

@@ -313,7 +313,8 @@ section#chat {
   grid-area: chat;
 }
 section#chat .overview_wrapper {
-  max-height: 80vh;
+  min-height: 75vh;
+  max-height: 75vh;
   box-sizing: border-box;
   width: 100%;
   height: calc(100% - 124px);
@@ -358,7 +359,7 @@ section#chat .chat_container:hover {
 }
 section#chat .new_chat {
   width: 100%;
-  height: 150px;
+  height: 10vh;
   box-sizing: border-box;
   padding: 1em 2em;
   margin: 0;
@@ -969,9 +970,49 @@ div.background {
   margin-top: 3em;
 }
 
-img.profile-settings {
-  width: 100px;
-  height: 100px;
+.modal_user_profile_settings .wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5em;
+}
+.modal_user_profile_settings .change_avatar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 3em;
+  margin-bottom: 2em;
+}
+.modal_user_profile_settings .avatar_container {
+  width: 7em;
+  height: 7em;
+}
+.modal_user_profile_settings h3 {
+  margin: 1em 0;
+}
+.modal_user_profile_settings input {
+  margin-top: 0;
+  margin-bottom: 2em;
+}
+.modal_user_profile_settings input[type=file] {
+  display: none;
+  margin: 0;
+}
+.modal_user_profile_settings .choose_file {
+  font-weight: 500;
+  color: #309a9f;
+  text-decoration: inherit;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.modal_user_profile_settings .choose_file:hover {
+  color: #0fa2a9;
+  cursor: pointer;
+}
+.modal_user_profile_settings .submit_button {
+  margin-top: 2em;
 }
 
 /*# sourceMappingURL=style.css.map */

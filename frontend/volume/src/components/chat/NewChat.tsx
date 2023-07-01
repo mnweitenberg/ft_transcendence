@@ -40,7 +40,6 @@ export default function NewChat({
 		useMutation(CREATE_PERSONAL_CHAT);
 
 	async function CreateChat(userId: string) {
-		console.log("userId", userId);
 		try {
 			await createPersonalChat({
 				variables: { userId: userId },
