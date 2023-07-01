@@ -17,14 +17,13 @@ function GroupStats(props: i.ModalProps & { selectedGroup: any }) {
 				{props.selectedGroup.members &&
 					props.selectedGroup.members.map(function (member: any) {
 						return (
-							<div className="friends_avatar_container">
+							<div className="friends_avatar_container" key={member.id}>
 								<img
 									onClick={() =>
 										props.toggleModal(
 											<UserStats {...props} selectedUser={member} />
 										)
 									}
-									key={member.id}
 									src={convertEncodedImage(member.avatar.file)}
 								/>
 							</div>

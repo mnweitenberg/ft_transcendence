@@ -10,6 +10,7 @@ import NewChat from "./NewChat";
 const GET_CHANNELS = gql`
 	query GetChannels {
 		currentUserQuery {
+			id
 			personal_chats {
 				id
 				name

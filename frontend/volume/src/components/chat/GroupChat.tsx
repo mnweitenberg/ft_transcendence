@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import GroupStats from "./GroupStats";
@@ -118,7 +118,8 @@ export default function GroupChat({
 
 	return (
 		<div className="personalMessage">
-			{renderHeader(data, renderOverview, props)};{renderMessages(data, current_user)};
+			{renderHeader(data, renderOverview, props)};
+			<Messages data={data} current_user={current_user} />;
 			{renderSendContainer(message, handleMessageInput, sendMessage)}
 		</div>
 	);
@@ -148,7 +149,14 @@ function renderHeader(data: any, renderOverview: () => void, props: any) {
 	);
 }
 
-function renderMessages(data: any, current_user: any) {
+function Messages({ data, current_user }: { data: any; current_user: any }) {
+	const messagesEndRef = useRef<HTMLDivElement | null>(null);
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	};
+	useEffect(() => {
+		scrollToBottom();
+	}, [data.group_chat.messages]);
 	return (
 		<div className="messages_container">
 			{data.group_chat.messages.map(function (message: any) {
@@ -174,6 +182,7 @@ function renderMessages(data: any, current_user: any) {
 					</div>
 				);
 			})}
+			<div ref={messagesEndRef} />
 		</div>
 	);
 }

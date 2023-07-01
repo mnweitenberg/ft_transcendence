@@ -113,19 +113,10 @@ export default function PersonalChat({
 		(member: any) => member.id !== current_user.id
 	)[0];
 
-	// Fix scroll to bottom
-	const messagesEndRef = useRef<HTMLDivElement | null>(null);
-	// const scrollToBottom = () => {
-	// 	messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-	// };
-	// useEffect(() => {
-	// 	scrollToBottom();
-	// }, [data.personal_chat.messages]);
-
 	return (
 		<div className="personalMessage">
 			{renderHeader(props, friend, data, renderOverview)}
-			{renderMessages(data, current_user, messagesEndRef)}
+			<Messages data={data} current_user={current_user} />
 			{renderSendContainer(message, handleMessageInput, sendMessage)}
 		</div>
 	);
@@ -158,7 +149,14 @@ function renderHeader(props: i.ModalProps, friend: i.User, data: any, renderOver
 	);
 }
 
-function renderMessages(data: any, current_user: any, messagesEndRef: any) {
+function Messages({ data, current_user }: { data: any; current_user: any }) {
+	const messagesEndRef = useRef<HTMLDivElement | null>(null);
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	};
+	useEffect(() => {
+		scrollToBottom();
+	}, [data.personal_chat.messages]);
 	return (
 		<div className="messages_container">
 			{data.personal_chat.messages.map(function (message: any) {
@@ -185,7 +183,7 @@ function renderMessages(data: any, current_user: any, messagesEndRef: any) {
 					</div>
 				);
 			})}
-			{/* <div ref={messagesEndRef} /> */}
+			<div ref={messagesEndRef} />
 		</div>
 	);
 }
