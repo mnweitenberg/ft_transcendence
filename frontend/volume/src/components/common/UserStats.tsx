@@ -3,7 +3,6 @@ import Stats from "./Stats";
 import Friends from "./Friends";
 import MatchHistory from "./MatchHistory";
 import * as i from "../../types/Interfaces";
-import { createChallengeAlert, createBlockAlert } from "../../utils/utils";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useFriendsData } from "src/utils/useFriendsData";
 import { gql, useMutation } from "@apollo/client";
@@ -41,16 +40,7 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 		return (
 			<div className="user_actions">
 				<h1>{modalProps.selectedUser.username}</h1>
-				<a
-					className="link"
-					onClick={() =>
-						modalProps.toggleModal(
-							createChallengeAlert(modalProps.selectedUser, modalProps)
-						)
-					}
-				>
-					challenge
-				</a>
+				<a className="link">challenge</a>
 				{renderFriendRequestActions(
 					friends,
 					modalProps,
@@ -124,14 +114,5 @@ function renderFriendRequestActions(
 
 // TODO: implement blockOrUnblock
 function renderBlockOrUnblock(friends: any, modalProps: any) {
-	return (
-		<a
-			className="link"
-			onClick={() =>
-				modalProps.toggleModal(createBlockAlert(modalProps.selectedUser, modalProps))
-			}
-		>
-			block
-		</a>
-	);
+	return <a className="link">block</a>;
 }

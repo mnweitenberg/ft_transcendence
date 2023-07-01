@@ -51,13 +51,6 @@ section .section_content {
   }
 }
 
-.wrap_name_message {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  margin: 1em 1em;
-}
-
 .flex_row_spacebetween {
   display: flex;
   flex-direction: row;
@@ -332,6 +325,13 @@ section#chat .chat_container {
   gap: 1em;
   padding: 1em 0 1em 2em;
   transition: 1s;
+}
+section#chat .chat_container .wrap_name_message {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 1em 1em;
+  width: 60%;
 }
 section#chat .chat_container .avatar_container {
   width: 60px;

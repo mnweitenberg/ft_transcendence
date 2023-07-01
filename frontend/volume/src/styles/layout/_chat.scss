@@ -23,6 +23,14 @@ section#chat {
 		padding: 1em 0 1em 2em;
 		transition: $transition-slow;
 
+		.wrap_name_message {
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			margin: 1em 1em;
+			width:60%;
+		}
+		
 		.avatar_container {
 			width: 60px;
 			height: 60px;

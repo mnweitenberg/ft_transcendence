@@ -127,7 +127,7 @@ function Overview({
 							<div className="wrap_name_message">
 								<div className="flex_row_spacebetween">
 									<h3 className="name">{chat.name}</h3>
-									<div className="status">{chat.status}</div>
+									<div className="status">online</div>
 								</div>
 								<div className="chat_preview">
 									{chat.lastMessage?.content ?? ""}
