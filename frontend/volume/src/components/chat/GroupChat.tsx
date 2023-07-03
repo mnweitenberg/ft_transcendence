@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
-import { createLeaveGroupChatAlert } from "../../utils/utils";
 import GroupStats from "./GroupStats";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
+import { renderSendContainer } from "./Chat";
 
 const GET_CHANNEL = gql`
 	query group_chat($channel_id: String!) {
@@ -20,6 +20,13 @@ const GET_CHANNEL = gql`
 					avatar {
 						file
 					}
+				}
+			}
+			members {
+				id
+				username
+				avatar {
+					file
 				}
 			}
 		}
@@ -111,74 +118,71 @@ export default function GroupChat({
 
 	return (
 		<div className="personalMessage">
-			<div className="chat_pm_header">
-				<div className="go_back">
-					<img
-						className="arrow_back"
-						src="/img/arrow_back.png"
-						onClick={renderOverview}
-					/>
-				</div>
-				<div className="pm_user">
-					<img className="pm_avatar" src={data.group_chat.logo} />
-					<h3>{data.group_chat.name}</h3>
-				</div>
-				<div className="groupchat_info">
-					<a
-						className="link"
-						// onClick={() =>
-						// 	props.toggleModal(props.selectedUser, <GroupStats {...props} />)
-						// }
-					>
-						group stats
-					</a>
-					<a
-						className="link"
-						// onClick={() =>
-						// 	props.toggleModal(props.selectedUser, createLeaveGroupChatAlert(props))
-						// }
-					>
-						leave group
-					</a>
-				</div>
-			</div>
+			{renderHeader(data, renderOverview, props)};
+			<Messages data={data} current_user={current_user} />;
+			{renderSendContainer(message, handleMessageInput, sendMessage)}
+		</div>
+	);
+}
 
-			<div className="messages_container">
-				{data.group_chat.messages.map(function (message: any) {
-					// TODO: use better type
-					if (message.author.id === current_user.id)
-						// TODO: use real author
-						return (
-							<div key={message.id} className="user">
-								{" "}
-								{message.content}{" "}
-							</div>
-						);
+function renderHeader(data: any, renderOverview: () => void, props: any) {
+	return (
+		<div className="chat_pm_header">
+			<div className="go_back">
+				<img className="arrow_back" src="/img/arrow_back.png" onClick={renderOverview} />
+			</div>
+			<div className="pm_user">
+				<img className="pm_avatar" src={data.group_chat.logo} />
+				<h3>{data.group_chat.name}</h3>
+			</div>
+			<div className="groupchat_info">
+				<a
+					className="link"
+					onClick={() =>
+						props.toggleModal(<GroupStats {...props} selectedGroup={data.group_chat} />)
+					}
+				>
+					group stats
+				</a>
+			</div>
+		</div>
+	);
+}
+
+function Messages({ data, current_user }: { data: any; current_user: any }) {
+	const messagesEndRef = useRef<HTMLDivElement | null>(null);
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	};
+	useEffect(() => {
+		scrollToBottom();
+	}, [data.group_chat.messages]);
+	return (
+		<div className="messages_container">
+			{data.group_chat.messages.map(function (message: any) {
+				// TODO: use better type
+				if (message.author.id === current_user.id)
+					// TODO: use real author
 					return (
-						<div key={message.id} className="friend">
-							<div className="flexContainer">
-								<div className="avatar_container">
-									<img src={convertEncodedImage(message.author.avatar.file)} />
-								</div>
-								<div>
-									<h3>{message.author.username}</h3>
-									{message.content}{" "}
-								</div>
-							</div>
+						<div key={message.id} className="user">
+							{message.content}
 						</div>
 					);
-				})}
-			</div>
-
-			<div className="send_container">
-				<input
-					type="text"
-					className="input_message"
-					value={message}
-					onChange={handleMessageInput}
-				/>
-				<img className="send_icon" src="/img/send.png" onClick={sendMessage} />
-			</div>
+				return (
+					<div key={message.id} className="friend">
+						<div className="flexContainer">
+							<div className="avatar_container">
+								<img src={convertEncodedImage(message.author.avatar.file)} />
+							</div>
+							<div>
+								<h3>{message.author.username}</h3>
+								{message.content}{" "}
+							</div>
+						</div>
+					</div>
+				);
+			})}
+			<div ref={messagesEndRef} />
 		</div>
 	);
 }

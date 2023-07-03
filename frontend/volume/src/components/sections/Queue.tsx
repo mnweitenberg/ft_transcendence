@@ -8,6 +8,7 @@ import UserStats from "src/components/common/UserStats";
 const GET_WHOLE_QUEUE = gql`
 	query getWholeQueue {
 		getWholeQueue {
+			id
 			p1 {
 				username
 				avatar {
@@ -45,6 +46,7 @@ const JOIN_QUEUE = gql`
 const QUEUE_CHANGED = gql`
 	subscription queueChanged {
 		queueChanged {
+			id
 			p1 {
 				username
 				avatar {
@@ -114,10 +116,7 @@ export default function Queue(props: i.ModalProps) {
 			<JoinQueueElement />
 			{queue_data.getWholeQueue.map(function (game: any) {
 				return (
-					<div
-						className="flex_row_spacebetween"
-						key={game.p1.username + game.p2.username}
-					>
+					<div className="flex_row_spacebetween" key={game.id}>
 						<div
 							className="player player--one"
 							onClick={() =>
@@ -174,29 +173,21 @@ function JoinQueueElement() {
 		joinQueue();
 	};
 
-	if (queue_loading) {
-		return <>Loading queue...</>;
-	}
-	if (queue_error) {
-		return <>error joining queue</>;
-	}
+	if (queue_loading) return <>Loading queue...</>;
+	if (queue_error) return <>error joining queue</>;
 	if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.CAN_JOIN) {
 		return (
 			<form onSubmit={handleClick}>
 				<button type="submit">Join queue</button>
 			</form>
 		);
-	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_QUEUE) {
+	}
+	if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_QUEUE) {
 		return (
 			<div>
-				<h3>'Join queue' not available. You are in the queue </h3>
-			</div>
-		);
-	} else if (queue_availability?.getQueueAvailability.queueStatus === QueueStatus.IN_MATCH) {
-		return (
-			<div>
-				<h3>'Join queue' not available. You are in a match</h3>
+				<h3>You've joined the queue </h3>
 			</div>
 		);
 	}
+	return <></>;
 }

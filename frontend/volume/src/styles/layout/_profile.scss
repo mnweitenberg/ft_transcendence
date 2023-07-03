@@ -39,6 +39,8 @@ section#profile {
 	flex-wrap: wrap;
 	gap: 15px;
 	align-content: space-between;
+	max-height: 20vh;
+	overflow-y: scroll;
 
 	.friends_avatar_container {
 		width: 40px;

@@ -56,7 +56,7 @@ function Friends(modalProps: i.ModalProps & { selectedUser: any }) {
 									}}
 								/>
 							</div>
-							{friend.username}
+							{/* {friend.username} */}
 						</div>
 					);
 				})}

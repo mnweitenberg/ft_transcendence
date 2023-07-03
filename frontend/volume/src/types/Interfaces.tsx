@@ -4,22 +4,6 @@ import { ReactNode } from "react";
 // USERSTATS //
 ///////////////
 
-// interface Stats {
-// 	ranking: number;
-// 	wins: number;
-// 	losses: number;
-// 	score: number;
-// }
-
-// export interface User {
-// 	id: string;
-// 	username: string;
-// 	avatar: string;
-// 	stats: Stats;
-// 	// chat?: Array<Chat>;
-// 	friends?: Array<User>;
-// }
-
 export interface User {
 	id: string;
 	username: string;

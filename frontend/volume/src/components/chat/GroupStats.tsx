@@ -1,36 +1,30 @@
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
+import UserStats from "../common/UserStats";
+import { convertEncodedImage } from "../../utils/convertEncodedImage";
 
-function UserStats(props: i.ModalProps & { selectedUser: any }) {
+function GroupStats(props: i.ModalProps & { selectedGroup: any }) {
 	return (
 		<div className="userStats">
 			<div className="user">
 				<div className="avatar_container">
-					<img src={props.selectedUser.avatar} />
+					<img src={convertEncodedImage(props.selectedGroup.logo)} />
 				</div>
-				<div className="user_actions">
-					{/* <h1>{props.selectedUser.name}</h1> */}
-					<h1>"[name of groupchat]"</h1>
-					{/* only show if user is admin: */}
-					<a className="link">change user priviliges</a>
-					{/* only show if user is admin: */}
-					<a className="link">change password</a>
-				</div>
+				{renderActions(props.selectedGroup.name)}
 			</div>
 			<h2>Group members</h2>
 			<div className="friend_list">
-				{props.selectedUser.friends &&
-					props.selectedUser.friends.map(function (friend: any) {
+				{props.selectedGroup.members &&
+					props.selectedGroup.members.map(function (member: any) {
 						return (
-							<div className="friends_avatar_container">
+							<div className="friends_avatar_container" key={member.id}>
 								<img
 									onClick={() =>
 										props.toggleModal(
-											<UserStats {...props} selectedUser={friend} />
+											<UserStats {...props} selectedUser={member} />
 										)
 									}
-									key={friend.name}
-									src={friend.avatar}
+									src={convertEncodedImage(member.avatar.file)}
 								/>
 							</div>
 						);
@@ -40,4 +34,24 @@ function UserStats(props: i.ModalProps & { selectedUser: any }) {
 	);
 }
 
-export default UserStats;
+function renderActions(groupname: string) {
+	// TO DO: check if user is admin
+	const userIsAdmin = true;
+	if (userIsAdmin) {
+		return (
+			<div className="user_actions">
+				<h1>{groupname}</h1>
+				<a className="link">change user priviliges</a>
+				<a className="link">change password</a>
+				<a className="link">leave group</a>
+			</div>
+		);
+	}
+	return (
+		<div className="user_actions">
+			<a className="link">leave group</a>
+		</div>
+	);
+}
+
+export default GroupStats;

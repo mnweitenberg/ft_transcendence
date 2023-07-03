@@ -94,6 +94,12 @@ export class UserResolver {
 	}
 
 	@Query(() => [User])
+	@UseGuards(JwtAuthGuard)
+	async all_available_personal_chats(@AuthUser() userInfo: UserInfo) {
+		return this.userService.getAvailablePersonalChats(userInfo.userUid);
+	}
+
+	@Query(() => [User])
 	async getFriends(@Args('user_id') user_id: string) {
 		return this.userService.getFriends(user_id);
 	}

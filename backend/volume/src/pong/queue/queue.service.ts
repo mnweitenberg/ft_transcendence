@@ -8,6 +8,7 @@ import { UserAvatarService } from 'src/user/user-avatar.service';
 import { Avatar } from 'src/user/entities/avatar.entity';
 import { QueueAvailability } from './queuestatus.model';
 import { QueueStatus } from './queuestatus.model';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class QueueService {
@@ -28,6 +29,7 @@ export class QueueService {
 			player_two_id,
 		);
 		const new_queued_match = new QueuedMatch();
+		new_queued_match.id = uuid(); 
 		new_queued_match.p1 = players[0];
 		new_queued_match.p2 = players[1];
 		this.queued_matches.push(new_queued_match);

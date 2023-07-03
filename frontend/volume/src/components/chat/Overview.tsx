@@ -1,20 +1,30 @@
 import "../../styles/style.css";
 import * as i from "../../types/Interfaces";
 import { ChatState } from "../../utils/constants";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import JoinChannel from "./JoinChannel";
 import CreateChannel from "./CreateChannel";
+import NewChat from "./NewChat";
 
 const GET_CHANNELS = gql`
 	query GetChannels {
 		currentUserQuery {
+			id
 			personal_chats {
 				id
 				name
 				logo
 				lastMessage {
 					content
+					dateSent
+				}
+				members {
+					id
+					username
+					avatar {
+						file
+					}
 				}
 			}
 			group_chats {
@@ -23,11 +33,30 @@ const GET_CHANNELS = gql`
 				logo
 				lastMessage {
 					content
+					dateSent
+				}
+				isPublic
+				members {
+					id
+					username
+					avatar {
+						file
+					}
 				}
 			}
 		}
 	}
 `;
+
+// const MESSAGE_SUBSCRIPTION = gql`
+// 	subscription group_message_sent {
+// 		group_message_sent {
+// 			id
+// 			content
+// 			dateSent
+// 		}
+// 	}
+// `;
 
 function Overview({
 	props,
@@ -38,139 +67,120 @@ function Overview({
 	setSelectedChannel: (channel_id: string) => void;
 	setChatState: (state: ChatState) => void;
 }) {
+	// const { data: newMessageData } = useSubscription(MESSAGE_SUBSCRIPTION);
 	const { loading, error, data, refetch } = useQuery(GET_CHANNELS);
 
 	const refetchChannels = () => {
 		refetch();
 	};
 
-	if (error) return <p>Error</p>;
+	if (error) return <p>Error: {error.message}</p>;
 	if (loading) return <p>Loading...</p>;
 
-	function renderPersonalChat(channel_id: string) {
+	function renderChat(channel_id: string, isPublic?: boolean) {
 		setSelectedChannel(channel_id);
-		setChatState(ChatState.personalMessage);
+		if (isPublic === undefined) setChatState(ChatState.personalMessage);
+		else setChatState(ChatState.groupMessage);
 	}
-	function renderGroupChat(channel_id: string) {
-		setSelectedChannel(channel_id);
-		setChatState(ChatState.groupMessage);
-	}
+
+	// merge personal and group chats
+	let allChats = data.currentUserQuery.personal_chats.concat(data.currentUserQuery.group_chats);
+
+	// if chat has no name(and therefor is personal chat), use the other member's name and avatar
+	allChats = allChats.map((chat: any) => {
+		const newChat = { ...chat };
+		if (!newChat.name) {
+			newChat.name =
+				props.userId === newChat.members[0]
+					? newChat.members[0].username
+					: newChat.members[1].username;
+		}
+		if (!newChat.logo) {
+			newChat.logo =
+				props.userId === newChat.members[0]
+					? newChat.members[0].avatar.file
+					: newChat.members[1].avatar.file;
+		}
+		return newChat;
+	});
+
+	// sort by dateSent
+	allChats.sort(function (a: any, b: any) {
+		if (a.lastMessage?.dateSent && b.lastMessage?.dateSent) {
+			return Date.parse(b.lastMessage.dateSent) - Date.parse(a.lastMessage.dateSent);
+		}
+	});
+
 	return (
 		<>
-			Personal Chats
-			<br></br>
-			{data.currentUserQuery.personal_chats.map((personal_chat: any) => {
-				return (
-					<div
-						className="chat_container"
-						key={personal_chat.id + "_key"}
-						onClick={() => renderPersonalChat(personal_chat.id)}
-					>
-						<img className="avatar" src={personal_chat.logo} />
-						<div className="wrap_name_message">
-							<div className="flex_row_spacebetween">
-								<h3 className="name">{personal_chat.name}</h3>
-								<div className="status">{personal_chat.status}</div>
+			<div className="overview_wrapper">
+				{allChats.map((chat: any) => {
+					return (
+						<div
+							className="chat_container"
+							key={chat.id + "_key"}
+							onClick={() => renderChat(chat.id, chat.isPublic)}
+						>
+							<div className="avatar_container">
+								<img src={convertEncodedImage(chat.logo)}></img>
 							</div>
-							<div className="chat_preview">
-								{personal_chat.lastMessage?.content ?? ""}
-							</div>
-						</div>
-					</div>
-				);
-			})}
-			<br></br>
-			Group Chats
-			<br></br>
-			{data.currentUserQuery.group_chats.map((group_chat: any) => {
-				return (
-					<div
-						className="chat_container"
-						key={group_chat.id + "_key"}
-						onClick={() => renderGroupChat(group_chat.id)}
-					>
-						<img className="avatar" src={group_chat.logo} />
-						<div className="wrap_name_message">
-							<div className="flex_row_spacebetween">
-								<h3 className="name">{group_chat.name}</h3>
-								<div className="status">{group_chat.status}</div>
-							</div>
-							<div className="chat_preview">
-								{group_chat.lastMessage?.content ?? ""}
+							<div className="wrap_name_message">
+								<div className="flex_row_spacebetween">
+									<h3 className="name">{chat.name}</h3>
+									<div className="status">online</div>
+								</div>
+								<div className="chat_preview">
+									{chat.lastMessage?.content ?? ""}
+								</div>
 							</div>
 						</div>
-					</div>
-				);
-			})}
-			<div className="new_chat flex_row_spacebetween">
-				<a onClick={() => props.toggleModal(<PersonalChat />)}>new chat</a>
-				<a
-					onClick={() =>
-						props.toggleModal(
-							<JoinChannel {...props} refetchChannels={refetchChannels} />
-						)
-					}
-				>
-					join channel
-				</a>
-				<a
-					onClick={() =>
-						props.toggleModal(
-							<CreateChannel {...props} refetchChannels={refetchChannels} />
-						)
-					}
-				>
-					create channel
-				</a>
+					);
+				})}
 			</div>
+			{renderNewChatOptions({ props, refetchChannels })}
 		</>
 	);
 }
 
-const GET_ALL_USERS = gql`
-	query {
-		allUsersQuery {
-			username
-		}
-	}
-`;
-
-// const GET_ALL_USERS = gql`
-// 	query {
-// 		allUsersQuery {
-// 			username
-// 			avater {
-// 				file
-// 			}
-// 		}
-// 	}
-// `;
-
-// TODO: Make avatars work
-function PersonalChat() {
-	const { loading, data, error } = useQuery(GET_ALL_USERS);
-	if (error) return <p>Error</p>;
-	if (loading) return <p>Loading...</p>;
+function renderNewChatOptions({
+	props,
+	refetchChannels,
+}: {
+	props: i.ModalProps;
+	refetchChannels: () => void;
+}) {
 	return (
-		<div className="new_chat">
-			{data.allUsersQuery.map(function (user: any) {
-				return (
-					<div key={user.username} className="selectUser">
-						<div className="avatar_container">
-							<img src={convertEncodedImage(user?.avatar.file)} />
-						</div>
-						<button onClick={() => CreateNewPersonalChannel(user)}>
-							Send message to {user.username}
-						</button>
-					</div>
-				);
-			})}
+		<div className="new_chat flex_row_spacebetween">
+			<a
+				onClick={() =>
+					props.toggleModal(
+						<NewChat
+							setShowModal={props.setShowModal}
+							refetchChannels={refetchChannels}
+						/>
+					)
+				}
+			>
+				new chat
+			</a>
+			<a
+				onClick={() =>
+					props.toggleModal(<JoinChannel {...props} refetchChannels={refetchChannels} />)
+				}
+			>
+				join channel
+			</a>
+			<a
+				onClick={() =>
+					props.toggleModal(
+						<CreateChannel {...props} refetchChannels={refetchChannels} />
+					)
+				}
+			>
+				create channel
+			</a>
 		</div>
 	);
-}
-
-function CreateNewPersonalChannel(user: any) {
-	console.log(user.username);
 }
 
 export default Overview;

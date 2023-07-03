@@ -32,8 +32,10 @@ async function postTemporaryCode(intraCode: string): Promise<string> {
 		);
 		return JSON.stringify(response.data);
 	} catch (error) {
+		console.error(error);
 		return null;
 	}
+	
 }
 
 async function downloadIntraAvatar(
@@ -67,6 +69,9 @@ export class AuthService {
 	}
 
 	async linkTokenToUser(intraToken: IntraToken): Promise<User> {
+		if (!intraToken) {
+			throw new Error('No token provided');
+		}
 		const axiosConfig = {
 			headers: {
 				Authorization:

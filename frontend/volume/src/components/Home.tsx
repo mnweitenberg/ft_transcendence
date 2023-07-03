@@ -11,6 +11,7 @@ import { Game, createPongProps, handleFinishGame } from "src/components/game/Gam
 import * as i from "src/types/Interfaces";
 import { useAuth } from "src/utils/authLogic";
 import { useQueryCurrentUser } from "src/utils/useQueryUser";
+import SettingsModal from "src/components/settings/SettingsModal";
 
 function Home(): JSX.Element {
 	const modalProps: i.ModalProps = createModalProps();
@@ -23,7 +24,7 @@ function Home(): JSX.Element {
 		}
 	}, [pongProps.finished]);
 
-	const username = useQueryCurrentUser().username;
+	const user = useQueryCurrentUser();
 
 	return (
 		<div className="grid-container">
@@ -32,7 +33,8 @@ function Home(): JSX.Element {
 			<Header {...pongProps} />
 
 			<div id="right_top">
-				<Link to="/settings">settings</Link>
+				{/* <Link to="/settings">settings</Link> */}
+				<a onClick={() => modalProps.toggleModal(<SettingsModal />)}>settings</a>
 				<a
 					id="logout"
 					onClick={() => {
@@ -55,7 +57,7 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">{username}</h1>
+				<h1 className="section_header chat_profile_header">{user.username}</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>

@@ -51,14 +51,6 @@ section .section_content {
   }
 }
 
-.wrap_name_message {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  width: 100%;
-  margin: 1em 1em;
-}
-
 .flex_row_spacebetween {
   display: flex;
   flex-direction: row;
@@ -70,6 +62,12 @@ section .section_content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.limit_heigth {
+  max-height: 20vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 a,
@@ -152,7 +150,7 @@ button:active {
 
 .modal-content {
   background-color: #eff4f6;
-  margin: 7% auto;
+  margin: 4em auto;
   padding: 4em;
   border: none;
   border-radius: 10px;
@@ -172,7 +170,6 @@ button:active {
 
 .stat_block {
   margin-bottom: 3em;
-  max-height: 33%;
   overflow-y: scroll;
 }
 
@@ -308,16 +305,33 @@ body {
 section#chat {
   grid-area: chat;
 }
+section#chat .overview_wrapper {
+  min-height: 75vh;
+  max-height: 75vh;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(100% - 124px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 section#chat .chat_container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
   height: 100px;
   box-sizing: border-box;
+  gap: 1em;
   padding: 1em 0 1em 2em;
   transition: 1s;
+}
+section#chat .chat_container .wrap_name_message {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 1em 1em;
+  width: 60%;
 }
 section#chat .chat_container .avatar_container {
   width: 60px;
@@ -345,7 +359,7 @@ section#chat .chat_container:hover {
 }
 section#chat .new_chat {
   width: 100%;
-  height: 150px;
+  height: 10vh;
   box-sizing: border-box;
   padding: 1em 2em;
   margin: 0;
@@ -393,9 +407,17 @@ section#chat .new_chat {
   align-items: center;
 }
 .personalMessage .chat_pm_header .pm_avatar {
-  width: 70px;
-  height: 70px;
+  margin-top: 0.5em;
+  width: 60px;
+  height: 60px;
   border-radius: 100%;
+  overflow: hidden;
+}
+.personalMessage .chat_pm_header .pm_avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .personalMessage .chat_pm_header .pm_info {
   flex: 1 1 0;
@@ -416,7 +438,7 @@ section#chat .new_chat {
   padding: 2em;
   box-sizing: border-box;
   width: 100%;
-  height: calc(100% - 95px - 85px);
+  max-height: 60vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -609,7 +631,7 @@ header .player {
   display: flex;
   justify-content: space-between;
   height: 70px;
-  width: 75%;
+  width: 70%;
 }
 header .player .avatar_container {
   width: 70px;
@@ -653,7 +675,7 @@ header .score {
   font-weight: 500;
   color: #1b5b76;
   margin: 0;
-  width: 25%;
+  width: 30%;
 }
 
 .match_history .td_ava {
@@ -726,6 +748,8 @@ section#profile .settings {
   flex-wrap: wrap;
   gap: 15px;
   align-content: space-between;
+  max-height: 20vh;
+  overflow-y: scroll;
 }
 .friend_list .friends_avatar_container {
   width: 40px;
@@ -900,7 +924,7 @@ div.background {
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   margin: auto;
-  width: 60%;
+  width: 60em;
   height: 90%;
   background-color: white;
   border-radius: 1em;
@@ -946,9 +970,49 @@ div.background {
   margin-top: 3em;
 }
 
-img.profile-settings {
-  width: 100px;
-  height: 100px;
+.modal_user_profile_settings .wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5em;
+}
+.modal_user_profile_settings .change_avatar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 3em;
+  margin-bottom: 2em;
+}
+.modal_user_profile_settings .avatar_container {
+  width: 7em;
+  height: 7em;
+}
+.modal_user_profile_settings h3 {
+  margin: 1em 0;
+}
+.modal_user_profile_settings input {
+  margin-top: 0;
+  margin-bottom: 2em;
+}
+.modal_user_profile_settings input[type=file] {
+  display: none;
+  margin: 0;
+}
+.modal_user_profile_settings .choose_file {
+  font-weight: 500;
+  color: #309a9f;
+  text-decoration: inherit;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.modal_user_profile_settings .choose_file:hover {
+  color: #0fa2a9;
+  cursor: pointer;
+}
+.modal_user_profile_settings .submit_button {
+  margin-top: 2em;
 }
 
 /*# sourceMappingURL=style.css.map */

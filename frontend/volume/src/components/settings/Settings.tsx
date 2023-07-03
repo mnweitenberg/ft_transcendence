@@ -5,6 +5,7 @@ import "src/styles/style.css";
 const USER_QUERY = gql`
 	query currentUserQuery {
 		currentUserQuery {
+			id
 			username
 			avatar {
 				file

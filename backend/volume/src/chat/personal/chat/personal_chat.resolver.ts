@@ -7,10 +7,11 @@ import {
 	Resolver,
 } from '@nestjs/graphql';
 import { PersonalChat } from './entities/personal_chat.entity';
-import { CreatePersonalChatInput } from './dto/create_personal_chat.input';
 import { PersonalChatService } from './personal_chat.service';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/user-info.interface';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Resolver(() => PersonalChat)
 export class PersonalChatResolver {
@@ -26,9 +27,13 @@ export class PersonalChatResolver {
 		return this.personal_chat_service.getChannelById(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Mutation(() => PersonalChat, { nullable: true })
-	async createPersonalChat(@Args() channel_input: CreatePersonalChatInput) {
-		return this.personal_chat_service.create(channel_input);
+	async createPersonalChat(
+		@AuthUser() user_info: UserInfo,
+		@Args('userId') userId: string,
+	) {
+		return this.personal_chat_service.create(user_info.userUid, userId);
 	}
 
 	@ResolveField()
@@ -49,13 +54,13 @@ export class PersonalChatResolver {
 		return null;
 	}
 
-	@ResolveField()
-	async logo(
-		@Parent() channel: PersonalChat,
-		@AuthUser() user_info: UserInfo,
-	) {
-		const members = channel.members ?? (await this.members(channel));
-		if (members[0].id === user_info.userUid) return members[1].avatar;
-		return members[0].avatar;
-	}
+	// @ResolveField()
+	// async logo(
+	// 	@Parent() channel: PersonalChat,
+	// 	@AuthUser() user_info: UserInfo,
+	// ) {
+	// 	const members = channel.members ?? (await this.members(channel));
+	// 	if (members[0].id === user_info.userUid) return members[1].avatar;
+	// 	return members[0].avatar;
+	// }
 }
