@@ -1,7 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
-import { Link } from "react-router-dom";
 import "src/styles/style.css";
 import { useQueryCurrentUser } from "src/utils/useQueryUser";
 
