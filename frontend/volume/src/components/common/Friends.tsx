@@ -62,6 +62,7 @@ function Friends(modalProps: i.ModalProps & { selectedUser: any }) {
 				})}
 			</div>
 			<IncomingFriendRequests {...modalProps} />
+			<IncomingChallenge {...modalProps} />
 		</div>
 	);
 }
@@ -88,5 +89,28 @@ function IncomingFriendRequests(modalProps: i.ModalProps) {
 
 	if (!error && !loading && data && data.getIncomingFriendRequest.length > 0)
 		return <FriendRequestAlert user={data.getIncomingFriendRequest[0]} />;
+	return <></>;
+}
+
+function IncomingChallenge(modalProps: i.ModalProps) {
+	// const { data, loading, error, subscribeToMore } = useQuery(GET_INCOMING_FRIEND_REQUEST);
+
+	// useEffect(() => {
+	// 	return subscribeToMore({
+	// 		document: IN_FRIEND_REQUEST_CHANGED,
+	// 		variables: { user_id: modalProps.userId },
+	// 		updateQuery: (prev, { subscriptionData }) => {
+	// 			if (!subscriptionData.data) return prev;
+	// 			const newRequests =
+	// 				subscriptionData.data.incomingFriendRequestChanged.incoming_friend_requests;
+	// 			return Object.assign({}, prev, {
+	// 				getIncomingFriendRequest: newRequests,
+	// 			});
+	// 		},
+	// 	});
+	// }, []);
+
+	// if (!error && !loading && data && data.getIncomingFriendRequest.length > 0)
+	// 	return <FriendRequestAlert user={data.getIncomingFriendRequest[0]} />;
 	return <></>;
 }

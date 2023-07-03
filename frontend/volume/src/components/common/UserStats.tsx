@@ -5,7 +5,7 @@ import MatchHistory from "./MatchHistory";
 import * as i from "../../types/Interfaces";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useFriendsData } from "src/utils/useFriendsData";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useOutgoingRequests } from "src/utils/useOutgoingRequests";
 
 export default function UserStats(modalProps: i.ModalProps & { selectedUser: any }) {
@@ -19,13 +19,34 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 		loading: loadingOutgoing,
 		error: errorOutgoing,
 	} = useOutgoingRequests(modalProps.userId);
+	const [challenge_friend, { loading: challenge_loading, error: challenge_error }] =
+		useMutation(CHALLENGE_FRIEND);
+	const {
+		data: challenge_availability_data,
+		loading: challenge_available_loading,
+		error: challenge_available_error,
+	} = useQuery(GET_CHALLENGE_AVAILABILITY, {
+		variables: { friendId: modalProps.selectedUser.id },
+	});
 
+	const {
+		data: own_challenge_availability_data,
+		loading: own_challenge_available_loading,
+		error: own_challenge_available_error,
+	} = useQuery(GET_OWN_CHALLENGE_AVAILABILITY);
+
+	if (challenge_available_loading) return <></>;
+	if (own_challenge_available_loading) return <></>;
 	if (loading) return <> </>;
 	if (loadingOutgoing) return <div>Loading friends</div>;
 	if (loadingRemove) return <> </>;
 	if (loadingRequest) return <>send friend request</>;
+	if (challenge_loading) return <>loading challenge</>;
 
-	if (error) return <div>Error friends</div>;
+	if (challenge_available_error) return <></>;
+	if (own_challenge_available_error) return <></>;
+	if (error) return <>Error friends</>;
+	if (challenge_error) return <>challenge error</>;
 	if (errorOutgoing) return <>error</>;
 	if (errorRemove) return <>error</>;
 	if (errorRequest) return <>error</>;
@@ -40,7 +61,13 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 		return (
 			<div className="user_actions">
 				<h1>{modalProps.selectedUser.username}</h1>
-				<a className="link">challenge</a>
+				{renderChallengeFriendActions(
+					friends,
+					modalProps,
+					challenge_friend,
+					challenge_availability_data.getChallengeAvailability.challengeStatus,
+					own_challenge_availability_data.getOwnChallengeAvailability.challengeStatus
+				)}
 				{renderFriendRequestActions(
 					friends,
 					modalProps,
@@ -108,6 +135,74 @@ function renderFriendRequestActions(
 			}}
 		>
 			send friend request
+		</a>
+	);
+}
+
+export enum ChallengeStatus {
+	CAN_CHALLENGE,
+	IN_MATCH,
+	IN_QUEUE,
+	IS_CHALLENGER,
+	OFFLINE,
+}
+
+const CHALLENGE_FRIEND = gql`
+	mutation ChallengeFriend($friendId: String!) {
+		challengeFriend(friend_id: $friendId)
+	}
+`;
+
+const GET_CHALLENGE_AVAILABILITY = gql`
+	query GetChallengeAvailability($friendId: String!) {
+		getChallengeAvailability(friend_id: $friendId) {
+			challengeStatus
+		}
+	}
+`;
+
+const GET_OWN_CHALLENGE_AVAILABILITY = gql`
+	query GetOwnChallengeAvailability {
+		getOwnChallengeAvailability {
+			challengeStatus
+		}
+	}
+`;
+
+function renderChallengeFriendActions(
+	friends: any,
+	modalProps: any,
+	challenge_friend: any,
+	challenge_availability_data: ChallengeStatus,
+	own_challenge_availability_data: ChallengeStatus
+) {
+	if (own_challenge_availability_data === ChallengeStatus.IN_QUEUE)
+		return <>You cannot challenge other players, because you are in queue</>;
+	if (own_challenge_availability_data === ChallengeStatus.IN_MATCH)
+		return <>You cannot challenge other players, because you are in a match</>;
+	if (own_challenge_availability_data === ChallengeStatus.IS_CHALLENGER)
+		return (
+			<>
+				You cannot challenge other players, because you are already challenged another
+				player
+			</>
+		);
+	if (challenge_availability_data === ChallengeStatus.IN_QUEUE)
+		return <>cannot challenge {modalProps.selectedUser.username} (in queue)</>;
+	if (challenge_availability_data === ChallengeStatus.IN_MATCH)
+		return <>cannot challenge {modalProps.selectedUser.username} (in match)</>;
+	if (challenge_availability_data === ChallengeStatus.OFFLINE)
+		return <>cannot challenge {modalProps.selectedUser.username} (offline)</>;
+	if (challenge_availability_data === ChallengeStatus.IS_CHALLENGER)
+		return <>cannot challenge {modalProps.selectedUser.username} </>;
+	return (
+		<a
+			className="link"
+			onClick={() => {
+				challenge_friend({ variables: { friendId: modalProps.selectedUser.id } });
+			}}
+		>
+			challenge
 		</a>
 	);
 }

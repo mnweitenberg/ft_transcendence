@@ -6,9 +6,9 @@ import { CreateUserInput } from 'src/user/dto/create-user.input';
 import { User } from 'src/user/entities/user.entity';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { Avatar } from 'src/user/entities/avatar.entity';
-import { QueueAvailability } from './queuestatus.model';
-import { QueueStatus } from './queuestatus.model';
 import { v4 as uuid } from 'uuid';
+import { QueueAvailability, ChallengeAvailability } from './queuestatus.model';
+import { QueueStatus, ChallengeStatus } from './queuestatus.model';
 
 @Injectable()
 export class QueueService {
@@ -19,6 +19,7 @@ export class QueueService {
 	users_looking_for_match: string[] = [];
 	queued_matches: QueuedMatch[] = [];
 	current_match: QueuedMatch;
+	is_challenger: string[] = []; // TODO: as soon as challenge is sent, the challengers id should be in here so he cannot join queue anymore untill challenge is accepted or denied
 
 	async addQueuedMatch(
 		player_one_id: string,
@@ -84,10 +85,16 @@ export class QueueService {
 		return this.queued_matches;
 	}
 
-	getQueueAvailability(playerId: string) : QueueAvailability {
+	async getQueueAvailability(playerId: string) : Promise<QueueAvailability> {
 		const queueAvailability: QueueAvailability = new QueueAvailability;
 
 		queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
+		for (let i = 0; i < this.is_challenger.length; i++) {
+			if (playerId === this.is_challenger[i]) {
+				queueAvailability.queueStatus = QueueStatus.IS_CHALLENGER;
+				return queueAvailability;
+			}
+		}
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (playerId === this.users_looking_for_match[i]) {
 				queueAvailability.queueStatus = QueueStatus.IN_QUEUE;
@@ -108,6 +115,45 @@ export class QueueService {
 			}
 		}
 		return queueAvailability;
+	}
+
+	async getChallengeAvailability(playerId: string) : Promise<ChallengeAvailability> {
+		const challengeAvailability: ChallengeAvailability = new ChallengeAvailability;
+
+		// TODO: write function that checks if player is online
+		if (playerId === "OFFLINE") {
+			challengeAvailability.challengeStatus = ChallengeStatus.OFFLINE;
+			return challengeAvailability;
+		}
+		
+		const queueAvailability = await this.getQueueAvailability(playerId);
+		switch (queueAvailability.queueStatus) {
+			case QueueStatus.IN_MATCH:
+				challengeAvailability.challengeStatus = ChallengeStatus.IN_MATCH;
+				break;
+		
+			case QueueStatus.IN_QUEUE:
+				challengeAvailability.challengeStatus = ChallengeStatus.IN_QUEUE;
+				break;
+		
+			case QueueStatus.IS_CHALLENGER:
+				challengeAvailability.challengeStatus = ChallengeStatus.IS_CHALLENGER;
+				break;
+		
+			default:
+				challengeAvailability.challengeStatus = ChallengeStatus.CAN_CHALLENGE
+				break;
+		}
+		return challengeAvailability;
+	}
+	
+	async challengeFriend(user_id: string, friend_id: string) {
+		const challengeAvailable = await this.getChallengeAvailability(friend_id);
+		if (challengeAvailable.challengeStatus != ChallengeStatus.CAN_CHALLENGE) {
+			return challengeAvailable;
+		}
+		this.addQueuedMatch(user_id, friend_id);
+		return challengeAvailable;
 	}
 
 	canPlayerLookForMatch(playerId: string): Boolean {
