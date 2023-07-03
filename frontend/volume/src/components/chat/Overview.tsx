@@ -86,7 +86,7 @@ function Overview({
 	// merge personal and group chats
 	let allChats = data.currentUserQuery.personal_chats.concat(data.currentUserQuery.group_chats);
 
-	// if chat has no name, use the other member's name
+	// if chat has no name(and therefor is personal chat), use the other member's name and avatar
 	allChats = allChats.map((chat: any) => {
 		const newChat = { ...chat };
 		if (!newChat.name) {
