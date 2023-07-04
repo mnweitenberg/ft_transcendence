@@ -4,11 +4,10 @@ import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useQueryUser } from "src/utils/useQueryUser";
 
 function Header(props: i.PongProps) {
-	if (!props.playersAvailable) return <header></header>;
-
 	const { user: p1, loading: loadingp1, error: errorp1 } = useQueryUser(props.players[0].id);
 	const { user: p2, loading: loadingp2, error: errorp2 } = useQueryUser(props.players[1].id);
 
+	if (!props.playersAvailable) return <header></header>;
 	if (!p1 || !p2) return <header></header>;
 	if (loadingp1 || loadingp2) return <header></header>;
 	if (errorp1 || errorp2) return <header></header>;

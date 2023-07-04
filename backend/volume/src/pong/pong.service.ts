@@ -6,8 +6,7 @@ import { GameLogicService } from './gameLogic.service';
 import { Injectable } from '@nestjs/common';
 import { UserInfo } from 'src/auth/user-info.interface';
 import { RankingService } from './ranking/ranking.service';
-import { QueueAvailability } from './queue/queuestatus.model';
-import { QueueStatus } from './queue/queuestatus.model';
+import { Availability, ChallengeStatus, QueueStatus } from './queue/queuestatus.model';
 import { pubSub } from 'src/app.module';
 
 @Injectable()
@@ -74,11 +73,16 @@ export class PongService {
 			this.emitter.emit('gameIsFinished');
 			await this.matchRepo.saveMatch(this.state.match);
 
-			const queueAvailability: QueueAvailability = new QueueAvailability;
+			const queueAvailability: Availability = new Availability;
 			queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
+			queueAvailability.challengeStatus = ChallengeStatus.CAN_CHALLENGE;
 			pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.state.match.players[0].id } );
 			pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.state.match.players[1].id } );
-			
+
+			pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: queueAvailability, userId: this.state.match.players[0].id } );
+			pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: queueAvailability, userId: this.state.match.players[1].id } );
+			pubSub.publish('challengeAvailabilityChanged', { challengeAvailabilityChanged: queueAvailability, userId: this.state.match.players[0].id } );
+			pubSub.publish('challengeAvailabilityChanged', { challengeAvailabilityChanged: queueAvailability, userId: this.state.match.players[1].id } );
 			await this.rankingService.updateRanking(
 				this.state.match,
 				this.state.match.players[0],

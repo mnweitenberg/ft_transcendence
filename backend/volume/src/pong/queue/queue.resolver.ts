@@ -1,40 +1,42 @@
-import { Args, Mutation, Resolver, Subscription, Query, ObjectType, Field } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Subscription, Query, ObjectType, Field, GqlExecutionContext } from '@nestjs/graphql';
 import { QueueService } from './queue.service';
 import { pubSub } from 'src/app.module';
 import { QueuedMatch } from './queuedmatch.model';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard, JwtSubscriptionGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/user-info.interface';
-import { QueueAvailability, ChallengeAvailability } from './queuestatus.model';
+import { Availability } from './queuestatus.model';
+import { getSubscriptionUser } from 'src/utils/getSubscriptionUser';
+import { User } from 'src/user/entities/user.entity';
 
 @Resolver()
 export class QueueResolver {
 	constructor(private queueService: QueueService) {}
 
 	@UseGuards(JwtAuthGuard)
-	@Query(() => QueueAvailability)
+	@Query(() => Availability)
 	async getQueueAvailability(@AuthUser() user: UserInfo) {
 		return await this.queueService.getQueueAvailability(user.userUid);
 	}
 	
-	@Query(() => ChallengeAvailability)
-	async getChallengeAvailability(@Args('friend_id') friend_id: string) {
-		return await this.queueService.getChallengeAvailability(friend_id);
-	}
-	
 	@UseGuards(JwtAuthGuard)
-	@Query(() => ChallengeAvailability)
+	@Query(() => Availability)
 	async getOwnChallengeAvailability(@AuthUser() user: UserInfo) {
 		return await this.queueService.getChallengeAvailability(user.userUid);
 	}
 
+	@Query(() => Availability)
+	async getChallengeAvailability(@Args('friendId') friendId: string) {
+		return await this.queueService.getChallengeAvailability(friendId);
+	}
+
 	@UseGuards(JwtAuthGuard)
-	@Mutation(() => ChallengeAvailability, { nullable: true } )
-	async challengeFriend(@AuthUser() user: UserInfo, @Args('friend_id') friend_id: string) {
+	@Mutation(() => Availability, { nullable: true } )
+	async challengeFriend(@AuthUser() user: UserInfo, @Args('friendId') friend_id: string) {
 		return this.queueService.challengeFriend(user.userUid, friend_id);		
 	}
-	
+
 	@UseGuards(JwtAuthGuard)
 	@Mutation(() => Boolean, { nullable: true })
 	async joinQueue(@AuthUser() user: UserInfo) {
@@ -46,7 +48,32 @@ export class QueueResolver {
 		return pubSub.asyncIterator('queueChanged');
 	}
 
-	@Subscription(() => QueueAvailability, {
+	@UseGuards(JwtSubscriptionGuard)
+	@Subscription(() => Availability, {
+		async filter(payload, variables, context) {
+			const user = getSubscriptionUser(context);
+			return (
+				payload.userId === user.userUid
+			);
+		},
+
+	})
+	ownChallengeAvailabilityChanged() {
+		return pubSub.asyncIterator('ownChallengeAvailabilityChanged');
+	}
+
+	@Subscription(() => Availability, {
+		filter: async (payload, variables) => {
+			return (
+				payload.userId === variables.friend_id
+			);
+		},
+	})
+	challengeAvailabilityChanged(@Args('friend_id') friend_id: string) {
+		return pubSub.asyncIterator('challengeAvailabilityChanged');
+	}
+
+	@Subscription(() => Availability, {
 		filter: async (payload, variables) => {
 			return (
 				payload.userId === variables.userId
@@ -72,8 +99,8 @@ export class QueueResolver {
 	}
 
 	@Query(() => Number)
-	createMatches() {
-		return this.queueService.createMatches();
+	createMatches(@Args('number_of_matches') number: number) {
+		return this.queueService.createMatches(number);
 	}
 
 	@Query(() => Number)

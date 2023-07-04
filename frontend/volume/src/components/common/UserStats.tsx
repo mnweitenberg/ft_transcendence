@@ -7,6 +7,10 @@ import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useFriendsData } from "src/utils/useFriendsData";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useOutgoingRequests } from "src/utils/useOutgoingRequests";
+import {
+	useChallengeAvailability,
+	useOwnChallengeAvailability,
+} from "src/utils/useChallengeAvailability";
 
 export default function UserStats(modalProps: i.ModalProps & { selectedUser: any }) {
 	const { friends, loading, error } = useFriendsData(modalProps.userId);
@@ -14,6 +18,7 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 		useMutation(REMOVE_FRIEND);
 	const [invite_friend, { loading: loadingRequest, error: errorRequest }] =
 		useMutation(INVITE_FRIEND);
+
 	const {
 		outgoingRequests,
 		loading: loadingOutgoing,
@@ -22,18 +27,15 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 	const [challenge_friend, { loading: challenge_loading, error: challenge_error }] =
 		useMutation(CHALLENGE_FRIEND);
 	const {
-		data: challenge_availability_data,
+		challengeAvailabilityStatus,
 		loading: challenge_available_loading,
 		error: challenge_available_error,
-	} = useQuery(GET_CHALLENGE_AVAILABILITY, {
-		variables: { friendId: modalProps.selectedUser.id },
-	});
-
+	} = useChallengeAvailability(modalProps.selectedUser.id);
 	const {
-		data: own_challenge_availability_data,
+		ownChallengeAvailabilityStatus,
 		loading: own_challenge_available_loading,
 		error: own_challenge_available_error,
-	} = useQuery(GET_OWN_CHALLENGE_AVAILABILITY);
+	} = useOwnChallengeAvailability();
 
 	if (challenge_available_loading) return <></>;
 	if (own_challenge_available_loading) return <></>;
@@ -65,8 +67,8 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 					friends,
 					modalProps,
 					challenge_friend,
-					challenge_availability_data.getChallengeAvailability.challengeStatus,
-					own_challenge_availability_data.getOwnChallengeAvailability.challengeStatus
+					ownChallengeAvailabilityStatus.challengeStatus,
+					challengeAvailabilityStatus.challengeStatus
 				)}
 				{renderFriendRequestActions(
 					friends,
@@ -149,23 +151,7 @@ export enum ChallengeStatus {
 
 const CHALLENGE_FRIEND = gql`
 	mutation ChallengeFriend($friendId: String!) {
-		challengeFriend(friend_id: $friendId)
-	}
-`;
-
-const GET_CHALLENGE_AVAILABILITY = gql`
-	query GetChallengeAvailability($friendId: String!) {
-		getChallengeAvailability(friend_id: $friendId) {
-			challengeStatus
-		}
-	}
-`;
-
-const GET_OWN_CHALLENGE_AVAILABILITY = gql`
-	query GetOwnChallengeAvailability {
-		getOwnChallengeAvailability {
-			challengeStatus
-		}
+		challengeFriend(friendId: $friendId)
 	}
 `;
 
@@ -173,8 +159,8 @@ function renderChallengeFriendActions(
 	friends: any,
 	modalProps: any,
 	challenge_friend: any,
-	challenge_availability_data: ChallengeStatus,
-	own_challenge_availability_data: ChallengeStatus
+	own_challenge_availability_data: ChallengeStatus,
+	challenge_availability_data: ChallengeStatus
 ) {
 	if (own_challenge_availability_data === ChallengeStatus.IN_QUEUE)
 		return <>You cannot challenge other players, because you are in queue</>;

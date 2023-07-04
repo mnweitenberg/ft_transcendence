@@ -6,9 +6,9 @@ import { CreateUserInput } from 'src/user/dto/create-user.input';
 import { User } from 'src/user/entities/user.entity';
 import { UserAvatarService } from 'src/user/user-avatar.service';
 import { Avatar } from 'src/user/entities/avatar.entity';
-import { v4 as uuid } from 'uuid';
-import { QueueAvailability, ChallengeAvailability } from './queuestatus.model';
+import { Availability } from './queuestatus.model';
 import { QueueStatus, ChallengeStatus } from './queuestatus.model';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class QueueService {
@@ -50,9 +50,12 @@ export class QueueService {
 			return ;
 		}
 
-		const queueAvailability: QueueAvailability = new QueueAvailability;
-		queueAvailability.queueStatus = QueueStatus.IN_QUEUE;
-		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: player_id } );
+		const availability: Availability = new Availability;
+		availability.queueStatus = QueueStatus.IN_QUEUE;
+		availability.challengeStatus = ChallengeStatus.IN_QUEUE;
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: availability, userId: player_id } );
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: availability, userId: player_id } );
+		pubSub.publish('challengeAvailabilityChanged', { challengeAvailabilityChanged: availability, userId: player_id } );
 		for (let i = 0; i < this.users_looking_for_match.length; i++) {
 			if (this.users_looking_for_match[i] != player_id) {
 				this.addQueuedMatch(this.users_looking_for_match[i], player_id);
@@ -74,10 +77,17 @@ export class QueueService {
 		this.queued_matches.splice(0, 1);
 		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
 
-		const queueAvailability: QueueAvailability = new QueueAvailability;
+		const queueAvailability: Availability = new Availability;
 		queueAvailability.queueStatus = QueueStatus.IN_MATCH;
 		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.current_match.p1.id } );
 		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: queueAvailability, userId: this.current_match.p2.id } );
+		
+		const challengeAvailability: Availability = new Availability;
+		challengeAvailability.challengeStatus = ChallengeStatus.IN_MATCH;
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: challengeAvailability, userId: this.current_match.p1.id } );
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: challengeAvailability, userId: this.current_match.p2.id } );
+		pubSub.publish('challengeAvailabilityChanged', { challengeAvailabilityChanged: challengeAvailability, userId: this.current_match.p2.id } );
+		pubSub.publish('challengeAvailabilityChanged', { challengeAvailabilityChanged: challengeAvailability, userId: this.current_match.p1.id } );
 		return this.current_match;
 	}
 
@@ -85,8 +95,8 @@ export class QueueService {
 		return this.queued_matches;
 	}
 
-	async getQueueAvailability(playerId: string) : Promise<QueueAvailability> {
-		const queueAvailability: QueueAvailability = new QueueAvailability;
+	async getQueueAvailability(playerId: string) : Promise<Availability> {
+		const queueAvailability: Availability = new Availability;
 
 		queueAvailability.queueStatus = QueueStatus.CAN_JOIN;
 		for (let i = 0; i < this.is_challenger.length; i++) {
@@ -117,36 +127,32 @@ export class QueueService {
 		return queueAvailability;
 	}
 
-	async getChallengeAvailability(playerId: string) : Promise<ChallengeAvailability> {
-		const challengeAvailability: ChallengeAvailability = new ChallengeAvailability;
+	async getChallengeAvailability(playerId: string) : Promise<Availability> {
+		const challengeAvailability: Availability = new Availability;
+		const queueAvailability = await this.getQueueAvailability(playerId);
 
 		// TODO: write function that checks if player is online
 		if (playerId === "OFFLINE") {
 			challengeAvailability.challengeStatus = ChallengeStatus.OFFLINE;
 			return challengeAvailability;
 		}
-		
-		const queueAvailability = await this.getQueueAvailability(playerId);
-		switch (queueAvailability.queueStatus) {
+		switch (await queueAvailability.queueStatus) {
 			case QueueStatus.IN_MATCH:
 				challengeAvailability.challengeStatus = ChallengeStatus.IN_MATCH;
 				break;
-		
 			case QueueStatus.IN_QUEUE:
 				challengeAvailability.challengeStatus = ChallengeStatus.IN_QUEUE;
 				break;
-		
 			case QueueStatus.IS_CHALLENGER:
 				challengeAvailability.challengeStatus = ChallengeStatus.IS_CHALLENGER;
 				break;
-		
 			default:
 				challengeAvailability.challengeStatus = ChallengeStatus.CAN_CHALLENGE
 				break;
 		}
 		return challengeAvailability;
 	}
-	
+
 	async challengeFriend(user_id: string, friend_id: string) {
 		const challengeAvailable = await this.getChallengeAvailability(friend_id);
 		if (challengeAvailable.challengeStatus != ChallengeStatus.CAN_CHALLENGE) {
@@ -188,25 +194,41 @@ export class QueueService {
 		return 3;
 	}
 
-	async createMatches() {
-		this.createMatch('mweitenb');
-		// this.createMatch('jbedaux');
-
-		this.createMatch('Marius');
-		this.createMatch('Justin');
-		this.createMatch('Milan');
-		this.createMatch('Jonathan');
-		// this.createMatch('Marius1');
-		// this.createMatch('Justin1');
-		// this.createMatch('Milan1');
-		// this.createMatch('Jonathan1');
-		// this.createMatch('Henk1');
-		// this.createMatch('Henk2');
-		// this.createMatch('Henk3');
-		// this.createMatch('Henk4');
-		// this.createMatch('Henk5');
-		// this.createMatch('Henk6');
-
+	async createMatches(number:number) {
+		switch (number) {
+			default:
+				this.createMatch('jbedaux')
+			case 15:
+				this.createMatch('mweitenb');
+			case 14:
+				this.createMatch('Marius');
+			case 13:
+				this.createMatch('Justin');
+			case 12:
+				this.createMatch('Milan');
+			case 11:
+				this.createMatch('Jonathan');
+			case 10:
+				this.createMatch('Marius1');
+			case 9:
+				this.createMatch('Justin1');
+			case 8:
+				this.createMatch('Milan1');
+			case 7:
+				this.createMatch('Jonathan1');
+			case 6:
+				this.createMatch('Henk1');
+			case 5:
+				this.createMatch('Henk2');
+			case 4:
+				this.createMatch('Henk3');
+			case 3:
+				this.createMatch('Henk4');
+			case 2:
+				this.createMatch('Henk5');
+			case 1:
+				this.createMatch('Henk6');
+		}
 		return 4;
 	}
 

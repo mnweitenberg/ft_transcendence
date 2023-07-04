@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { Context } from 'graphql-ws';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,8 +17,10 @@ import { PongModule } from './pong/pong.module';
 import { RankingModule } from './pong/ranking/ranking.module';
 import { MatchModule } from './pong/match/match.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import * as cp from 'cookie-parser';
 
 export const pubSub = new PubSub();
+const cookieParser = cp();
 
 @Module({
 	imports: [
@@ -27,7 +30,13 @@ export const pubSub = new PubSub();
 			autoSchemaFile: 'schema.gql',
 			context: ({ req, res }) => ({ req, res }),
 			subscriptions: {
-				'graphql-ws': true,
+				'graphql-ws': {
+					onConnect: (context: Context<any, any>) => {
+						const { connectionParams, extra } = context;
+						cookieParser(extra.request, undefined, () => {});
+						extra.user = { user: {} };
+					},
+				},
 				'subscriptions-transport-ws': false,
 			},
 			// sortSchema: true, // Sort lexicographically

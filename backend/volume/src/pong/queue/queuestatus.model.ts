@@ -12,16 +12,14 @@ export enum ChallengeStatus {
 	IN_MATCH,
 	IN_QUEUE,
 	IS_CHALLENGER,
-	OFFLINE 
+	OFFLINE,
 }
 
 @ObjectType()
-export class QueueAvailability {
+export class Availability {
 	@Field()
 	queueStatus: QueueStatus;
-}
-@ObjectType()
-export class ChallengeAvailability {
+
 	@Field()
-	challengeStatus: ChallengeStatus;
+	challengeStatus: ChallengeStatus; 
 }

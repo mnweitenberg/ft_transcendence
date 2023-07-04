@@ -8,7 +8,15 @@ import { Socket } from 'socket.io';
 export class JwtAuthGuard extends AuthGuard('jwt') {
 	getRequest(context: ExecutionContext) {
 		const ctx = GqlExecutionContext.create(context);
-		return ctx.getContext().req ? ctx.getContext().req : null;
+		return ctx.getContext().req ?? null;
+	}
+}
+
+@Injectable()
+export class JwtSubscriptionGuard extends AuthGuard('jwt') {
+	getRequest(context: ExecutionContext) {
+		const ctx = GqlExecutionContext.create(context);
+		return ctx.getContext().req?.extra.request ?? null;
 	}
 }
 
