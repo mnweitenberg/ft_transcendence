@@ -32,7 +32,51 @@ export class QueueResolver {
 	}
 
 	@UseGuards(JwtAuthGuard)
-	@Mutation(() => Availability, { nullable: true } )
+	@Query(() => User , {nullable: true})
+	async getIncomingChallenge(@AuthUser() user: UserInfo){
+		return await this.queueService.getIncomingChallenge(user.userUid);
+	}
+
+	@UseGuards(JwtSubscriptionGuard)
+	@Subscription(() => User, {
+		async filter(payload, variables, context) {
+			const user = getSubscriptionUser(context);
+			return (
+				payload.userId === user.userUid
+			);
+		},
+		nullable: true
+	})
+	incomingChallenge() {
+		return pubSub.asyncIterator('incomingChallenge');
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => Boolean)
+	async acceptChallenge(
+		@AuthUser() userInfo: UserInfo,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.queueService.acceptChallenge(userInfo.userUid, friend_id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => Boolean, { nullable: true } )
+	async denyChallenge(
+		@AuthUser() userInfo: UserInfo,
+		@Args('friend_id') friend_id: string,
+	) {
+		return this.queueService.denyChallenge(userInfo.userUid, friend_id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Query(() => User)
+	async getChallenge(@AuthUser() user: UserInfo) {
+		return await this.queueService.getChallengeAvailability(user.userUid);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => Boolean, { nullable: true } )
 	async challengeFriend(@AuthUser() user: UserInfo, @Args('friendId') friend_id: string) {
 		return this.queueService.challengeFriend(user.userUid, friend_id);		
 	}
@@ -42,7 +86,7 @@ export class QueueResolver {
 	async joinQueue(@AuthUser() user: UserInfo) {
 		return await this.queueService.joinQueue(user.userUid);
 	}
-
+	
 	@Subscription(() => [QueuedMatch])
 	queueChanged() {
 		return pubSub.asyncIterator('queueChanged');
@@ -121,5 +165,10 @@ export class QueueResolver {
 	@Query(() => Number)
 	removeQueue() {
 		return this.queueService.removeQueue();
+	}
+
+	@Mutation(() => Boolean, { nullable: true } )
+	async challengeFriend1(@Args('userId') user_id: string, @Args('friendId') friend_id: string) {
+		return this.queueService.challengeFriend(user_id, friend_id);		
 	}
 }

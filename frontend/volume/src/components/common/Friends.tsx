@@ -6,6 +6,7 @@ import { useFriendsData } from "src/utils/useFriendsData";
 import { gql, useQuery, useSubscription } from "@apollo/client";
 import { useEffect } from "react";
 import FriendRequestAlert from "./FriendRequestAlert";
+import ChallengeAlert from "./ChallengeAlert";
 
 const GET_INCOMING_FRIEND_REQUEST = gql`
 	query {
@@ -28,6 +29,30 @@ const IN_FRIEND_REQUEST_CHANGED = gql`
 				avatar {
 					file
 				}
+			}
+		}
+	}
+`;
+
+const GET_INCOMING_CHALLENGE = gql`
+	query GetIncomingChallenge {
+		getIncomingChallenge {
+			id
+			username
+			avatar {
+				file
+			}
+		}
+	}
+`;
+
+const INCOMING_CHALLENGE = gql`
+	subscription IncomingChallenge {
+		incomingChallenge {
+			id
+			username
+			avatar {
+				file
 			}
 		}
 	}
@@ -93,24 +118,22 @@ function IncomingFriendRequests(modalProps: i.ModalProps) {
 }
 
 function IncomingChallenge(modalProps: i.ModalProps) {
-	// const { data, loading, error, subscribeToMore } = useQuery(GET_INCOMING_FRIEND_REQUEST);
+	const { data, loading, error, subscribeToMore } = useQuery(GET_INCOMING_CHALLENGE);
 
-	// useEffect(() => {
-	// 	return subscribeToMore({
-	// 		document: IN_FRIEND_REQUEST_CHANGED,
-	// 		variables: { user_id: modalProps.userId },
-	// 		updateQuery: (prev, { subscriptionData }) => {
-	// 			if (!subscriptionData.data) return prev;
-	// 			const newRequests =
-	// 				subscriptionData.data.incomingFriendRequestChanged.incoming_friend_requests;
-	// 			return Object.assign({}, prev, {
-	// 				getIncomingFriendRequest: newRequests,
-	// 			});
-	// 		},
-	// 	});
-	// }, []);
+	useEffect(() => {
+		return subscribeToMore({
+			document: INCOMING_CHALLENGE,
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return null;
+				const newChallenger = subscriptionData.data.incomingChallenge;
+				return Object.assign({}, prev, {
+					getIncomingChallenge: newChallenger,
+				});
+			},
+		});
+	}, []);
 
-	// if (!error && !loading && data && data.getIncomingFriendRequest.length > 0)
-	// 	return <FriendRequestAlert user={data.getIncomingFriendRequest[0]} />;
+	if (!error && !loading && data?.getIncomingChallenge)
+		return <ChallengeAlert user={data.getIncomingChallenge} />;
 	return <></>;
 }

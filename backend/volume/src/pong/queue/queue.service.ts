@@ -8,6 +8,7 @@ import { UserAvatarService } from 'src/user/user-avatar.service';
 import { Avatar } from 'src/user/entities/avatar.entity';
 import { Availability } from './queuestatus.model';
 import { QueueStatus, ChallengeStatus } from './queuestatus.model';
+import { Challenge } from './challenge.model';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class QueueService {
 	queued_matches: QueuedMatch[] = [];
 	current_match: QueuedMatch;
 	is_challenger: string[] = []; // TODO: as soon as challenge is sent, the challengers id should be in here so he cannot join queue anymore untill challenge is accepted or denied
+	challenges: Challenge[] = [];
 
 	async addQueuedMatch(
 		player_one_id: string,
@@ -153,13 +155,29 @@ export class QueueService {
 		return challengeAvailability;
 	}
 
-	async challengeFriend(user_id: string, friend_id: string) {
-		const challengeAvailable = await this.getChallengeAvailability(friend_id);
-		if (challengeAvailable.challengeStatus != ChallengeStatus.CAN_CHALLENGE) {
-			return challengeAvailable;
+	async getIncomingChallenge(user_id: string) : Promise<User> | null {
+		for (let i = 0; i < this.challenges.length; i++) {
+			if (this.challenges[i].opponent_id === user_id) {
+				const challenger: User = await this.userService.getUserById(this.challenges[i].challenger_id);
+				return challenger;
+			}
 		}
-		this.addQueuedMatch(user_id, friend_id);
-		return challengeAvailable;
+		return null;
+	}
+
+	async challengeFriend(user_id: string, friend_id: string) {
+		let challengeAvailable = await this.getChallengeAvailability(friend_id);
+		if (challengeAvailable.challengeStatus != ChallengeStatus.CAN_CHALLENGE) {
+			return false;
+		}
+		challengeAvailable = await this.getChallengeAvailability(user_id);
+		if (challengeAvailable.challengeStatus != ChallengeStatus.CAN_CHALLENGE) {
+			return false;
+		}
+		
+		const challenger: User = await this.userService.getUserById(user_id);
+		pubSub.publish('incomingChallenge',  { incomingChallenge: challenger, userId: friend_id } );
+		return true;
 	}
 
 	canPlayerLookForMatch(playerId: string): Boolean {
@@ -184,6 +202,17 @@ export class QueueService {
 			}
 		}
 		return true;
+	}
+
+	async acceptChallenge(user_id: string, friend_id: string) {
+		this.addQueuedMatch(user_id, friend_id);
+		// TODO: pubsub message that challenge is accepted
+		pubSub.publish('incomingChallenge',  { incomingChallenge: null, userId: user_id } );
+	}
+	
+	async denyChallenge(user_id: string, friend_id: string) {
+		// TODO: pubsub message that challege is denied
+		pubSub.publish('incomingChallenge',  { incomingChallenge: null, userId: user_id } );
 	}
 
 	/*

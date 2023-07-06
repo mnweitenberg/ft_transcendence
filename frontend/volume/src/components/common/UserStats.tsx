@@ -14,18 +14,11 @@ import {
 
 export default function UserStats(modalProps: i.ModalProps & { selectedUser: any }) {
 	const { friends, loading, error } = useFriendsData(modalProps.userId);
-	const [remove_friend, { loading: loadingRemove, error: errorRemove }] =
-		useMutation(REMOVE_FRIEND);
-	const [invite_friend, { loading: loadingRequest, error: errorRequest }] =
-		useMutation(INVITE_FRIEND);
-
 	const {
 		outgoingRequests,
 		loading: loadingOutgoing,
 		error: errorOutgoing,
 	} = useOutgoingRequests(modalProps.userId);
-	const [challenge_friend, { loading: challenge_loading, error: challenge_error }] =
-		useMutation(CHALLENGE_FRIEND);
 	const {
 		challengeAvailabilityStatus,
 		loading: challenge_available_loading,
@@ -36,6 +29,13 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 		loading: own_challenge_available_loading,
 		error: own_challenge_available_error,
 	} = useOwnChallengeAvailability();
+
+	const [remove_friend, { loading: loadingRemove, error: errorRemove }] =
+		useMutation(REMOVE_FRIEND);
+	const [invite_friend, { loading: loadingRequest, error: errorRequest }] =
+		useMutation(INVITE_FRIEND);
+	const [challenge_friend, { loading: challenge_loading, error: challenge_error }] =
+		useMutation(CHALLENGE_FRIEND);
 
 	if (challenge_available_loading) return <></>;
 	if (own_challenge_available_loading) return <></>;
@@ -64,7 +64,6 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 			<div className="user_actions">
 				<h1>{modalProps.selectedUser.username}</h1>
 				{renderChallengeFriendActions(
-					friends,
 					modalProps,
 					challenge_friend,
 					ownChallengeAvailabilityStatus.challengeStatus,
@@ -156,7 +155,6 @@ const CHALLENGE_FRIEND = gql`
 `;
 
 function renderChallengeFriendActions(
-	friends: any,
 	modalProps: any,
 	challenge_friend: any,
 	own_challenge_availability_data: ChallengeStatus,
