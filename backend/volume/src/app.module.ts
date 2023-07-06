@@ -29,11 +29,21 @@ const cookieParser = cp();
 			driver: ApolloDriver,
 			autoSchemaFile: 'schema.gql',
 			context: ({ req, res }) => ({ req, res }),
+			// context: async ({ req, res, connection }) => {
+			// 	// subscriptions
+			// 	if (connection) {
+			// 		return { req: connection.context, res };
+			// 	}
+			// 	// queries and mutations
+			// 	return { req, res };
+			// },
 			subscriptions: {
 				'graphql-ws': {
 					onConnect: (context: Context<any, any>) => {
 						const { connectionParams, extra } = context;
 						cookieParser(extra.request, undefined, () => {});
+						// user validation will remain the same as in the example above
+						// when using with graphql-ws, additional context value should be stored in the extra field
 						extra.user = { user: {} };
 					},
 				},
