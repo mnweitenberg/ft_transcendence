@@ -28,16 +28,13 @@ export default function ChallengeAlert({ user }: { user: any }) {
 			{showModal && (
 				<div className="modal">
 					<div className="modal-content">
-						{/* <span className="close" onClick={() => setShowModal(false)}>
-							&times;
-						</span> */}
 						<div className="requestAlert">
 							<div className="avatar_container">
 								<img src={convertEncodedImage(user.avatar.file)} />
 							</div>
 							<div className="user_actions">
 								<h1>{user.username}</h1>
-								<p>Challenge from {user.username}</p>
+								<p>Challenge from {user.username}, auto denying after 9 seconds</p>
 							</div>
 						</div>
 						<AcceptChallenge friend_id={user.id} setShowModal={setShowModal} />
@@ -77,6 +74,16 @@ function DenyChallenge({ friend_id, setShowModal }: { friend_id: string; setShow
 		deny_friend,
 		{ data: accept_data, loading: accept_loading, error: accept_error, called: accept_called },
 	] = useMutation(DENY_CHALLENGE);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			deny_friend({ variables: { friendId: friend_id } });
+		}, 9000);
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, []);
 
 	if (accept_loading) return <>Loading accept</>;
 	if (accept_error) return <>Error accept</>;

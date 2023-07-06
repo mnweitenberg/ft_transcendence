@@ -40,6 +40,31 @@ export class QueueService {
 		return new_queued_match;
 	}
 
+	async addChallengeMatch(
+		user_id: string,
+		challenger_id: string,
+	): Promise<QueuedMatch> {
+		const players: User[] = await this.checkPlayers(
+			user_id,
+			challenger_id,
+		);
+		const new_queued_match = new QueuedMatch();
+		new_queued_match.id = uuid(); 
+		new_queued_match.p1 = players[0];
+		new_queued_match.p2 = players[1];
+		let availability;
+		availability.queueStatus = QueueStatus.IN_QUEUE;
+		availability.challengeStatus = ChallengeStatus.IN_QUEUE;
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: availability, userId: user_id } );
+		pubSub.publish('queueAvailabilityChanged', { queueAvailabilityChanged: availability, userId: challenger_id } );
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: availability, userId: challenger_id } );
+		pubSub.publish('challengeAvailabilityChanged', { challengeAvailabilityChanged: availability, userId: user_id } );
+		
+		this.queued_matches.push(new_queued_match);
+		pubSub.publish('queueChanged', { queueChanged: this.queued_matches });
+		return new_queued_match;
+	}
+
 	private async checkPlayers(id1, id2): Promise<User[]> {
 		const p1 = await this.userService.getUserById(id1);
 		const p2 = await this.userService.getUserById(id2);
@@ -174,7 +199,10 @@ export class QueueService {
 		if (challengeAvailable.challengeStatus != ChallengeStatus.CAN_CHALLENGE) {
 			return false;
 		}
-		
+		this.is_challenger.push(user_id);
+		challengeAvailable = await this.getChallengeAvailability(user_id);
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: challengeAvailable, userId: user_id } );
+
 		const challenger: User = await this.userService.getUserById(user_id);
 		pubSub.publish('incomingChallenge',  { incomingChallenge: challenger, userId: friend_id } );
 		return true;
@@ -204,15 +232,32 @@ export class QueueService {
 		return true;
 	}
 
-	async acceptChallenge(user_id: string, friend_id: string) {
-		this.addQueuedMatch(user_id, friend_id);
+	async acceptChallenge(user_id: string, challenger_id: string) {
+		this.addChallengeMatch(user_id, challenger_id);
 		// TODO: pubsub message that challenge is accepted
+		for (let i = 0; i < this.is_challenger.length; i++) {
+			if (challenger_id === this.is_challenger[i]) {
+				this.is_challenger.splice(i, 1);
+			}
+		}
+	
+		const challengeAvailable = await this.getChallengeAvailability(user_id);
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: challengeAvailable, userId: challenger_id } );
 		pubSub.publish('incomingChallenge',  { incomingChallenge: null, userId: user_id } );
+		return true;
 	}
 	
 	async denyChallenge(user_id: string, friend_id: string) {
 		// TODO: pubsub message that challege is denied
+		for (let i = 0; i < this.is_challenger.length; i++) {
+			if (friend_id === this.is_challenger[i]) {
+				this.is_challenger.splice(i, 1);
+			}
+		}
+		const challengeAvailable = await this.getChallengeAvailability(user_id);
+		pubSub.publish('ownChallengeAvailabilityChanged', { ownChallengeAvailabilityChanged: challengeAvailable, userId: friend_id } );
 		pubSub.publish('incomingChallenge',  { incomingChallenge: null, userId: user_id } );
+		return true;
 	}
 
 	/*
