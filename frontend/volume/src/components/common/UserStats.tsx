@@ -154,6 +154,15 @@ const CHALLENGE_FRIEND = gql`
 	}
 `;
 
+// TODO: add timer voor timeout challenge
+//
+// const [counter, setCounter] = useState(CHALLENGE_TIME_OUT / 1000);
+
+// useEffect(() => {
+// 	counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
+// }, [counter]);
+
+// {counter}  <-- displays seconds
 function renderChallengeFriendActions(
 	modalProps: any,
 	challenge_friend: any,
@@ -161,24 +170,23 @@ function renderChallengeFriendActions(
 	challenge_availability_data: ChallengeStatus
 ) {
 	if (own_challenge_availability_data === ChallengeStatus.IN_QUEUE)
-		return <>You cannot challenge other players, because you are in queue</>;
+		return <div>You cannot challenge other players, because you are in queue</div>;
 	if (own_challenge_availability_data === ChallengeStatus.IN_MATCH)
-		return <>You cannot challenge other players, because you are in a match</>;
+		return <div>You cannot challenge other players, because you are in a match</div>;
 	if (own_challenge_availability_data === ChallengeStatus.IS_CHALLENGER)
 		return (
-			<>
-				You cannot challenge other players, because you are already challenged another
-				player
-			</>
+			<div>
+				You cannot challenge other players, because you already challenged another player
+			</div>
 		);
 	if (challenge_availability_data === ChallengeStatus.IN_QUEUE)
-		return <>cannot challenge {modalProps.selectedUser.username} (in queue)</>;
+		return <div>cannot challenge {modalProps.selectedUser.username} (in queue)</div>;
 	if (challenge_availability_data === ChallengeStatus.IN_MATCH)
-		return <>cannot challenge {modalProps.selectedUser.username} (in match)</>;
+		return <div>cannot challenge {modalProps.selectedUser.username} (in match)</div>;
 	if (challenge_availability_data === ChallengeStatus.OFFLINE)
-		return <>cannot challenge {modalProps.selectedUser.username} (offline)</>;
+		return <div>cannot challenge {modalProps.selectedUser.username} (offline)</div>;
 	if (challenge_availability_data === ChallengeStatus.IS_CHALLENGER)
-		return <>cannot challenge {modalProps.selectedUser.username} </>;
+		return <div>cannot challenge {modalProps.selectedUser.username} </div>;
 	return (
 		<a
 			className="link"

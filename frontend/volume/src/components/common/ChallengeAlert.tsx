@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 
+export const CHALLENGE_TIME_OUT = 9000;
+
 const ACCEPT_CHALLENGE = gql`
 	mutation AcceptChallenge($friendId: String!) {
 		acceptChallenge(friend_id: $friendId)
@@ -34,7 +36,7 @@ export default function ChallengeAlert({ user }: { user: any }) {
 							</div>
 							<div className="user_actions">
 								<h1>{user.username}</h1>
-								<p>Challenge from {user.username}, auto denying after 9 seconds</p>
+								<p>{user.username} challenged you to play a game!</p>
 							</div>
 						</div>
 						<AcceptChallenge friend_id={user.id} setShowModal={setShowModal} />
@@ -74,11 +76,16 @@ function DenyChallenge({ friend_id, setShowModal }: { friend_id: string; setShow
 		deny_friend,
 		{ data: accept_data, loading: accept_loading, error: accept_error, called: accept_called },
 	] = useMutation(DENY_CHALLENGE);
+	const [counter, setCounter] = useState(CHALLENGE_TIME_OUT / 1000);
+
+	useEffect(() => {
+		counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
+	}, [counter]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			deny_friend({ variables: { friendId: friend_id } });
-		}, 9000);
+		}, CHALLENGE_TIME_OUT);
 
 		return () => {
 			clearTimeout(timer);
@@ -96,7 +103,7 @@ function DenyChallenge({ friend_id, setShowModal }: { friend_id: string; setShow
 					setShowModal(false);
 				}}
 			>
-				<button type="submit">Deny</button>
+				<button type="submit">Deny ({counter} s)</button>
 			</form>
 		</div>
 	);
