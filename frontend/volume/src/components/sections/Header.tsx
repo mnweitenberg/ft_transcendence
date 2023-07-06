@@ -10,17 +10,17 @@ function Header(props: i.PongProps) {
 
 	return (
 		<header>
-			<LeftPlayer {...props.players[0]} />
+			<Player className="player_left" user={props.players[0]} />
 			<div className="score">
 				<div className="player_one">{p1Score}</div>
 				<div className="player_two">{p2Score}</div>
 			</div>
-			<RightPlayer {...props.players[1]} />
+			<Player className="player_right" user={props.players[1]} />
 		</header>
 	);
 }
 
-function LeftPlayer(user: any, left: number) {
+function Player({ user, className }: { user: any; className: string }) {
 	const { user: player, loading: loading, error: error } = useQueryUser(user.id);
 
 	if (!player) return <></>;
@@ -28,24 +28,7 @@ function LeftPlayer(user: any, left: number) {
 	if (error) return <>Error</>;
 
 	return (
-		<div className="player player_left">
-			<div className="avatar_container">
-				<img src={convertEncodedImage(player.avatar.file)}></img>
-			</div>
-			<h3 className="name">{player.username}</h3>
-		</div>
-	);
-}
-
-function RightPlayer(user: any, left: number) {
-	const { user: player, loading: loading, error: error } = useQueryUser(user.id);
-
-	if (!player) return <></>;
-	if (loading) return <>Loading</>;
-	if (error) return <>Error</>;
-
-	return (
-		<div className="player player_right">
+		<div className={["player", className].join(" ")}>
 			<div className="avatar_container">
 				<img src={convertEncodedImage(player.avatar.file)}></img>
 			</div>
