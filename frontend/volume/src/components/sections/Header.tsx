@@ -4,37 +4,36 @@ import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import { useQueryUser } from "src/utils/useQueryUser";
 
 function Header(props: i.PongProps) {
-	const { user: p1, loading: loadingp1, error: errorp1 } = useQueryUser(props.players[0].id);
-	const { user: p2, loading: loadingp2, error: errorp2 } = useQueryUser(props.players[1].id);
-
 	if (!props.playersAvailable) return <header></header>;
-	if (!p1 || !p2) return <header></header>;
-	if (loadingp1 || loadingp2) return <header></header>;
-	if (errorp1 || errorp2) return <header></header>;
 
 	const [p1Score, p2Score] = props.score;
 
 	return (
 		<header>
-			<div className="player player_left">
-				<div className="avatar_container">
-					<img src={convertEncodedImage(p1.avatar.file)}></img>
-				</div>
-				<h3 className="name">{p1.username}</h3>
-			</div>
-
+			<Player className="player_left" user={props.players[0]} />
 			<div className="score">
 				<div className="player_one">{p1Score}</div>
 				<div className="player_two">{p2Score}</div>
 			</div>
-
-			<div className="player player_right">
-				<h3 className="name">{p2.username}</h3>
-				<div className="avatar_container">
-					<img src={convertEncodedImage(p2.avatar.file)}></img>
-				</div>
-			</div>
+			<Player className="player_right" user={props.players[1]} />
 		</header>
+	);
+}
+
+function Player({ user, className }: { user: any; className: string }) {
+	const { user: player, loading: loading, error: error } = useQueryUser(user.id);
+
+	if (!player) return <></>;
+	if (loading) return <>Loading</>;
+	if (error) return <>Error</>;
+
+	return (
+		<div className={["player", className].join(" ")}>
+			<div className="avatar_container">
+				<img src={convertEncodedImage(player.avatar.file)}></img>
+			</div>
+			<h3 className="name">{player.username}</h3>
+		</div>
 	);
 }
 
