@@ -15,7 +15,7 @@ export default function SettingsModule({ user }): JSX.Element {
 	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION, {
 		refetchQueries: [{ query: CURRENT_USER }],
 	});
-	const [picture, setPicture] = useState<PictureForm>({ name: "", data: "" });
+	const [picture, setPicture] = useState<PictureForm>({ name: "", data: user.avatar.file });
 	const [usernameInput, setUsernameInput] = useState("");
 	const [isEmptyForm, setIsEmptyForm] = useState(false);
 
@@ -77,7 +77,7 @@ export default function SettingsModule({ user }): JSX.Element {
 					<h3>Change profile picture </h3>
 					<div className="change_avatar">
 						<div className="avatar_container">
-							<img src={convertEncodedImage(user.avatar.file)} alt="error no image" />
+							<img src={convertEncodedImage(picture.data)} alt="error no image" />
 						</div>
 						<label className="choose_file" htmlFor="changeAvatar">
 							<input
