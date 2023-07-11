@@ -1,30 +1,21 @@
-import { gql, useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { convertEncodedImage } from "src/utils/convertEncodedImage";
 import "src/styles/style.css";
-import { useQueryCurrentUser } from "src/utils/useQueryUser";
-
-const FORM_MUTATION = gql`
-	mutation changeUserData($input: ChangeUserDataInput!) {
-		changeUserData(changeUserData: $input) {
-			username
-			avatar {
-				file
-				filename
-			}
-		}
-	}
-`;
+import Loading from "../authorization/Loading";
+import { FORM_MUTATION } from "src/utils/graphQLMutations";
+import { CURRENT_USER } from "src/utils/graphQLQueries";
 
 interface PictureForm {
 	name: string;
 	data: string;
 }
 
-export default function SettingsModule(): JSX.Element {
-	const user = useQueryCurrentUser();
-	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION);
-	const [picture, setPicture] = useState<PictureForm>({ name: "", data: "" });
+export default function SettingsModule({ user, showModal }): JSX.Element {
+	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION, {
+		refetchQueries: [{ query: CURRENT_USER }],
+	});
+	const [picture, setPicture] = useState<PictureForm>({ name: "", data: user.avatar.file });
 	const [usernameInput, setUsernameInput] = useState("");
 	const [isEmptyForm, setIsEmptyForm] = useState(false);
 
@@ -37,7 +28,7 @@ export default function SettingsModule(): JSX.Element {
 			formData["username"] = usernameInput;
 		}
 
-		if (picture.data !== "") {
+		if (picture.data !== "" && picture.data !== user.avatar.file) {
 			formData["avatar"] = {
 				file: picture.data,
 				filename: picture.name,
@@ -56,6 +47,7 @@ export default function SettingsModule(): JSX.Element {
 				input: formData,
 			},
 		});
+		showModal(false);
 	};
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsernameInput(event.currentTarget.value);
@@ -74,6 +66,7 @@ export default function SettingsModule(): JSX.Element {
 		};
 		fileReader.readAsBinaryString(file);
 	};
+
 	return (
 		<div className="modal_user_profile_settings">
 			<div className="wrapper">
@@ -84,7 +77,7 @@ export default function SettingsModule(): JSX.Element {
 					<h3>Change profile picture </h3>
 					<div className="change_avatar">
 						<div className="avatar_container">
-							<img src={convertEncodedImage(user.avatar.file)} alt="error no image" />
+							<img src={convertEncodedImage(picture.data)} alt="error no image" />
 						</div>
 						<label className="choose_file" htmlFor="changeAvatar">
 							<input

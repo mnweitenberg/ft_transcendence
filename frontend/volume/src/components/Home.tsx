@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
 import "src/styles/style.css";
 import Chat from "src/components/chat/Chat";
 import Header from "src/components/sections/Header";
@@ -10,8 +11,9 @@ import Modal, { createModalProps } from "src/components/common/Modal";
 import { Game, createPongProps, handleFinishGame } from "src/components/game/Game";
 import * as i from "src/types/Interfaces";
 import { useAuth } from "src/utils/authLogic";
-import { useQueryCurrentUser } from "src/utils/useQueryUser";
 import SettingsModal from "src/components/settings/SettingsModal";
+import Loading from "./authorization/Loading";
+import { CURRENT_USER } from "src/utils/graphQLQueries";
 
 function Home(): JSX.Element {
 	const modalProps: i.ModalProps = createModalProps();
@@ -24,7 +26,9 @@ function Home(): JSX.Element {
 		}
 	}, [pongProps.finished]);
 
-	const user = useQueryCurrentUser();
+	const currentUser = useQuery(CURRENT_USER);
+	if (currentUser.loading) return <Loading />;
+	else if (currentUser.error) return <>Error</>;
 
 	return (
 		<div className="grid-container">
@@ -34,7 +38,18 @@ function Home(): JSX.Element {
 
 			<div id="right_top">
 				{/* <Link to="/settings">settings</Link> */}
-				<a onClick={() => modalProps.toggleModal(<SettingsModal />)}>settings</a>
+				<a
+					onClick={() =>
+						modalProps.toggleModal(
+							<SettingsModal
+								user={currentUser.data.currentUserQuery}
+								showModal={modalProps.setShowModal}
+							/>
+						)
+					}
+				>
+					settings
+				</a>
 				<a
 					id="logout"
 					onClick={() => {
@@ -57,7 +72,9 @@ function Home(): JSX.Element {
 			</div>
 
 			<section id="profile">
-				<h1 className="section_header chat_profile_header">{user.username}</h1>
+				<h1 className="section_header chat_profile_header">
+					{currentUser.data.currentUserQuery.username}
+				</h1>
 				<div className="section_content">
 					<Profile {...modalProps} />
 				</div>
