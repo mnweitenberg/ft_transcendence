@@ -41,7 +41,10 @@ function Home(): JSX.Element {
 				<a
 					onClick={() =>
 						modalProps.toggleModal(
-							<SettingsModal user={currentUser.data.currentUserQuery} />
+							<SettingsModal
+								user={currentUser.data.currentUserQuery}
+								showModal={modalProps.setShowModal}
+							/>
 						)
 					}
 				>

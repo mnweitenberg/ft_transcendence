@@ -11,7 +11,7 @@ interface PictureForm {
 	data: string;
 }
 
-export default function SettingsModule({ user }): JSX.Element {
+export default function SettingsModule({ user, showModal }): JSX.Element {
 	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION, {
 		refetchQueries: [{ query: CURRENT_USER }],
 	});
@@ -28,7 +28,7 @@ export default function SettingsModule({ user }): JSX.Element {
 			formData["username"] = usernameInput;
 		}
 
-		if (picture.data !== "") {
+		if (picture.data !== "" && picture.data !== user.avatar.file) {
 			formData["avatar"] = {
 				file: picture.data,
 				filename: picture.name,
@@ -47,6 +47,7 @@ export default function SettingsModule({ user }): JSX.Element {
 				input: formData,
 			},
 		});
+		showModal(false);
 	};
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsernameInput(event.currentTarget.value);
@@ -66,7 +67,6 @@ export default function SettingsModule({ user }): JSX.Element {
 		fileReader.readAsBinaryString(file);
 	};
 
-	console.log(user);
 	return (
 		<div className="modal_user_profile_settings">
 			<div className="wrapper">
