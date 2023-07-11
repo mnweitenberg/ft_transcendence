@@ -11,7 +11,7 @@ interface PictureForm {
 	data: string;
 }
 
-export default function SettingsModule(user: any): JSX.Element {
+export default function SettingsModule({ user }): JSX.Element {
 	const [formMutation, { loading, error, data }] = useMutation(FORM_MUTATION, {
 		refetchQueries: [{ query: CURRENT_USER }],
 	});
@@ -77,12 +77,7 @@ export default function SettingsModule(user: any): JSX.Element {
 					<h3>Change profile picture </h3>
 					<div className="change_avatar">
 						<div className="avatar_container">
-							<img
-								src={convertEncodedImage(
-									currentUser.data.currentUserQuery.avatar.file
-								)}
-								alt="error no image"
-							/>
+							<img src={convertEncodedImage(user.avatar.file)} alt="error no image" />
 						</div>
 						<label className="choose_file" htmlFor="changeAvatar">
 							<input
@@ -99,7 +94,7 @@ export default function SettingsModule(user: any): JSX.Element {
 						<input
 							type="text"
 							name="username"
-							placeholder={currentUser.data.currentUserQuery.username}
+							placeholder={user.username}
 							onChange={handleChange}
 						/>
 					</label>

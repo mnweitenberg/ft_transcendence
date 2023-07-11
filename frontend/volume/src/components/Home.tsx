@@ -40,7 +40,9 @@ function Home(): JSX.Element {
 				{/* <Link to="/settings">settings</Link> */}
 				<a
 					onClick={() =>
-						modalProps.toggleModal(<SettingsModal user={currentUser.data} />)
+						modalProps.toggleModal(
+							<SettingsModal user={currentUser.data.currentUserQuery} />
+						)
 					}
 				>
 					settings
