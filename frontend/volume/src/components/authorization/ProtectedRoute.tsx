@@ -2,20 +2,25 @@ import { gql, useQuery } from "@apollo/client";
 import { Navigate } from "react-router-dom";
 import Loading from "./Loading";
 
-const LOGIN_QUERY = gql`
-	query loginQuery {
-		loginQuery
+const CURRENT_USER = gql`
+	query currentUserQuery {
+		currentUserQuery {
+			username
+			avatar {
+				file
+			}
+			id
+		}
 	}
 `;
 
 function ProtectedRoute({ children }: { children: any }): JSX.Element {
-	const { loading, error, data } = useQuery(LOGIN_QUERY);
+	const { loading, error, data } = useQuery(CURRENT_USER);
 
 	if (loading) return <Loading />;
+	if (error && error.message == "Unauthorized") return <Navigate to="/login" replace />;
+	else if (error) return <>Error</>;
 
-	if (!data.loginQuery) {
-		return <Navigate to="/login" replace />;
-	}
 	return children;
 }
 export default ProtectedRoute;

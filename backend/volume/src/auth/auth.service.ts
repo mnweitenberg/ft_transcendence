@@ -6,8 +6,15 @@ import { UserAvatarService } from 'src/user/user-avatar.service';
 import { UploadAvatarInput } from 'src/user/dto/upload-avatar.input';
 import { authenticator } from 'otplib';
 import { UserInfo } from 'src/auth/user-info.interface';
+import { Request } from 'express';
 
 const axios = require('axios').default;
+
+// export enum AuthStates {
+// 	NONE = 'NONE',
+// 	PARTIAL = 'PARTIAL',
+// 	FULL = 'FULL'
+// }
 
 export interface IntraToken {
 	access_token: string;
@@ -104,6 +111,12 @@ export class AuthService {
 	async getJwtCookie(userInfo: UserInfo): Promise<string> {
 		const token = await this.jwtService.signAsync(userInfo);
 		return JSON.stringify({ access_token: token });
+	}
+
+	async isCookieValid(request: Request): Promise<Boolean> {
+		const reqCookie = request.cookies['session_cookie'];
+	
+		if (reqCookie == undefined) return false;
 	}
 
 	async generateTwoFASecret(userInfo: UserInfo) {
