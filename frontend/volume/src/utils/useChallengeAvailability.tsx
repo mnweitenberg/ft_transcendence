@@ -33,11 +33,10 @@ const OWN_CHALLENGE_AVAILABILITY_CHANGED = gql`
 	}
 `;
 
-// TODO: subscription also needs to no cache fetch
 export const useChallengeAvailability = (friendId: any) => {
 	const { data, loading, error, subscribeToMore } = useQuery(GET_CHALLENGE_AVAILABILITY, {
 		variables: { friendId: friendId },
-		fetchPolicy: "no-cache",
+		fetchPolicy: "cache-and-network",
 	});
 
 	useEffect(() => {
@@ -46,10 +45,9 @@ export const useChallengeAvailability = (friendId: any) => {
 			variables: { friendId: friendId },
 			updateQuery: (prev, { subscriptionData }) => {
 				if (!subscriptionData.data) return prev;
-				const availabilityChanged = subscriptionData.data.challengeAvailabilityChanged;
-				return Object.assign({}, prev, {
-					getChallengeAvailability: availabilityChanged,
-				});
+				return {
+					getChallengeAvailability: subscriptionData.data.challengeAvailabilityChanged,
+				};
 			},
 		});
 	}, []);
@@ -57,10 +55,9 @@ export const useChallengeAvailability = (friendId: any) => {
 	return { challengeAvailabilityStatus: data?.getChallengeAvailability, loading, error };
 };
 
-// TODO: subscription also needs to no cache fetch
 export const useOwnChallengeAvailability = () => {
 	const { data, loading, error, subscribeToMore } = useQuery(GET_OWN_CHALLENGE_AVAILABILITY, {
-		fetchPolicy: "no-cache",
+		fetchPolicy: "cache-and-network",
 	});
 
 	useEffect(() => {
@@ -68,10 +65,10 @@ export const useOwnChallengeAvailability = () => {
 			document: OWN_CHALLENGE_AVAILABILITY_CHANGED,
 			updateQuery: (prev, { subscriptionData }) => {
 				if (!subscriptionData.data) return prev;
-				const availabilityChanged = subscriptionData.data.ownChallengeAvailabilityChanged;
-				return Object.assign({}, prev, {
-					getOwnChallengeAvailability: availabilityChanged,
-				});
+				return {
+					getOwnChallengeAvailability:
+						subscriptionData.data.ownChallengeAvailabilityChanged,
+				};
 			},
 		});
 	}, []);
