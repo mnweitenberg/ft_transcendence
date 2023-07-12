@@ -134,7 +134,7 @@ function renderHeader(data: any, renderOverview: () => void, props: any) {
 				<img className="arrow_back" src="/img/arrow_back.png" onClick={renderOverview} />
 			</div>
 			<div className="pm_user">
-				<img className="pm_avatar" src={data.group_chat.logo} />
+				<img className="pm_avatar" src={convertEncodedImage(data.group_chat.logo)} />
 				<h3>{data.group_chat.name}</h3>
 			</div>
 			<div className="groupchat_info">

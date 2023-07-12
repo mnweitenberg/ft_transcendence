@@ -17,14 +17,14 @@ const GET_CHANNEL = gql`
 				author {
 					id
 					username
+					avatar {
+						file
+					}
 				}
 			}
 			members {
 				id
 				username
-				avatar {
-					file
-				}
 			}
 		}
 		currentUserQuery {
@@ -41,6 +41,9 @@ const SUBSCRIBE_MESSAGES = gql`
 			author {
 				id
 				username
+				avatar {
+					file
+				}
 			}
 		}
 	}
@@ -160,30 +163,32 @@ function Messages({ data, current_user }: { data: any; current_user: any }) {
 	return (
 		<div className="messages_container">
 			{data.personal_chat.messages.map(function (message: any) {
-				// TODO: use better type
-				if (message.author.id === current_user.id)
-					// TODO: use real author
-					return (
-						<div key={message.id} className="user">
-							{" "}
-							{message.content}{" "}
-						</div>
-					);
-				return (
-					<div key={message.id} className="friend">
-						<div className="flexContainer">
-							<div className="avatar_container">
-								<img src={message.author.avatar} />
-							</div>
-							<div>
-								<h3>{message.author.username}</h3>
-								{message.content}{" "}
-							</div>
-						</div>
-					</div>
-				);
+				return <Message key={message.id} message={message} current_user={current_user} />;
 			})}
 			<div ref={messagesEndRef} />
+		</div>
+	);
+}
+
+function Message({ message, current_user }: { message: any; current_user: any }) {
+	if (message.author.id === current_user.id) {
+		return <div className="user">{message.content}</div>;
+	}
+	if (message.author.blocked_by_me) {
+		// FIXME: block state seems to only update on reload
+		return <div className="friend blocked">Blocked message</div>;
+	}
+	return (
+		<div className="friend">
+			<div className="flexContainer">
+				<div className="avatar_container">
+					<img src={convertEncodedImage(message.author.avatar.file)} />
+				</div>
+				<div>
+					<h3>{message.author.username}</h3>
+					{message.content}{" "}
+				</div>
+			</div>
 		</div>
 	);
 }
