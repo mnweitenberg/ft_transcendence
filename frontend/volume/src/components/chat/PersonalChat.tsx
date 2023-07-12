@@ -17,6 +17,7 @@ const GET_CHANNEL = gql`
 				author {
 					id
 					username
+					blocked_by_me
 					avatar {
 						file
 					}
@@ -25,6 +26,9 @@ const GET_CHANNEL = gql`
 			members {
 				id
 				username
+				avatar {
+					file
+				}
 			}
 		}
 		currentUserQuery {
@@ -41,6 +45,7 @@ const SUBSCRIBE_MESSAGES = gql`
 			author {
 				id
 				username
+				blocked_by_me
 				avatar {
 					file
 				}
