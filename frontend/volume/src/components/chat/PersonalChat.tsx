@@ -17,6 +17,10 @@ const GET_CHANNEL = gql`
 				author {
 					id
 					username
+					blocked_by_me
+					avatar {
+						file
+					}
 				}
 			}
 			members {
@@ -41,7 +45,20 @@ const SUBSCRIBE_MESSAGES = gql`
 			author {
 				id
 				username
+				blocked_by_me
+				avatar {
+					file
+				}
 			}
+		}
+	}
+`;
+
+const SUBSCRIBE_BLOCK = gql`
+	subscription BlockStateChanged($user_ids: [String!]!) {
+		multi_block_state_changed(user_ids: $user_ids) {
+			user_id
+			blocked
 		}
 	}
 `;
@@ -84,6 +101,34 @@ export default function PersonalChat({
 			},
 		});
 	}, []);
+
+	useEffect(() => {
+		if (!data) return;
+		return subscribeToMore({
+			document: SUBSCRIBE_BLOCK,
+			variables: {
+				channel_id: channel_id,
+				user_ids: data.personal_chat.members.map((member: any) => member.id),
+			},
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const block_update = subscriptionData.data.multi_block_state_changed;
+				const messages = prev.personal_chat.messages.map((msg: any) => {
+					if (msg.author.id === block_update.user_id) {
+						const author = { ...msg.author, blocked_by_me: block_update.blocked };
+						return { ...msg, author };
+					}
+					return msg;
+				});
+				return Object.assign({}, prev, {
+					personal_chat: {
+						...prev.personal_chat,
+						messages,
+					},
+				});
+			},
+		});
+	}, [loading]);
 
 	const handleMessageInput = (e: any) => {
 		setMessage(e.target.value);
@@ -160,30 +205,31 @@ function Messages({ data, current_user }: { data: any; current_user: any }) {
 	return (
 		<div className="messages_container">
 			{data.personal_chat.messages.map(function (message: any) {
-				// TODO: use better type
-				if (message.author.id === current_user.id)
-					// TODO: use real author
-					return (
-						<div key={message.id} className="user">
-							{" "}
-							{message.content}{" "}
-						</div>
-					);
-				return (
-					<div key={message.id} className="friend">
-						<div className="flexContainer">
-							<div className="avatar_container">
-								<img src={message.author.avatar} />
-							</div>
-							<div>
-								<h3>{message.author.username}</h3>
-								{message.content}{" "}
-							</div>
-						</div>
-					</div>
-				);
+				return <Message key={message.id} message={message} current_user={current_user} />;
 			})}
 			<div ref={messagesEndRef} />
+		</div>
+	);
+}
+
+function Message({ message, current_user }: { message: any; current_user: any }) {
+	if (message.author.id === current_user.id) {
+		return <div className="user">{message.content}</div>;
+	}
+	if (message.author.blocked_by_me) {
+		return <div className="friend blocked">Blocked message</div>;
+	}
+	return (
+		<div className="friend">
+			<div className="flexContainer">
+				<div className="avatar_container">
+					<img src={convertEncodedImage(message.author.avatar.file)} />
+				</div>
+				<div>
+					<h3>{message.author.username}</h3>
+					{message.content}{" "}
+				</div>
+			</div>
 		</div>
 	);
 }

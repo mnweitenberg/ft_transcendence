@@ -22,9 +22,6 @@ const GET_CHANNELS = gql`
 				members {
 					id
 					username
-					avatar {
-						file
-					}
 				}
 			}
 			group_chats {
@@ -87,14 +84,9 @@ function Overview({
 	let allChats = data.currentUserQuery.personal_chats.concat(data.currentUserQuery.group_chats);
 
 	// if chat has no name(and therefor is personal chat), use the other member's name and avatar
+	// TODO: move back to backend
 	allChats = allChats.map((chat: any) => {
 		const newChat = { ...chat };
-		if (!newChat.name) {
-			newChat.name =
-				props.userId === newChat.members[0]
-					? newChat.members[0].username
-					: newChat.members[1].username;
-		}
 		if (!newChat.logo) {
 			newChat.logo =
 				props.userId === newChat.members[0]

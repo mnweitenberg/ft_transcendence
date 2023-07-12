@@ -26,7 +26,6 @@ export class PersonalChat {
 	@Field(() => [PersonalMessage])
 	messages: PersonalMessage[];
 
-	@Column()
 	@Field(() => String, {
 		description: 'name of the channel',
 	})

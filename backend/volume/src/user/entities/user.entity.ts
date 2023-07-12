@@ -69,13 +69,24 @@ export class User {
 	@JoinTable()
 	friends: User[];
 
-	@ManyToMany(() => User, (user) => user.incoming_friend_requests)
+	@ManyToMany(() => User, (user) => user.outgoing_friend_requests)
 	@JoinTable()
 	@Field(() => [User])
 	incoming_friend_requests: User[];
 
-	@ManyToMany(() => User, (user) => user.outgoing_friend_requests)
+	@ManyToMany(() => User, (user) => user.incoming_friend_requests)
 	@JoinTable()
 	@Field(() => [User])
 	outgoing_friend_requests: User[];
+	
+	@ManyToMany(() => User, (user) => user.blocked_by)
+	@JoinTable()
+	@Field(() => [User])
+	blocked_users: User[];
+
+	@ManyToMany(() => User, (user) => user.blocked_users)
+	blocked_by: User[];
+
+	@Field(() => Boolean)
+	blocked_by_me: boolean;
 }
