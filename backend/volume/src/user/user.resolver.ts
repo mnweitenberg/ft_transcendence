@@ -19,6 +19,7 @@ import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
 import { pubSub } from 'src/app.module';
 import { getSubscriptionUser } from 'src/utils/getSubscriptionUser';
+import { MultiBlockStateChange, MultiBlockStateChangeInput } from './dto/multi-block-state-change.dto';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -228,7 +229,21 @@ export class UserResolver {
 			return payload.blocked_id === variables.user_id && payload.by_user_id === user.userUid;
 		},
 	})
-	async block_state_changed(@Args('user_id') user_id: string) {
+	async block_state_changed(@Args('user_id') _user_id: string) {
+		return pubSub.asyncIterator('block_state_changed');
+	}
+
+	@UseGuards(JwtSubscriptionGuard)
+	@Subscription(() => MultiBlockStateChange, {
+		filter: (payload, variables, context) => {
+			const user = getSubscriptionUser(context);
+			return variables.user_ids.includes(payload.blocked_id) && payload.by_user_id === user.userUid;
+		},
+		resolve(payload) {
+			return {user_id: payload.blocked_id, blocked: payload.block_state_changed};
+		},
+	})
+	async multi_block_state_changed(@Args() _input: MultiBlockStateChangeInput) {
 		return pubSub.asyncIterator('block_state_changed');
 	}
 

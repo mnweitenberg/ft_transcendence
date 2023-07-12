@@ -54,6 +54,15 @@ const SUBSCRIBE_MESSAGES = gql`
 	}
 `;
 
+const SUBSCRIBE_BLOCK = gql`
+	subscription BlockStateChanged($user_ids: [String!]!) {
+		multi_block_state_changed(user_ids: $user_ids) {
+			user_id
+			blocked
+		}
+	}
+`;
+
 const SEND_MESSAGE = gql`
 	mutation sendMessage($channel_id: String!, $content: String!) {
 		createPersonalMessage(channel_id: $channel_id, content: $content) {
@@ -92,6 +101,34 @@ export default function PersonalChat({
 			},
 		});
 	}, []);
+
+	useEffect(() => {
+		if (!data) return;
+		return subscribeToMore({
+			document: SUBSCRIBE_BLOCK,
+			variables: {
+				channel_id: channel_id,
+				user_ids: data.personal_chat.members.map((member: any) => member.id),
+			},
+			updateQuery: (prev, { subscriptionData }) => {
+				if (!subscriptionData.data) return prev;
+				const block_update = subscriptionData.data.multi_block_state_changed;
+				const messages = prev.personal_chat.messages.map((msg: any) => {
+					if (msg.author.id === block_update.user_id) {
+						const author = { ...msg.author, blocked_by_me: block_update.blocked };
+						return { ...msg, author };
+					}
+					return msg;
+				});
+				return Object.assign({}, prev, {
+					personal_chat: {
+						...prev.personal_chat,
+						messages,
+					},
+				});
+			},
+		});
+	}, [loading]);
 
 	const handleMessageInput = (e: any) => {
 		setMessage(e.target.value);
@@ -180,7 +217,6 @@ function Message({ message, current_user }: { message: any; current_user: any })
 		return <div className="user">{message.content}</div>;
 	}
 	if (message.author.blocked_by_me) {
-		// FIXME: block state seems to only update on reload
 		return <div className="friend blocked">Blocked message</div>;
 	}
 	return (
