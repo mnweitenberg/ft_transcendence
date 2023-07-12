@@ -11,6 +11,7 @@ import {
 	useChallengeAvailability,
 	useOwnChallengeAvailability,
 } from "src/utils/useChallengeAvailability";
+import { useBlockState } from "src/utils/useBlockState";
 
 export default function UserStats(modalProps: i.ModalProps & { selectedUser: any }) {
 	const { friends, loading, error } = useFriendsData(modalProps.userId);
@@ -37,6 +38,15 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 	const [challenge_friend, { loading: challenge_loading, error: challenge_error }] =
 		useMutation(CHALLENGE_FRIEND);
 
+	const [block_user, { loading: block_loading, error: block_error }] = useMutation(BLOCK_USER);
+	const [unblock_user, { loading: unblock_loading, error: unblock_error }] =
+		useMutation(UNBLOCK_USER);
+	const {
+		block_state: blocked,
+		loading: block_state_loading,
+		error: block_state_error,
+	} = useBlockState(modalProps.selectedUser.id);
+
 	if (challenge_available_loading) return <></>;
 	if (own_challenge_available_loading) return <></>;
 	if (loading) return <> </>;
@@ -44,6 +54,9 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 	if (loadingRemove) return <> </>;
 	if (loadingRequest) return <>send friend request</>;
 	if (challenge_loading) return <>loading challenge</>;
+	if (block_loading) return <>loading block status</>;
+	if (unblock_loading) return <>loading block status</>;
+	if (block_state_loading) return <>loading block status</>;
 
 	if (challenge_available_error) return <></>;
 	if (own_challenge_available_error) return <></>;
@@ -52,6 +65,9 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 	if (errorOutgoing) return <>error</>;
 	if (errorRemove) return <>error</>;
 	if (errorRequest) return <>error</>;
+	if (block_error) return <>error blocking user</>;
+	if (unblock_error) return <>error unblocking user</>;
+	if (block_state_error) return <>error loading user's block status</>;
 
 	const renderUserActions = () => {
 		if (modalProps.selectedUser.id === modalProps.userId)
@@ -76,7 +92,7 @@ export default function UserStats(modalProps: i.ModalProps & { selectedUser: any
 					remove_friend,
 					invite_friend
 				)}
-				{renderBlockOrUnblock(friends, modalProps)}
+				{renderBlockOrUnblock(modalProps, blocked, block_user, unblock_user)}
 			</div>
 		);
 	};
@@ -199,7 +215,45 @@ function renderChallengeFriendActions(
 	);
 }
 
-// TODO: implement blockOrUnblock
-function renderBlockOrUnblock(friends: any, modalProps: any) {
-	return <a className="link">block</a>;
+const BLOCK_USER = gql`
+	mutation BlockUser($username: String!) {
+		block_user(username: $username)
+	}
+`;
+
+const UNBLOCK_USER = gql`
+	mutation UnblockUser($username: String!) {
+		unblock_user(username: $username)
+	}
+`;
+
+function renderBlockOrUnblock(
+	modalProps: any,
+	blocked: boolean,
+	block_user: any,
+	unblock_user: any
+) {
+	if (blocked) {
+		return (
+			<a
+				className="link"
+				onClick={() => {
+					unblock_user({ variables: { username: modalProps.selectedUser.username } });
+				}}
+			>
+				unblock
+			</a>
+		);
+	} else {
+		return (
+			<a
+				className="link"
+				onClick={() => {
+					block_user({ variables: { username: modalProps.selectedUser.username } });
+				}}
+			>
+				block
+			</a>
+		);
+	}
 }

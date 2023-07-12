@@ -12,12 +12,13 @@ import { User } from './entities/user.entity';
 import { Avatar } from './entities/avatar.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard, JwtSubscriptionGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { UserInfo } from 'src/auth/user-info.interface';
 import { UserAvatarService } from './user-avatar.service';
 import { ChangeUserDataInput } from './dto/change-user-data-input';
 import { pubSub } from 'src/app.module';
+import { getSubscriptionUser } from 'src/utils/getSubscriptionUser';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -183,6 +184,52 @@ export class UserResolver {
 	})
 	async friendsChanged(@Args('user_id') user_id: string) {
 		return pubSub.asyncIterator('friendsChanged');
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@ResolveField()
+	async blocked_users(@Parent() user: User, @AuthUser() user_info: UserInfo) {
+		if (user.id !== user_info.userUid) {
+			throw 'Cannot only access your own blocked_users'
+		}
+		return this.userService.getBlockedUsers(user);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => Boolean)
+	async block_user(@AuthUser() user: UserInfo, @Args('username') username: string) {
+		return this.userService.blockUser(user.userUid, username);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Mutation(() => Boolean)
+	async unblock_user(@AuthUser() user: UserInfo, @Args('username') username: string) {
+		return this.userService.unblockUser(user.userUid, username);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@ResolveField()
+	async blocked_by_me(@AuthUser() me: UserInfo, @Parent() user: User) {
+		const user_with_block = await this.userService.getUserById(user.id, {blocked_by: true});
+		return user_with_block.blocked_by.some((blocker) => blocker.id === me.userUid);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Query(() => Boolean)
+	async is_user_blocked(@AuthUser() me: UserInfo, @Args('user_id') user_id: string) {
+		const user = await this.userService.getUserById(user_id, {blocked_by: true});
+		return user.blocked_by.some((blocker) => blocker.id === me.userUid);
+	}
+
+	@UseGuards(JwtSubscriptionGuard)
+	@Subscription(() => Boolean, {
+		filter: (payload, variables, context) => {
+			const user = getSubscriptionUser(context);
+			return payload.blocked_id === variables.user_id && payload.by_user_id === user.userUid;
+		},
+	})
+	async block_state_changed(@Args('user_id') user_id: string) {
+		return pubSub.asyncIterator('block_state_changed');
 	}
 
 	// TESTING

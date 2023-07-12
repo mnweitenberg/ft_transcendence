@@ -17,6 +17,7 @@ const GET_CHANNEL = gql`
 				author {
 					id
 					username
+					blocked_by_me
 					avatar {
 						file
 					}
@@ -43,6 +44,7 @@ const SUBSCRIBE_MESSAGES = gql`
 			content
 			author {
 				id
+				blocked_by_me
 				username
 				avatar {
 					file
@@ -118,8 +120,8 @@ export default function GroupChat({
 
 	return (
 		<div className="personalMessage">
-			{renderHeader(data, renderOverview, props)};
-			<Messages data={data} current_user={current_user} />;
+			{renderHeader(data, renderOverview, props)}
+			<Messages data={data} current_user={current_user} />
 			{renderSendContainer(message, handleMessageInput, sendMessage)}
 		</div>
 	);
@@ -160,29 +162,32 @@ function Messages({ data, current_user }: { data: any; current_user: any }) {
 	return (
 		<div className="messages_container">
 			{data.group_chat.messages.map(function (message: any) {
-				// TODO: use better type
-				if (message.author.id === current_user.id)
-					// TODO: use real author
-					return (
-						<div key={message.id} className="user">
-							{message.content}
-						</div>
-					);
-				return (
-					<div key={message.id} className="friend">
-						<div className="flexContainer">
-							<div className="avatar_container">
-								<img src={convertEncodedImage(message.author.avatar.file)} />
-							</div>
-							<div>
-								<h3>{message.author.username}</h3>
-								{message.content}{" "}
-							</div>
-						</div>
-					</div>
-				);
+				return <Message key={message.id} message={message} current_user={current_user} />;
 			})}
 			<div ref={messagesEndRef} />
+		</div>
+	);
+}
+
+function Message({ message, current_user }: { message: any; current_user: any }) {
+	if (message.author.id === current_user.id) {
+		return <div className="user">{message.content}</div>;
+	}
+	if (message.author.blocked_by_me) {
+		// FIXME: block state seems to only update on reload
+		return <div className="friend blocked">Blocked message</div>;
+	}
+	return (
+		<div className="friend">
+			<div className="flexContainer">
+				<div className="avatar_container">
+					<img src={convertEncodedImage(message.author.avatar.file)} />
+				</div>
+				<div>
+					<h3>{message.author.username}</h3>
+					{message.content}{" "}
+				</div>
+			</div>
 		</div>
 	);
 }
