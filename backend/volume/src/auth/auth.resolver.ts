@@ -17,8 +17,8 @@ export class AuthResolver {
 	}
 
 	@Mutation()
-	async enableTwoFactorMutation() {
-
+	async setTwoFactorMutation() {
+		
 	}
 
 	// @Query(() => Boolean)
